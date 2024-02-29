@@ -1,7 +1,7 @@
 import { Hex } from 'viem';
-import { mintNFT, sleep, registerSocialRemixPolicy, registerRootIp, linkIpToParent, mintLicense } from './utils';
+import { mintNFT, sleep, registerSocialRemixPolicy, registerRootIp, linkIpToParent, mintLicense } from '../../../utils/utils';
 
-export async function testFlow2() {
+export default async function testFlow2() {
   // const NFTIdOfA = await mintNFT('A');
   // const NFTIdOfB = await mintNFT('B');
   const policyId = await registerSocialRemixPolicy();
