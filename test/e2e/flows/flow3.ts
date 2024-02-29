@@ -6,9 +6,9 @@ import {
   registerSocialRemixPolicy,
   mintLicense,
   registerDerivativeIP,
-} from './utils';
+} from '../../../utils/utils';
 
-export async function testFlow3() {
+export default async function testFlow3() {
   const policyId = await registerSocialRemixPolicy();
   // const NFTIdOfA = await mintNFT('A');
   // const NFTIdOfB = await mintNFT('B');

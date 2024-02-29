@@ -6,9 +6,9 @@ import {
   registerDerivativeIP,
   sleep,
   mintLicense,
-} from './utils';
+} from '../../../utils/utils';
 
-export async function testFlow5() {
+export default async function testFlow5() {
   const policyId = await registerCommercialUsePolicy();
   // const NFTIdOfA = await mintNFT('A');
   // const NFTIdOfB = await mintNFT('B');
