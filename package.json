@@ -1,0 +1,23 @@
+{
+  "name": "sdk-e2e-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/storyprotocol/sdk-e2e-tests.git"
+  },
+  "dependencies": {
+    "@story-protocol/core-sdk": "0.0.1-beta-rc.9",
+    "viem": "^1.18.4"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/storyprotocol/sdk-e2e-tests/issues"
+  },
+  "homepage": "https://github.com/storyprotocol/sdk-e2e-tests#readme"
+}
