@@ -4,10 +4,11 @@ import testFlow3 from './flows/flow3';
 import testFlow4 from './flows/flow4';
 import testFlow5 from './flows/flow5';
 import testFlow6 from './flows/flow6';
+import testFlow7 from './flows/flow7';
 
 type flowsTestMapType = {
-  [key: string]: Function
-}
+  [key: string]: Function;
+};
 const flowsTestMap: flowsTestMapType = {
   flow1: testFlow1,
   flow2: testFlow2,
@@ -15,9 +16,10 @@ const flowsTestMap: flowsTestMapType = {
   flow4: testFlow4,
   flow5: testFlow5,
   flow6: testFlow6,
-}
+  flow7: testFlow7,
+};
 process.env.TEST_FLOWS?.split(',').forEach(async (flow: keyof flowsTestMapType) => {
-  if(flowsTestMap[flow]) {
+  if (flowsTestMap[flow]) {
     try {
       console.log(`testing ${flow}...`);
       await flowsTestMap[flow]();
@@ -27,4 +29,4 @@ process.env.TEST_FLOWS?.split(',').forEach(async (flow: keyof flowsTestMapType) 
       throw new Error(`${flow} failed with error: ${(err as Error).message}`);
     }
   }
-})
+});

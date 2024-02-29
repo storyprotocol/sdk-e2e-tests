@@ -3,8 +3,7 @@ import { mintNFT, sleep, grantIp, registerSocialRemixPolicy, mintLicense, regist
 
 export default async function testFlow4() {
   const policyId = await registerSocialRemixPolicy();
-  // const NFTIdOfA = await mintNFT('A');
-  const NFTIdOfA = '204';
+  const NFTIdOfA = await mintNFT('A');
   await sleep(5);
   const ipId = (await registerRootIp(NFTIdOfA)) as Hex;
   await sleep(5);

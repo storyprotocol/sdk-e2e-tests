@@ -1,4 +1,4 @@
-import { http, Hex } from "viem";
+import { http, Hex, createPublicClient } from 'viem';
 import { PrivateKeyAccount } from 'viem/accounts';
 import type { StoryConfig } from '@story-protocol/core-sdk';
 import { sepolia } from 'viem/chains';
@@ -21,10 +21,31 @@ import {
   LICENSE_MODULE,
   RPC_URL,
 } from '../config/config';
+import mintNFTAbi from '../abi/mintNFT.json';
 
 export type Who = 'A' | 'B' | 'C';
 
-export async function mintNFT(who: Who) {
+const publicClient = createPublicClient({
+  chain: sepolia,
+  transport: http(),
+});
+export async function getNFTId(txHash: Hex) {
+  const { logs } = await publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
+  if (logs[0].topics[3]) {
+    const tokenId = parseInt(logs[0].topics[3], 16);
+    return tokenId;
+  }
+  return 0;
+}
+function getWalletAddress(who: Who = 'A') {
+  let walletAddress = TEST_WALLET_A_ADDRESS;
+  if (who === 'B') walletAddress = TEST_WALLET_B_ADDRESS;
+  if (who === 'C') walletAddress = TEST_WALLET_C_ADDRESS;
+  return walletAddress;
+}
+export async function mintNFT(who: Who): Promise<string> {
   let client = walletClientA;
   let account = accountA;
   if (who === 'B') {
@@ -35,17 +56,20 @@ export async function mintNFT(who: Who) {
     client = walletClientC;
     account = accountC;
   }
-  const hash = await client.writeContract({
+  const walletAddress = getWalletAddress(who);
+  const txHash = await client.writeContract({
     account,
-    address: (NFT_CONTRACT_ADDRESS || '0x') as `0x${string}`,
+    address: NFT_CONTRACT_ADDRESS,
     chain: sepolia,
-    abi: [],
-    functionName: 'mint' as never,
-    args: [],
+    abi: mintNFTAbi,
+    functionName: 'mint',
+    args: [walletAddress],
   });
-
-  console.log('mintNFT', hash);
-  return '123';
+  console.log('mintNFTHash:', txHash);
+  await sleep(5);
+  const tokenId = await getNFTId(txHash);
+  console.log(`tokenId of ${who}`, tokenId);
+  return String(tokenId);
 }
 
 function getStoryClient(who?: Who) {
@@ -163,15 +187,16 @@ export const registerCommercialUsePolicy = async () => {
   return response.policyId;
 };
 
-export const addOnePolicyToIp = async (ipId: Hex, policyId: string) => {
-  const response = await storyClientA.policy.addPolicyToIp({
+export const addOnePolicyToIp = async (ipId: Hex, policyId: string, who: Who = 'A') => {
+  const storyClient = getStoryClient(who);
+  const response = await storyClient.policy.addPolicyToIp({
     policyId,
     ipId,
     txOptions: {
       waitForTransaction: true,
     },
   });
-  console.log(`added policy ${policyId} to IP ${ipId}: `, response);
+  console.log(`added policy ${policyId} to IP ${ipId}, which belong to wallet ${who}: `, response);
 };
 
 export const grantIp = async (ipId: Hex, receiver: Who = 'B', promoter: Who = 'A') => {
@@ -203,7 +228,7 @@ export const mintLicense = async (ipId: Hex, policyId: string, receiver: Who = '
       waitForTransaction: true,
     },
   });
-  console.log(`${promoter} mint license to ${receiver} derived from IP ${ipId}: `, response);
+  console.log(`${promoter} mint license with policy ${policyId} to ${receiver} derived from IP ${ipId}: `, response);
   return response.licenseId;
 };
 

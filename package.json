@@ -11,7 +11,8 @@
     "test:flow4": "TEST_FLOWS=flow4 tsx test/e2e/e2e.ts",
     "test:flow5": "TEST_FLOWS=flow5 tsx test/e2e/e2e.ts",
     "test:flow6": "TEST_FLOWS=flow6 tsx test/e2e/e2e.ts",
-    "test:all": "TEST_FLOWS=flow1,flow2,flow3,flow4,flow5,flow6 tsx test/e2e/e2e.ts"
+    "test:flow7": "TEST_FLOWS=flow7 tsx test/e2e/e2e.ts",
+    "test": "TEST_FLOWS=flow1,flow2,flow3,flow4,flow5,flow6,flow7 tsx test/e2e/e2e.ts"
   },
   "engines": {
     "node": "20.0.0"

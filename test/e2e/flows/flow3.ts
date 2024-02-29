@@ -10,10 +10,8 @@ import {
 
 export default async function testFlow3() {
   const policyId = await registerSocialRemixPolicy();
-  // const NFTIdOfA = await mintNFT('A');
-  // const NFTIdOfB = await mintNFT('B');
-  const NFTIdOfA = '202';
-  const NFTIdOfB = '209';
+  const NFTIdOfA = await mintNFT('A');
+  const NFTIdOfB = await mintNFT('B');
   await sleep(5);
   if (!policyId) return;
   const ipId = (await registerIpWithExistingPolicy(NFTIdOfA, policyId)) as Hex;
@@ -21,5 +19,5 @@ export default async function testFlow3() {
   const licenseId = await mintLicense(ipId, policyId, 'B', 'A');
   if (!licenseId) return;
   await sleep(5);
-  registerDerivativeIP(NFTIdOfB, [licenseId], 'B');
+  await registerDerivativeIP(NFTIdOfB, [licenseId], 'B');
 }
