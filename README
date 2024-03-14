@@ -18,15 +18,13 @@ This project dedicates to perform e2e test for the story protocol typescript sdk
 
 - Run specific test (recommend):
 
-        run `npm run test:flow1`
+        run `mocha -r ts-node/register -r mocha-steps ./test/**/**/*.test.ts --timeout 240000`
 
 - Run all test together:
 
         run `npm run test`
 
-## How can I extend test flows to this project
+- Run all test together:
 
-- wrap your test flow into a function and default export this function.
-- put the new test file into `/test/e2e/flows`
-- import the function from `/test/e2e/e2e.ts`, and register it into `flowsTestMap`
-- extend the `scripts` field of the `/package.json` file with a reference to the existing other scrip command, and finally add the flow name to `TEST_FLOWS` in 'test' of the 'scripts'
+        run `npm run open:report`
+
