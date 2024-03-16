@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome || true",
-    "open:report": "open mochawesome-report/mochawesome.html"
+    "open:report": "open mochawesome-report/mochawesome.html",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "engines": {
     "node": "20.0.0"
@@ -25,9 +26,11 @@
     "@types/mocha-steps": "^1.3.3",
     "@types/node": "^20.8.2",
     "@types/sinon": "^10.0.18",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.50.0",
+    "eslint": "^8.57.0",
     "mocha": "^10.2.0",
     "mocha-steps": "^1.3.0",
     "mochawesome": "^7.1.3",
