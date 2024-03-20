@@ -68,22 +68,18 @@ export const addPolicyToIp = async function (wallet: keyof typeof storyClients, 
 }
 
 export const mintLicense = async function (wallet: keyof typeof storyClients, policyId: string, ipId: Hex, receiverAddress: Hex, waitForTransaction: boolean) {
-    try {
-        const storyClient = getStoryClient(wallet);
-        const response = await storyClient.license.mintLicense({
-            policyId: policyId,
-            licensorIpId: ipId,
-            mintAmount: 1,
-            receiverAddress: receiverAddress,
-            txOptions: {
-                waitForTransaction: waitForTransaction,
-            }
-        })
-        console.log(response)
-        return response
-    } catch (error) {
-        console.log(error)
-    }
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.mintLicense({
+        policyId: policyId,
+        licensorIpId: ipId,
+        mintAmount: 1,
+        receiverAddress: receiverAddress,
+        txOptions: {
+            waitForTransaction: waitForTransaction,
+        }
+    })
+    console.log(response)
+    return response
 }
 
 export const registerDerivativeIp = async function (wallet: keyof typeof storyClients, licenseIds: string[], tokenId: string, waitForTransaction: boolean) {
@@ -117,14 +113,13 @@ export const linkIpToParent = async function (wallet: keyof typeof storyClients,
     }
 }
 
-export const setPermission = async function (wallet: keyof typeof storyClients, ipId: Hex, signer: Hex, to: Hex, func: Hex, permission: number, waitForTransaction: boolean) {
+export const setPermission = async function (wallet: keyof typeof storyClients, ipId: Hex, signer: Hex, to: Hex, permission: number, waitForTransaction: boolean) {
     try {
         const storyClient = getStoryClient(wallet);
         const response = await storyClient.permission.setPermission({
             ipId: ipId,
             signer: signer,
             to: to,
-            func: func,
             permission: permission,
             txOptions: {
               waitForTransaction: waitForTransaction,

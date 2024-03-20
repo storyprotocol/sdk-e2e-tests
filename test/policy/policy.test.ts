@@ -1,18 +1,9 @@
-import { privateKeyA, privateKeyB, accountA, accountB } from '../../config/config'
-import { mintNFT, sleep } from '../../utils/utils'
 import { registerPILPolicy } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
-
-let tokenIdA: any
-let tokenIdB: any
-let ipIdA: any
-let ipIdB: any
-let policyId: any
-let licenseId: any
 
 const waitForTransaction: boolean = true;
 
