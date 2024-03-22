@@ -15,22 +15,18 @@ interface PolicyOptions {
     [key: string]: any;
 }
 
-export const registerRootIp = async function (wallet: keyof typeof storyClients, policyId: string, tokenId: string, waitForTransaction: boolean) {
-    try {
-        const storyClient = getStoryClient(wallet);
-        const response = await storyClient.ipAsset.registerRootIp({
-            policyId: policyId,
-            tokenContractAddress: process.env.MY_NFT_CONTRACT_ADDRESS as Address,
-            tokenId: tokenId,
-            txOptions: {
-                waitForTransaction: waitForTransaction
-            }
-        })
-        console.log(response)
-        return response
-    } catch (error) {
-        console.log(error)
-    }
+export const registerRootIp = async function (wallet: keyof typeof storyClients, policyId: string, tokenContractAddress: Address, tokenId: string, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAsset.registerRootIp({
+        policyId: policyId,
+        tokenContractAddress: tokenContractAddress,
+        tokenId: tokenId,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(response)
+    return response
 }
 
 export const registerPILPolicy = async function (wallet: keyof typeof storyClients, transferable: boolean, waitForTransaction: boolean, options?: PolicyOptions) {
@@ -82,11 +78,11 @@ export const mintLicense = async function (wallet: keyof typeof storyClients, po
     return response
 }
 
-export const registerDerivativeIp = async function (wallet: keyof typeof storyClients, licenseIds: string[], tokenId: string, waitForTransaction: boolean) {
+export const registerDerivativeIp = async function (wallet: keyof typeof storyClients, licenseIds: string[], tokenContractAddress: Hex, tokenId: string, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.registerDerivativeIp({
         licenseIds: licenseIds,
-        tokenContractAddress: process.env.MY_NFT_CONTRACT_ADDRESS as Address,
+        tokenContractAddress: tokenContractAddress,
         tokenId: tokenId,
         txOptions: {
             waitForTransaction: waitForTransaction,
