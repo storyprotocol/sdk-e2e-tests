@@ -63,12 +63,12 @@ export const addPolicyToIp = async function (wallet: keyof typeof storyClients, 
     }
 }
 
-export const mintLicense = async function (wallet: keyof typeof storyClients, policyId: string, ipId: Hex, receiverAddress: Hex, waitForTransaction: boolean) {
+export const mintLicense = async function (wallet: keyof typeof storyClients, policyId: string, ipId: Hex, mintAmount: number, receiverAddress: Hex, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.mintLicense({
         policyId: policyId,
         licensorIpId: ipId,
-        mintAmount: 1,
+        mintAmount: mintAmount,
         receiverAddress: receiverAddress,
         txOptions: {
             waitForTransaction: waitForTransaction,

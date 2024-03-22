@@ -1,6 +1,6 @@
 import { accountB, nftContractAddress, privateKeyA, privateKeyB } from '../../config/config';
 import { mintLicense, registerDerivativeIp, registerRootIp } from '../../utils/sdkUtils';
-import { mintNFT } from '../../utils/utils';
+import { mintNFT, sleep } from '../../utils/utils';
 import { before, it } from 'mocha';
 import { expect } from 'chai'
 import chai from 'chai';
@@ -20,7 +20,7 @@ describe('SDK Test', function () {
             tokenIdA = await mintNFT(privateKeyA);            
             expect(tokenIdA).not.empty
             
-            tokenIdB = await mintNFT(privateKeyB);
+            tokenIdB = await mintNFT(privateKeyA);
             expect(tokenIdB).not.empty 
         });
 
@@ -59,7 +59,7 @@ describe('SDK Test', function () {
             const response = await expect(
                 registerRootIp("B", "1", nftContractAddress, tokenIdA, true)
             ).to.be.rejectedWith("Failed to register root IP: The contract function \"registerRootIp\" reverted.", 
-                                     "Error: RegistrationModule__InvalidOwner()")
+                                 "Error: RegistrationModule__InvalidOwner()")
         });        
 
         it("Register a root IP asset", async function () {
@@ -87,7 +87,7 @@ describe('SDK Test', function () {
 
         it("Register a root IP asset with waitForTransaction: false", async function () {
             const response = await expect(
-                registerRootIp("B", "1", nftContractAddress, tokenIdB, false)
+                registerRootIp("A", "1", nftContractAddress, tokenIdB, false)
             ).to.not.be.rejected
         
             expect(response.txHash).to.be.a("string");
@@ -98,8 +98,9 @@ describe('SDK Test', function () {
 
     describe('Test ipAsset.registerDerivativeIp Function', async function () {
         before("Mint a NFT to Wallet A", async function () {
+            await sleep(20)
             const response = await expect(
-                mintLicense("A", "1", ipIdA, accountB.address, true)
+                mintLicense("A", "1", ipIdA, 2, accountB.address, true)
             ).to.not.be.rejected;
     
             expect(response.txHash).to.be.a("string");
@@ -111,8 +112,8 @@ describe('SDK Test', function () {
 
             tokenIdC = await mintNFT(privateKeyB);
             expect(tokenIdC).not.empty
-            
-            tokenIdD = await mintNFT(privateKeyA);
+
+            tokenIdD = await mintNFT(privateKeyB);
             expect(tokenIdD).not.empty
         });
 
@@ -131,7 +132,7 @@ describe('SDK Test', function () {
         it("Register a derivative IP asset fail as non-existent NFT contract address", async function () {
             const response = await expect(
                 registerDerivativeIp("B", [licenseIdA], "0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F48", tokenIdC, true)
-            ).to.be.rejectedWith("Failed to register root IP: Execution reverted for an unknown reason.")
+            ).to.be.rejectedWith("Failed to register derivative IP: Execution reverted for an unknown reason.")
         });
 
         it("Register a derivative IP asset fail as invalid NFT contract address", async function () {
@@ -149,7 +150,7 @@ describe('SDK Test', function () {
         it("Register a derivative IP asset fail as invalid owner", async function () {
             const response = await expect(
                 registerDerivativeIp("A", [licenseIdA], nftContractAddress, tokenIdC, true)
-            ).to.not.be.rejectedWith("Failed to register derivative IP: The contract function \"registerDerivativeIp\" reverted.", 
+            ).to.be.rejectedWith("Failed to register derivative IP: The contract function \"registerDerivativeIp\" reverted.",
                                      "Error: RegistrationModule__InvalidOwner()")
         });
 
@@ -160,6 +161,7 @@ describe('SDK Test', function () {
         
             expect(response.txHash).to.be.a("string");
             expect(response.txHash).not.empty;
+
             expect(response.ipId).to.be.a("string");
             expect(response.ipId).not.empty;
         });
@@ -176,7 +178,7 @@ describe('SDK Test', function () {
 
         it("Register a derivative IP asset with waitForTransaction: false", async function () {
             const response = await expect(
-                registerDerivativeIp("A", [licenseIdA], nftContractAddress, tokenIdD, false)
+                registerDerivativeIp("B", [licenseIdA], nftContractAddress, tokenIdD, false)
             ).to.not.be.rejected
         
             expect(response.txHash).to.be.a("string");
