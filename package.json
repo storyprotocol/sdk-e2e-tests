@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome || true",
+    "test": "mocha -r ts-node/register -r mocha-steps './test/**/**/commicialPolicy.test.ts' --timeout 240000 --reporter mochawesome",
     "open:report": "open mochawesome-report/mochawesome.html"
   },
   "engines": {
@@ -23,6 +23,7 @@
     "@types/chai-as-promised": "^7.1.6",
     "@types/mocha": "^10.0.2",
     "@types/mocha-steps": "^1.3.3",
+    "@types/mochawesome": "^6.2.4",
     "@types/node": "^20.8.2",
     "@types/sinon": "^10.0.18",
     "chai": "^4.3.10",

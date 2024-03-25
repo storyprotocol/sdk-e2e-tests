@@ -1,9 +1,18 @@
 import { Hex, http, Address, createWalletClient, createPublicClient } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains';
+import fs from 'fs';
 
 export function sleep(second: number) {
   return new Promise((resolve) => setTimeout(resolve, second * 1000));
+}
+
+export function writeToCSV(filename: string, headers: string[], data: any[]) {
+  const csvHeader = headers.join(',');
+  const csvData = data.map(row => headers.map(header => row[header]).join(',')).join('\n');
+  console.log(csvData)
+  const csvContent = `${csvHeader}\n${csvData}`;
+  fs.writeFileSync(filename, csvContent);
 }
 
 export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
