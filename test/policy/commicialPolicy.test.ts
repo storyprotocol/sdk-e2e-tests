@@ -6,21 +6,17 @@ chai.use(chaiAsPromised);
 import addContext = require("mochawesome/addContext");
 import { beforeEach } from 'mocha';
 import { Address } from 'viem';
-import {writeToCSV} from '../../utils/utils'
+import { captureConsoleLogs, writeToCSV} from '../../utils/utils'
 
 const testResults: any[] = [];
+let response: any;
 
 describe("SDK Test", function () {
-    describe("Register Commercial Policies", async function () {
+    describe("Register Commercial Policies (policy.registerPILPolicy)", async function () {
         let consoleLogs: string[] = [];
 
         beforeEach(function () {
-            consoleLogs = [];
-            const originalConsoleLog = console.log;
-            console.log = function (...args: any[]) {
-                consoleLogs.push(args.join(' '));
-                originalConsoleLog.apply(console, args);
-            };
+            consoleLogs = captureConsoleLogs(consoleLogs)
         });
 
         afterEach(function () {
@@ -30,7 +26,6 @@ describe("SDK Test", function () {
                     value: consoleLogs[consoleLogs.length - 1]
                 });
             }
-
         });
 
         const parameters = [
@@ -71,17 +66,29 @@ describe("SDK Test", function () {
             }
 
             it("Create a policy with parameters" + JSON.stringify(policyOptions), async function () {
-                const response = await clientA.policy.registerPILPolicy({
-                    ...policyOptions,
-                    txOptions: {
-                        waitForTransaction: true
-                    }
-                });
+                // derivativesAllowed is false, and one or more other derivatives-related parameters are true, the registration process fails.
+                if (!policyOptions.derivativesAllowed && (policyOptions.derivativesAttribution ||
+                    policyOptions.derivativesApproval || policyOptions.derivativesReciprocal)) {
+                    response = await expect(
+                        clientA.policy.registerPILPolicy({
+                            ...policyOptions,
+                            txOptions: {
+                                waitForTransaction: true
+                            }
+                        })
+                    ).to.be.rejectedWith("Failed to register policy: The contract function \"registerPolicy\" reverted with the following signature:", "0x550c4952")
+                } else {
+                    response = await expect(
+                        clientA.policy.registerPILPolicy({
+                            ...policyOptions,
+                            txOptions: {
+                                waitForTransaction: true
+                            }
+                        })
+                    ).to.not.be.rejected
+                    expect(response.policyId).to.be.a("string").and.not.empty;
+                }
                 console.log(JSON.stringify(response))
-
-
-                expect(response.policyId).to.be.a("string");
-                expect(response.policyId).not.empty;
 
                 const policyOptionsKeyValue: { [key: string]: string } = {};
 
@@ -99,5 +106,5 @@ describe("SDK Test", function () {
                 writeToCSV(csvFilename, headers, testResults);
             }
         });
-    });
+    });    
 });

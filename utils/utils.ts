@@ -15,6 +15,17 @@ export function writeToCSV(filename: string, headers: string[], data: any[]) {
   fs.writeFileSync(filename, csvContent);
 }
 
+export function captureConsoleLogs(consoleLogs:string[]){
+  consoleLogs = [];
+  const originalConsoleLog = console.log;
+  console.log = function (...args: any[]) {
+    consoleLogs.push(args.join(' '));
+    originalConsoleLog.apply(console, args);
+  };
+  return consoleLogs
+}
+
+
 export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
   console.log('Minting a new NFT...')
 
