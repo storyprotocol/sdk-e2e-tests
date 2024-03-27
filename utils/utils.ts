@@ -27,8 +27,6 @@ export function captureConsoleLogs(consoleLogs:string[]){
 
 
 export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
-  console.log('Minting a new NFT...')
-
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address)
   const walletClient = createWalletClient({
     account,
@@ -72,8 +70,6 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
     tokenId = parseInt(logs[0].topics[3], 16);
   }
 
-  console.log(`Minted NFT successful with hash: ${hash}`);
-  console.log(`Minted NFT tokenId: ${tokenId}`);
-
+  console.log(`Minted NFT successful with hash: ` + JSON.stringify(hash) + `\nMinted NFT tokenId: ` + JSON.stringify(tokenId));
   return String(tokenId);
 }

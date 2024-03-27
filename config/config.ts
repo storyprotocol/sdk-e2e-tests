@@ -3,6 +3,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 
 export const licenseModuleAddress = process.env.LICENSE_MODULE_ADDRESS as Hex;
+export const nftContractAddress = process.env.MY_NFT_CONTRACT_ADDRESS as Hex;
 export const transport = http(process.env.RPC_PROVIDER_URL);
 export const privateKeyA = process.env.WALLET_PRIVATE_KEY_A as Hex;
 export const privateKeyB = process.env.WALLET_PRIVATE_KEY_B as Hex;
