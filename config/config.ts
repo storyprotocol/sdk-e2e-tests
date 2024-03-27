@@ -10,12 +10,10 @@ export const transport = http(process.env.RPC_PROVIDER_URL);
 export const privateKeyA = process.env.WALLET_PRIVATE_KEY_A as Hex;
 export const privateKeyB = process.env.WALLET_PRIVATE_KEY_B as Hex;
 export const privateKeyC = process.env.WALLET_PRIVATE_KEY_C as Hex;
-export const privateKeyD = process.env.WALLET_PRIVATE_KEY_D as Hex;
 
 export const accountA = privateKeyToAccount(privateKeyA as Address);
 export const accountB = privateKeyToAccount(privateKeyB as Address);
 export const accountC = privateKeyToAccount(privateKeyC as Address);
-export const accountD = privateKeyToAccount(privateKeyD as Address);
 
 export const configA: StoryConfig = {
   account: accountA,
@@ -32,12 +30,6 @@ export const configC: StoryConfig = {
   transport: transport,
 }
 
-export const configD: StoryConfig = {
-  account: accountD,
-  transport: transport,
-}
-
 export const clientA = StoryClient.newClient(configA)
 export const clientB = StoryClient.newClient(configB)
 export const clientC = StoryClient.newClient(configC)
-export const clientD = StoryClient.newClient(configD)
