@@ -99,7 +99,7 @@ describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivativeIp Function', async function () {
         before("Mint a NFT to Wallet A", async function () {
             const response = await expect(
-                mintLicense("A", "1", ipIdA, accountB.address, true)
+                mintLicense("A", "1", ipIdA, 5, accountB.address, true)
             ).to.not.be.rejected;
     
             expect(response.txHash).to.be.a("string");
