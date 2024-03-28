@@ -1,12 +1,10 @@
-import { accountA, clientA } from '../../config/config'
+import { clientA, mintFeeTokenAddress, royaltyPolicyAddress } from '../../config/config'
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai'
 chai.use(chaiAsPromised);
 import addContext = require("mochawesome/addContext");
-import { beforeEach } from 'mocha';
-import { Address } from 'viem';
-import { captureConsoleLogs, writeToCSV} from '../../utils/utils'
+import { captureConsoleLogs, writeToCSV } from '../../utils/utils'
 
 const testResults: any[] = [];
 let response: any;
@@ -56,10 +54,7 @@ describe("SDK Test", function () {
             policyOptions = {
                 ...combination,
                 commercialUse: true,
-                // commercialRevShare: 100,
-                // mintingFee: 0,
-                // mintingFeeToken: "0x857308523a01B430cB112400976B9FC4A6429D55" as Address,
-                royaltyPolicy: "0x16eF58e959522727588921A92e9084d36E5d3855" as Address,
+                royaltyPolicy: royaltyPolicyAddress,
                 territories: [],
                 distributionChannels: [],
                 contentRestrictions: []
@@ -99,6 +94,171 @@ describe("SDK Test", function () {
                 testResults.push({ ...policyOptionsKeyValue, policyId: response && response.policyId ? `${response.policyId}` : "" });
             });
         };
+
+        it("Register a commercial policy without royaltyPolicy address", async function () {
+            await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.be.rejectedWith("Failed to register policy: The contract function \"registerPolicy\" reverted with the following signature:", "0x7660ada6");
+        });
+
+        it("Register a commercial policy with an invalid commercializerChecker address", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    commercializerChecker: "0x16eF58e959522727588921A92e9084d36E5d3851",
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.be.rejectedWith("Failed to register policy: The contract function \"registerPolicy\" reverted.", 
+                                 "Error: PolicyFrameworkManager__CommercializerCheckerDoesNotSupportHook(address commercializer)");
+        });
+
+        it("Register a commercial policy with an invalid commercialRevShare value", async function () {
+            await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    commercialRevShare: -1,
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.be.rejectedWith("Failed to register policy: Number \"-1\" is not in safe 256-bit unsigned integer range")
+        });
+
+        it("Register a commercial policy with commercializerCheckerData", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    commercializerCheckerData: "0x48656c6c6f2c20776f726c6421",                    
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.not.be.rejected
+            
+            expect(response.policyId).to.be.a("string").and.not.empty;
+        });
+
+        it("Register a commercial policy with minting fee but no mintingFee token address", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    mintingFee: "10",
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.be.rejectedWith("Failed to register policy: The contract function \"registerPolicy\" reverted.",
+                                 "Error: LicensingModule__MintingFeeTokenNotWhitelisted()")
+        });
+
+        it("Register a commercial policy with an invalid mintingFeeToken address", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    mintingFeeToken: "0x0000",
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.be.rejectedWith("Failed to register policy: Address \"0x0000\" is invalid.")
+        });
+
+        it("Register a commercial policy with invalid minting fee value", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    mintingFee: "mintingFee",
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.be.rejectedWith("Failed to register policy: Cannot convert mintingFee to a BigInt")
+        });
+
+        it("Register a commercial policy with valid territories, distributionChannels and contentRestrictions parameters", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    territories: ["US", "AU"],
+                    distributionChannels: ["YouTube"],
+                    contentRestrictions: ["Casino"],
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.not.be.rejected
+            
+            expect(response.policyId).to.be.a("string").and.not.empty;
+        });
+
+        it("Register a commercial policy with the parameters territories, distributionChannels, contentRestrictions as special characters", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    commercialUse: true,
+                    royaltyPolicy: royaltyPolicyAddress,
+                    territories: ["!@#", "@#$"],
+                    distributionChannels: ["***"],
+                    contentRestrictions: ["`*&"],
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })
+            ).to.not.be.rejected
+            
+            expect(response.policyId).to.be.a("string").and.not.empty;
+        });
+
+        it("Register a commercial policy with all parameters set", async function () {
+            const response = await expect(
+                clientA.policy.registerPILPolicy({
+                    transferable: true,
+                    attribution: true,
+                    derivativesAllowed: true,
+                    derivativesAttribution: true,
+                    derivativesApproval: true,
+                    derivativesReciprocal: true,
+                    commercialUse: true,
+                    commercialAttribution:true,
+                    commercialRevShare: 300,
+                    commercializerCheckerData: "0x48656c6c6f2c20776f726c6421",
+                    royaltyPolicy: royaltyPolicyAddress,
+                    mintingFee: "10",
+                    mintingFeeToken: mintFeeTokenAddress,
+                    territories: ["US", "AU", "UK", "CA", "FR"],
+                    distributionChannels: ["Book", "Youtube", "Tiktok"],
+                    contentRestrictions: ["Casino"],
+                    txOptions: {
+                        waitForTransaction: true
+                    }
+                })                
+            ).not.to.be.rejected
+
+            expect(response.policyId).to.be.a("string").and.not.empty;
+        });
+
         after(function () {
             if (testResults.length > 0) {
                 const csvFilename = "./test/policy/test-results-commicial.csv";
@@ -106,5 +266,5 @@ describe("SDK Test", function () {
                 writeToCSV(csvFilename, headers, testResults);
             }
         });
-    });    
+    });
 });
