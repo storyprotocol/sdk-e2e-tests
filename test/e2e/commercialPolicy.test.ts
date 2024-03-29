@@ -1,6 +1,6 @@
 import { privateKeyA, privateKeyB, accountB, privateKeyC, royaltyPolicyAddress, nftContractAddress } from '../../config/config'
 import { mintNFT, sleep, captureConsoleLogs } from '../../utils/utils'
-import { registerRootIp, registerPILPolicy, addPolicyToIp, mintLicense, registerDerivativeIp } from '../../utils/sdkUtils'
+import { registerRootIp, registerPILPolicy, mintLicense, registerDerivativeIp } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import chai from 'chai';
@@ -19,7 +19,7 @@ let licenseIdA: any
 const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function (){
-    describe("Commercial Policy", function(){
+    describe("Register Root IP and Derivative IP Asset with Commercial Policy", function(){
         // To print test results in test report
         let consoleLogs: string[] = [];
         beforeEach(function () {
@@ -116,7 +116,7 @@ describe('SDK E2E Test', function (){
             });
         });
         
-        describe('Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: false)', async function () {
+        describe('[smoke]Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: false)', async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty

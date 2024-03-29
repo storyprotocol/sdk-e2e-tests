@@ -21,7 +21,7 @@ let licenseIdB: any
 const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function (){
-    describe("Register Derivative IP Asset", function(){
+    describe("Register Root IP and Derivative IP Asset with Non-Commercial Policy", function(){
         // To print test results in test report
         let consoleLogs: string[] = [];
         beforeEach(function () {
@@ -62,7 +62,7 @@ describe('SDK E2E Test', function (){
             policyId2 = responsePolicy2.policyId
         });
     
-        describe("Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: true)", async function () {
+        describe("[smoke]Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: true)", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty    
