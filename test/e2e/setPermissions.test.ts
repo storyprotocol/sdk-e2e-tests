@@ -14,7 +14,7 @@ let ipIdA: any
 const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function () {
-    describe("Set Permissions Functions", async function () {
+    describe("[smoke]Set Permissions Functions", async function () {
         // To print test results in test report
         let consoleLogs: string[] = [];
         beforeEach(function () {
