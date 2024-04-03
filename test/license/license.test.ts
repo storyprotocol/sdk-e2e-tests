@@ -300,6 +300,21 @@ describe('SDK Test', function () {
                 expect(response.licenseId).to.be.a("string").and.not.empty;
                 expect(response.licenseId).not.to.equal(licenseId2);           
             });
+
+            it("Non-owner can NOT mint a license", async function () {
+                const response = await expect(
+                    clientB.license.mintLicense({
+                        policyId: policyId2,
+                        licensorIpId: ipIdA,
+                        mintAmount: 1,
+                        receiverAddress: accountA.address,
+                        txOptions: {
+                            waitForTransaction: true,
+                        }
+                    })
+                ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.",
+                                     "Error: LicensingModule__CallerNotLicensorAndPolicyNotSet()")
+            });
         });
 
         describe('Mint a license - IP Asset with a non-commercial policy', async function () {
