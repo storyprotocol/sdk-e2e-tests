@@ -1,4 +1,4 @@
-import { accountA, accountB, nftContractAddress, privateKeyA, privateKeyB, privateKeyC, clientA, clientB, royaltyPolicyAddress} from '../../config/config';
+import { accountA, accountB, nftContractAddress, privateKeyA, clientA, clientB, royaltyPolicyAddress} from '../../config/config';
 import { registerRootIp, registerPILPolicy } from '../../utils/sdkUtils';
 import { mintNFT, captureConsoleLogs, sleep } from '../../utils/utils';
 import { expect } from 'chai'
@@ -9,7 +9,6 @@ import addContext = require("mochawesome/addContext");
 
 let tokenIdA: any
 let tokenIdB: any
-let tokenIdC: any
 let policyId1: any
 let policyId2: any
 let policyId3: any
@@ -34,7 +33,7 @@ describe('SDK Test', function () {
             }
         });
 
-        before("Mint NFTs, Create Policies and Register IPs",async function () {
+        before("Mint NFTs, Create Policies and Register IP Assets",async function () {
             tokenIdA = await mintNFT(privateKeyA);
             expect(tokenIdA).not.empty
 
@@ -86,7 +85,7 @@ describe('SDK Test', function () {
                         }
                     })       
                 ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.", 
-                                        "Error: LicensingModule__PolicyNotFound()");
+                                     "Error: LicensingModule__PolicyNotFound()");
             });
 
             it("Mint a license with policyId:0", async function () {
@@ -101,7 +100,7 @@ describe('SDK Test', function () {
                         }
                     })   
                 ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.", 
-                                        "Error: LicensingModule__PolicyNotFound()");
+                                     "Error: LicensingModule__PolicyNotFound()");
             });
 
             it("Mint a license with an invalid policyId", async function () {
@@ -144,7 +143,7 @@ describe('SDK Test', function () {
                         }
                     })       
                 ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.", 
-                                        "Error: LicensingModule__LicensorNotRegistered()");
+                                     "Error: LicensingModule__LicensorNotRegistered()");
             });
 
             it("Mint a license with an invalid mintAmount value", async function () {
@@ -173,7 +172,7 @@ describe('SDK Test', function () {
                         }
                     })
                 ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted with the following signature:", 
-                                        "0x5c346611");
+                                     "0x5c346611");
             });
 
             it("Mint a license with an invalid receiver address", async function () {
@@ -193,6 +192,7 @@ describe('SDK Test', function () {
 
         describe('Mint a license - IP Asset without policy', async function () {
             let licenseId1: any
+            let licenseId2: any
             it("The owner can mint a license with non-commercial policy", async function () {
                 const response = await expect(
                     clientA.license.mintLicense({
@@ -226,6 +226,7 @@ describe('SDK Test', function () {
                 console.log(JSON.stringify(response))
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.licenseId).to.be.a("string").and.not.empty;
+                licenseId2 = response.licenseId;
             });
 
             it("The owner mint a license with same non-commercial policy", async function () {
@@ -260,7 +261,44 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected
                 console.log(JSON.stringify(response))
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseId).to.be.a("string").and.not.empty;           
+                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseId).not.to.equal(licenseId1);           
+            });
+
+            it("The owner mint a license with same commercial policy", async function () {
+                const response = await expect(
+                    clientA.license.mintLicense({
+                        policyId: policyId3,
+                        licensorIpId: ipIdA,
+                        mintAmount: 1,
+                        receiverAddress: accountA.address,
+                        txOptions: {
+                            waitForTransaction: true,
+                        }
+                    })
+                ).to.not.be.rejected
+                console.log(JSON.stringify(response))
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseId).to.equal(licenseId2);          
+            });
+
+            it("The owner mint a license with different commercial policy", async function () {
+                const response = await expect(
+                    clientA.license.mintLicense({
+                        policyId: policyId2,
+                        licensorIpId: ipIdA,
+                        mintAmount: 1,
+                        receiverAddress: accountA.address,
+                        txOptions: {
+                            waitForTransaction: true,
+                        }
+                    })
+                ).to.not.be.rejected
+                console.log(JSON.stringify(response))
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseId).not.to.equal(licenseId2);           
             });
         });
 
@@ -268,9 +306,12 @@ describe('SDK Test', function () {
             let ipId1: any
             let ipId2: any
             before("Mint NFTs, Create Policies and Register IPs",async function () {
+                tokenIdA = await mintNFT(privateKeyA);
+                expect(tokenIdB).not.empty
+
                 tokenIdB = await mintNFT(privateKeyA);
                 expect(tokenIdB).not.empty
-                ipId1 = (await registerRootIp("A", policyId1, nftContractAddress, tokenIdB, true)).ipId
+                ipId1 = (await registerRootIp("A", policyId1, nftContractAddress, tokenIdA, true)).ipId
                 ipId2 = (await registerRootIp("A", policyId2, nftContractAddress, tokenIdB, true)).ipId
                 await sleep(20)
             });
@@ -326,10 +367,10 @@ describe('SDK Test', function () {
                 expect(response.licenseId).to.be.a("string").and.not.empty;
             });
 
-            it("Non-owner can mint a license with the same non-commercial policy", async function () {
+            it("Non-owner can NOT mint a license", async function () {
                 const response = await expect(
                     clientB.license.mintLicense({
-                        policyId: policyId1,
+                        policyId: policyId2,
                         licensorIpId: ipId1,
                         mintAmount: 1,
                         receiverAddress: accountA.address,
@@ -337,10 +378,8 @@ describe('SDK Test', function () {
                             waitForTransaction: true,
                         }
                     })
-                ).to.not.be.rejected
-                console.log(JSON.stringify(response))
-                expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.",
+                                     "Error: LicensingModule__CallerNotLicensorAndPolicyNotSet()")
             });
         });
 
@@ -348,11 +387,13 @@ describe('SDK Test', function () {
             let ipId1: any
             let ipId2: any
             before("Mint NFTs, Create Policies and Register IPs",async function () {
-                tokenIdC = await mintNFT(privateKeyA);
+                tokenIdA = await mintNFT(privateKeyA);
+                expect(tokenIdA).not.empty                
+                tokenIdB = await mintNFT(privateKeyA);
                 expect(tokenIdB).not.empty
 
-                ipId1 = (await registerRootIp("A", policyId3, nftContractAddress, tokenIdB, true)).ipId
-                ipId2 = (await registerRootIp("A", policyId3, nftContractAddress, tokenIdA, true)).ipId
+                ipId1 = (await registerRootIp("A", policyId3, nftContractAddress, tokenIdA, true)).ipId
+                ipId2 = (await registerRootIp("A", policyId4, nftContractAddress, tokenIdB, true)).ipId
                 await sleep(20)
             });
 
@@ -376,7 +417,7 @@ describe('SDK Test', function () {
             it("The owner can mint a license with a different commercial policy", async function () {
                 const response = await expect(
                     clientA.license.mintLicense({
-                        policyId: policyId4,
+                        policyId: policyId3,
                         licensorIpId: ipId2,
                         mintAmount: 1,
                         receiverAddress: accountA.address,
@@ -410,7 +451,7 @@ describe('SDK Test', function () {
             it("Non-owner can NOT mint a license", async function () {
                 const response = await expect(
                     clientB.license.mintLicense({
-                        policyId: policyId3,
+                        policyId: policyId4,
                         licensorIpId: ipId1,
                         mintAmount: 1,
                         receiverAddress: accountA.address,
@@ -418,10 +459,8 @@ describe('SDK Test', function () {
                             waitForTransaction: true,
                         }
                     })
-                ).to.not.be.rejected
-                console.log(JSON.stringify(response))
-                expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.",
+                                         "Error: LicensingModule__CallerNotLicensorAndPolicyNotSet()")
             });
         });
     });
