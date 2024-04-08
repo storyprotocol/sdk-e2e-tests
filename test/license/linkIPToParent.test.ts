@@ -80,8 +80,8 @@ describe('SDK Test', function () {
             await sleep(20)
         });
 
-        describe('Link Ip to Parent - Negative Tests', async function () {
-            it("Link Ip to Parent with an invalid licenseId", async function () {
+        describe('Link IP to Parent - Negative Tests', async function () {
+            it("Link IP to parent with an invalid licenseId", async function () {
                 const response = await expect(
                     clientA.license.linkIpToParent({
                         licenseIds: ["licenseId1"],
@@ -93,7 +93,7 @@ describe('SDK Test', function () {
                 ).to.be.rejectedWith("Failed to link IP to parents: Cannot convert licenseId1 to a BigInt"); 
             });
 
-            it("Link Ip to Parent with a non-existent licenseId", async function () {
+            it("Link IP to parent with a non-existent licenseId", async function () {
                 const response = await expect(
                     clientA.license.linkIpToParent({
                         licenseIds: ["99999999"],
@@ -105,7 +105,7 @@ describe('SDK Test', function () {
                 ).to.be.rejectedWith("Failed to link IP to parents: Cannot read properties of null (reading 'licensorIpId')"); 
             });
 
-            it("Link Ip to Parent with an empty IP id", async function () {
+            it("Link IP to parent with an empty IP id", async function () {
                 const response = await expect(
                     clientA.license.linkIpToParent({
                         licenseIds: [licenseId1],
@@ -117,7 +117,7 @@ describe('SDK Test', function () {
                 ).to.be.rejectedWith("Failed to link IP to parents: Address \"undefined\" is invalid."); 
             });
 
-            it("Link Ip to Parent with an invalid IP id", async function () {
+            it("Link IP to parent with an invalid IP id", async function () {
                 const response = await expect(
                     clientA.license.linkIpToParent({
                         licenseIds: [licenseId1],
@@ -129,7 +129,7 @@ describe('SDK Test', function () {
                 ).to.be.rejectedWith("Failed to link IP to parents: Address \"0x0000\" is invalid."); 
             });
 
-            it("Link Ip to Parent with a non-existent IP id", async function () {
+            it("Link IP to parent with a non-existent IP id", async function () {
                 const response = await expect(
                     clientA.license.linkIpToParent({
                         licenseIds: [licenseId1],
@@ -141,7 +141,7 @@ describe('SDK Test', function () {
                 ).to.be.rejectedWith("Failed to link IP to parents: The contract function \"execute\" returned no data (\"0x\")."); 
             });
 
-            it("Non-owner try to link IP to parent", async function () {
+            it("Link IP to parent by a non-owner", async function () {
                 const response = await expect(
                     clientB.license.linkIpToParent({
                         licenseIds: [licenseId1],
@@ -154,7 +154,7 @@ describe('SDK Test', function () {
                                      "Error: AccessController__PermissionDenied"); 
             });
 
-            it("Link Ip to Parent with parentId equals childId", async function () {
+            it("Link IP to parent with parentId equals childId", async function () {
                 const response = await expect(
                     clientA.license.linkIpToParent({
                         licenseIds: [licenseId2],
@@ -167,7 +167,7 @@ describe('SDK Test', function () {
                                      "Error: LicensingModule__ParentIdEqualThanChild()");
             });            
 
-            it("Link Ip to Parent with multiple incompatible licenses", async function () {
+            it("Link IP to parent with multiple incompatible licenses", async function () {
                 const response = await expect(
                     clientB.license.linkIpToParent({
                         licenseIds: [licenseId1, licenseId2],
@@ -180,7 +180,7 @@ describe('SDK Test', function () {
                                      "Error: LicensingModule__IncompatibleLicensorCommercialPolicy()");
             });            
 
-            it("Link Ip to Parent by a not licensee", async function () {
+            it("Link Ip to parent by a not licensee", async function () {
                 const response = await expect(
                     clientC.license.linkIpToParent({
                         licenseIds: [licenseId1],
@@ -194,8 +194,8 @@ describe('SDK Test', function () {
             });
         });
 
-        describe('Link Ip to Parent', async function () {            
-            it("Link Ip to Parent with an empty licenseIds array", async function () {
+        describe('Link IP to Parent', async function () {            
+            it("Link IP to parent with an empty licenseIds array", async function () {
                 const response = await expect(
                     clientB.license.linkIpToParent({
                         licenseIds: [],
@@ -209,7 +209,7 @@ describe('SDK Test', function () {
                 expect(response.success).to.be.true; 
             });
 
-            it("Link Ip to Parent with a license linked non-commericial policy", async function () {
+            it("Link IP to parent with a license linked non-commericial policy", async function () {
                 const response = await expect(
                     clientB.license.linkIpToParent({
                         licenseIds: [licenseId1],
@@ -223,7 +223,7 @@ describe('SDK Test', function () {
                 expect(response.success).to.be.true; 
             });
 
-            it("Link Ip to Parent with multiple licenses", async function () {
+            it("Link IP to parent with multiple licenses", async function () {
                 const response = await expect(
                     clientB.license.linkIpToParent({
                         licenseIds: [licenseId1, licenseId3],
@@ -237,7 +237,7 @@ describe('SDK Test', function () {
                 expect(response.success).to.be.true; 
             });
 
-            it("Link Ip to Parent with a license linked commericial policy", async function () {
+            it("Link IP to parent with a license linked commericial policy", async function () {
                 const response = await expect(
                     clientC.license.linkIpToParent({
                         licenseIds: [licenseId2],
