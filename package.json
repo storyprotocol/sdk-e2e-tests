@@ -7,6 +7,8 @@
     "test:smoke": "mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:e2e": "mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test": "mocha -r ts-node/register -r mocha-steps './test/**/**/**.test.ts' --timeout 240000 --reporter mochawesome",
+    "test:sepolia": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
+    "test:story": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "open:report": "open mochawesome-report/mochawesome.html"
   },
   "engines": {
