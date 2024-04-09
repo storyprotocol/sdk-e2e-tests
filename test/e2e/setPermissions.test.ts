@@ -1,6 +1,6 @@
 import { privateKeyA, accountB, accountA, licenseModuleAddress, nftContractAddress} from '../../config/config'
 import { mintNFT, captureConsoleLogs } from '../../utils/utils'
-import { registerRootIp, mintLicense, setPermission } from '../../utils/sdkUtils'
+import { registerIpAsset, mintLicense, setPermission } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import chai from 'chai';
@@ -38,7 +38,7 @@ describe('SDK E2E Test', function () {
         
             step("Wallet A register a root IP Asset without policy, get an ipId (ipIdA)", async function () {
                 const response = await expect(
-                    registerRootIp("A", "0", nftContractAddress, tokenIdA, waitForTransaction)
+                    registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
                 ).to.not.be.rejected
         
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -74,7 +74,7 @@ describe('SDK E2E Test', function () {
         
             step("Wallet A register a root IP Asset without policy, get an ipId (ipIdA)", async function () {
                 const response = await expect(
-                    registerRootIp("A", "0", nftContractAddress, tokenIdA, waitForTransaction)
+                    registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
                 ).to.not.be.rejected
         
                 expect(response.txHash).to.be.a("string").and.not.empty;
