@@ -3,23 +3,22 @@ import { privateKeyToAccount } from "viem/accounts";
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
 import { SupportedChainIds } from "@story-protocol/core-sdk/dist/declarations/src/types/config";
 
-const TEST_ENV = process.env.TEST_ENV as SupportedChainIds
-console.log(TEST_ENV)
+const TEST_ENV = process.env.TEST_ENV as SupportedChainIds;
 
 export let licenseModuleAddress: Hex;
 export let nftContractAddress: Hex;
 export let royaltyPolicyAddress: Hex;
 export let mintFeeTokenAddress: Hex;
-export let rpcProviderUrl: any;
+export let rpcProviderUrl: string;
 
-if (TEST_ENV == "sepolia") {
-  rpcProviderUrl = http(process.env.SEPOLIA_RPC_PROVIDER_URL);
+if (String(TEST_ENV) == "sepolia") {
+  rpcProviderUrl = process.env.SEPOLIA_RPC_PROVIDER_URL as string;
   licenseModuleAddress = process.env.SEPOLIA_LICENSE_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.SEPOLIA_NFT_CONTRACT_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.SEPOLIA_ROYALTY_POLICY_ADDRESS as Hex;
   mintFeeTokenAddress = process.env.SEPOLIA_MINT_FEE_TOKEN as Hex;
-} else if (TEST_ENV == "storyTestnet") {
-  rpcProviderUrl = http(process.env.STORY_RPC_PROVIDER_URL);
+} else if (String(TEST_ENV) == "storyTestnet") {
+  rpcProviderUrl = process.env.STORY_RPC_PROVIDER_URL as string;
   licenseModuleAddress = process.env.STORY_LICENSE_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.STORY_NFT_CONTRACT_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.STORY_ROYALTY_POLICY_ADDRESS as Hex;
@@ -39,19 +38,19 @@ export const accountC = privateKeyToAccount(privateKeyC as Address);
 export const configA: StoryConfig = {
   account: accountA,
   chainId: TEST_ENV,
-  transport: rpcProviderUrl,
+  transport: http(rpcProviderUrl),
 }
 
 export const configB: StoryConfig = {
   account: accountB,
   chainId: TEST_ENV,
-  transport: rpcProviderUrl,
+  transport: http(rpcProviderUrl),
 }
 
 export const configC: StoryConfig = {
   account: accountC,
   chainId: TEST_ENV,
-  transport: rpcProviderUrl,
+  transport: http(rpcProviderUrl),
 }
 
 export const clientA = StoryClient.newClient(configA)

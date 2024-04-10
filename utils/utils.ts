@@ -39,6 +39,9 @@ export function captureConsoleLogs(consoleLogs:string[]){
 }
 
 export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
+  console.log(chainId)
+  console.log(rpcProviderUrl)
+  console.log(nftContractAddress)
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address)
   const baseConfig = {
     chain: chainId,
@@ -61,13 +64,13 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
 
   // 3. Mint an NFT to your account
   const { result } = await publicClient.simulateContract({
-    address: process.env.MY_NFT_CONTRACT_ADDRESS as Address,
+    address: nftContractAddress as Address,
     functionName: 'mint',
     args: [account.address],
     abi: [contractAbi]
   })
   const hash = await walletClient.writeContract({
-    address: process.env.MY_NFT_CONTRACT_ADDRESS as Address,
+    address: nftContractAddress as Address,
     functionName: 'mint',
     args: [account.address],
     abi: [contractAbi]
