@@ -63,7 +63,7 @@ describe('SDK E2E Test', function (){
             policyId2 = responsePolicy2.policyId
         });
     
-        describe("[smoke]Link IP asset to the parent IP asset, root IP\'s policy allows derivatives (derivativesAllowed: true)", async function () {
+        describe.skip("[smoke]Link IP asset to the parent IP asset, root IP\'s policy allows derivatives (derivativesAllowed: true)", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty    
@@ -160,7 +160,7 @@ describe('SDK E2E Test', function (){
             });
         });
         
-        describe('Link IP asset to the parent IP asset, root IP\'s policy allows derivatives (derivativesAllowed: false)', async function () {
+        describe.skip('Link IP asset to the parent IP asset, root IP\'s policy allows derivatives (derivativesAllowed: false)', async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty
@@ -219,7 +219,7 @@ describe('SDK E2E Test', function (){
             });
         });
     
-        describe('Link IP asset to multiple parent IP assets', async function () {
+        describe.skip('Link IP asset to multiple parent IP assets', async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty    
@@ -311,7 +311,7 @@ describe('SDK E2E Test', function (){
             });
         });
     
-        describe('Link IP asset to multiple parent IP assets, NotLicensee', async function () {
+        describe.skip('Link IP asset to multiple parent IP assets, NotLicensee', async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty    

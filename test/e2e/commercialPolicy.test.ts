@@ -1,5 +1,5 @@
-import { privateKeyA, privateKeyB, accountB, privateKeyC, royaltyPolicyAddress, nftContractAddress } from '../../config/config'
-import { mintNFT, sleep, captureConsoleLogs } from '../../utils/utils'
+import { privateKeyA, privateKeyB, accountB, privateKeyC, royaltyPolicyLAPAddress, nftContractAddress } from '../../config/config'
+import { mintNFT, captureConsoleLogs } from '../../utils/utils'
 import { registerIpAsset, registerPILPolicy, mintLicense, linkIpToParent } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
@@ -39,7 +39,7 @@ describe('SDK E2E Test', function (){
 
         before("Create 2 commercial policies",async function () {
             const policyOptions1 = {
-                royaltyPolicy: royaltyPolicyAddress,
+                royaltyPolicy: royaltyPolicyLAPAddress,
                 commercialRevShare: 300,
                 attribution: true,
                 commercialUse: true,
@@ -49,7 +49,7 @@ describe('SDK E2E Test', function (){
             }
     
             const policyOptions2 = {
-                royaltyPolicy: royaltyPolicyAddress,
+                royaltyPolicy: royaltyPolicyLAPAddress,
                 commercialRevShare: 600,
                 attribution: true,
                 commercialUse: true,
@@ -62,7 +62,7 @@ describe('SDK E2E Test', function (){
             policyId2 = (await registerPILPolicy("A", true, waitForTransaction, policyOptions2)).policyId;
         });
     
-        describe("Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: true)", async function () {
+        describe("[smoke]Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: true)", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 expect(tokenIdA).not.empty    
@@ -114,13 +114,12 @@ describe('SDK E2E Test', function (){
                 ).to.not.be.rejected;
         
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.ipId).to.be.a("string").and.not.empty;
+                expect(response.success).to.be.true;
             });
         
             step("Mint a NFT to WalletC and get a tokenId(tokenIdC)", async function () {
                 tokenIdC = await mintNFT(privateKeyC);
                 expect(tokenIdC).not.empty
-                await sleep(10)
             });
                         
             step("Wallet B register an IP Asset with tokenIdB and get an ipId (ipIdB)", async function () {
@@ -137,9 +136,9 @@ describe('SDK E2E Test', function (){
             });  
         
             step("Wallet C can NOT register a derivative IP asset with licenseIdA and tokenIdC", async function () {
-                const response = await expect(
+                await expect(
                     linkIpToParent("C", [licenseIdA], ipIdC, waitForTransaction)
-                ).to.be.rejectedWith("Failed to register derivative IP: The contract function \"registerDerivativeIp\" reverted.", 
+                ).to.be.rejectedWith("Failed to link IP to parents: The contract function \"execute\" reverted.", 
                                      "Error: LicensingModule__NotLicensee()");
             });
         });
@@ -147,19 +146,18 @@ describe('SDK E2E Test', function (){
         describe('[smoke]Register a derivative IP asset, root IP\'s policy allows derivatives (derivativesAllowed: false)', async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
-                expect(tokenIdA).not.empty
-        
+                expect(tokenIdA).not.empty;        
             });
         
             step("Wallet A register a root IP Asset with tokenIdA and policyId2, get an ipId (ipIdA)", async function () {
                 const response = await expect(
                     registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
-                ).to.not.be.rejected
+                ).to.not.be.rejected;
         
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.ipId).to.be.a("string").and.not.empty;
         
-                ipIdA = response.ipId
+                ipIdA = response.ipId;
             });
         
             step("Wallet A mint a license with the receiverAddress set as Wallet B, get a licenseId (licenseIdA)", async function () {
@@ -170,12 +168,12 @@ describe('SDK E2E Test', function (){
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.licenseId).to.be.a("string").and.not.empty;
         
-                licenseIdA = response.licenseId
+                licenseIdA = response.licenseId;
             });        
         
             step("Mint a NFT to WalletB, get a tokenId (tokenidB)", async function () {
                 tokenIdB = await mintNFT(privateKeyB);
-                expect(tokenIdB).not.empty
+                expect(tokenIdB).not.empty;
             });
             
             step("Wallet B register an IP Asset with tokenIdB and get an ipId (ipIdB)", async function () {
@@ -183,18 +181,16 @@ describe('SDK E2E Test', function (){
                     registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
                 ).to.not.be.rejected;
                         
-                expect(response.txHash).to.be.a("string");
-                expect(response.txHash).not.empty;
-                expect(response.ipId).to.be.a("string");
-                expect(response.ipId).not.empty;
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.ipId).to.be.a("string").and.not.empty;
 
                 ipIdB = response.ipId
             });            
         
             step("Wallet B can NOT register a derivative IP asset with licenseIdA and tokenIdB", async function () {                
-                const response = await expect(
+                await expect(
                     linkIpToParent("B", [licenseIdA], ipIdB, waitForTransaction)
-                ).to.be.rejectedWith("Failed to register derivative IP: The contract function \"registerDerivativeIp\" reverted.", 
+                ).to.be.rejectedWith("Failed to link IP to parents: The contract function \"execute\" reverted.", 
                                      "Error: LicensingModule__LinkParentParamFailed()");
             });
         });

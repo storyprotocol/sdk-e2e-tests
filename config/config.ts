@@ -8,20 +8,26 @@ const TEST_ENV = process.env.TEST_ENV as SupportedChainIds;
 export let licenseModuleAddress: Hex;
 export let nftContractAddress: Hex;
 export let royaltyPolicyAddress: Hex;
+export let royaltyPolicyLAPAddress: Hex;
+export let royaltyApproveAddress: Hex;
 export let mintFeeTokenAddress: Hex;
 export let rpcProviderUrl: string;
 
-if (String(TEST_ENV) == "sepolia") {
+if (String(TEST_ENV) === "sepolia") {
   rpcProviderUrl = process.env.SEPOLIA_RPC_PROVIDER_URL as string;
   licenseModuleAddress = process.env.SEPOLIA_LICENSE_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.SEPOLIA_NFT_CONTRACT_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.SEPOLIA_ROYALTY_POLICY_ADDRESS as Hex;
+  royaltyPolicyLAPAddress = process.env.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS as Hex;
+  royaltyApproveAddress = process.env.SEPOLIA_ROYALTY_ERC20 as Hex;
   mintFeeTokenAddress = process.env.SEPOLIA_MINT_FEE_TOKEN as Hex;
-} else if (String(TEST_ENV) == "storyTestnet") {
+} else if (String(TEST_ENV) === "storyTestnet") {
   rpcProviderUrl = process.env.STORY_RPC_PROVIDER_URL as string;
   licenseModuleAddress = process.env.STORY_LICENSE_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.STORY_NFT_CONTRACT_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.STORY_ROYALTY_POLICY_ADDRESS as Hex;
+  royaltyPolicyLAPAddress = process.env.STORY_ROYALTY_POLICY_LAP_ADDRESS as Hex;
+  royaltyApproveAddress = process.env.STORY_ROYALTY_ERC20 as Hex;
   mintFeeTokenAddress = process.env.STORY_MINT_FEE_TOKEN as Hex;
 } else {
   throw new Error(`Unknown TEST_ENV value: ${TEST_ENV}`);
