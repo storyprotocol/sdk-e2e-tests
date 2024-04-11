@@ -165,7 +165,7 @@ export async function approveSpender(WALLET_PRIVATE_KEY: Hex, value: number) {
   await publicClient.waitForTransactionReceipt({
     hash: hash
   });
-}
+};
 
 export async function mintAmount(WALLET_PRIVATE_KEY: Hex, amount: number){
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
@@ -202,6 +202,45 @@ export async function mintAmount(WALLET_PRIVATE_KEY: Hex, amount: number){
   await publicClient.waitForTransactionReceipt({
     hash: hash
   });
+};
+
+export async function getLatestTokenId(): Promise<number> {
+  const contractAddress = nftContractAddress;
+  let latestTokenId: number | undefined;
+
+  try {
+    const res = await fetch(`https://story-network.explorer.caldera.xyz/api/v2/tokens/${contractAddress}/instances`);
+    if (res.ok) {
+      const { items } = await res.json();
+      // console.log(items);
+      latestTokenId = items[0].id;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  return Number(latestTokenId);
+};
+
+export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex): Promise<string> {
+  let tokenId: string = '';
+
+  for (let i = 0; i < 3; i++) {
+    try {
+      tokenId = await mintNFT(WALLET_PRIVATE_KEY);
+      break;
+    } catch (error) {      
+      if (i === 1) {
+        try{
+          const latestTokenId = await getLatestTokenId();
+          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1);
+          break;
+        } catch (error) {
+          tokenId = '';
+        }        
+      }
+    }
+  }
+
+  return tokenId;
 }
-
-
