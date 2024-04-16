@@ -1,7 +1,7 @@
-import { mintingFeeTokenAddress } from '../../config/config'
+import { mintingFeeTokenAddress } from '../../config/config';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { expect } from 'chai'
+import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
 import { registerCommercialRemixPIL, registerCommercialUsePIL, registerNonComSocialRemixingPIL } from '../../utils/sdkUtils';
@@ -13,22 +13,22 @@ describe("SDK Test", function () {
                 let waitForTransaction: any;
                 const response = await expect(
                     registerNonComSocialRemixingPIL("A", waitForTransaction)
-                ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                ).to.not.be.rejected;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });
     
             it("Register Non-Commercial Social Remixing PIL with waitForTransaction: true", async function () {
                 const response = await expect(
                     registerNonComSocialRemixingPIL("A", true)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });
     
             it("Register Non-Commercial Social Remixing PIL with waitForTransaction: false", async function () {
                 const response = await expect(
                     registerNonComSocialRemixingPIL("A", false)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
         })
 
@@ -70,21 +70,21 @@ describe("SDK Test", function () {
                 const response = await expect(
                     registerCommercialUsePIL("A", "0", mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
     
             it("Register Commercial Use PIL with waitForTransaction: true", async function () {
                 const response = await expect(
                     registerCommercialUsePIL("A", "0", mintingFeeTokenAddress, true)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
     
             it("Register Commercial Use PIL with waitForTransaction: false", async function () {
                 const response = await expect(
                     registerCommercialUsePIL("A", "16", mintingFeeTokenAddress, false)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
         })
                 
@@ -139,21 +139,21 @@ describe("SDK Test", function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", 0, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
     
             it("Register Commercial Remix PIL with waitForTransaction: true", async function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", 100, mintingFeeTokenAddress, true)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
     
             it("Register Commercial Use PIL with waitForTransaction: false", async function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "16", 1001, mintingFeeTokenAddress, false)
                 ).to.not.be.rejected
-                expect(response.licenseId).to.be.a("string").and.not.empty;
+                expect(response.licenseTermsId).to.be.a("string").and.not.empty;
             });            
         })
     });
