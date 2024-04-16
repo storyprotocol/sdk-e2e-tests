@@ -15,11 +15,10 @@ interface PolicyOptions {
     [key: string]: any;
 }
 
-export const registerRootIp = async function (wallet: keyof typeof storyClients, policyId: string, tokenContractAddress: Address, tokenId: string, waitForTransaction: boolean) {
+export const registerIpAsset = async function (wallet: keyof typeof storyClients, tokenContractAddress: Address, tokenId: string, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
-    const response = await storyClient.ipAsset.registerRootIp({
-        policyId: policyId,
-        tokenContractAddress: tokenContractAddress,
+    const response = await storyClient.ipAsset.register({
+        tokenContract: tokenContractAddress,
         tokenId: tokenId,
         txOptions: {
             waitForTransaction: waitForTransaction
@@ -29,66 +28,91 @@ export const registerRootIp = async function (wallet: keyof typeof storyClients,
     return response
 }
 
-export const registerPILPolicy = async function (wallet: keyof typeof storyClients, transferable: boolean, waitForTransaction: boolean, options?: PolicyOptions) {
+export const registerDerivative = async function (wallet: keyof typeof storyClients, childIpId: Hex, parentIpIds: `0x${string}`[], licenseTermsIds: string[], waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
-    const response = await storyClient.policy.registerPILPolicy({
-        transferable: transferable,
-        ...options,
-        txOptions: {
-            waitForTransaction: waitForTransaction,
-        }
-    })
-    console.log(JSON.stringify(response))
-    return response
-}
-
-export const addPolicyToIp = async function (wallet: keyof typeof storyClients, ipId: Hex, policyId: string, waitForTransaction: boolean) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.policy.addPolicyToIp({
-        ipId: ipId,
-        policyId: policyId,
-        txOptions: {
-            waitForTransaction: waitForTransaction,
-        }
-    })
-    console.log(JSON.stringify(response))
-    return response
-}
-
-export const mintLicense = async function (wallet: keyof typeof storyClients, policyId: string, ipId: Hex, mintAmount: number, receiverAddress: Hex, waitForTransaction: boolean) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.license.mintLicense({
-        policyId: policyId,
-        licensorIpId: ipId,
-        mintAmount: mintAmount,
-        receiverAddress: receiverAddress,
-        txOptions: {
-            waitForTransaction: waitForTransaction,
-        }
-    })
-    console.log(JSON.stringify(response))
-    return response
-}
-
-export const registerDerivativeIp = async function (wallet: keyof typeof storyClients, licenseIds: string[], tokenContractAddress: Hex, tokenId: string, waitForTransaction: boolean) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.ipAsset.registerDerivativeIp({
-        licenseIds: licenseIds,
-        tokenContractAddress: tokenContractAddress,
-        tokenId: tokenId,
-        txOptions: {
-            waitForTransaction: waitForTransaction,
-        }
-    });
-    console.log(JSON.stringify(response));
-    return response;
-}
-
-export const linkIpToParent = async function (wallet: keyof typeof storyClients, licenseIds: string[], childIpId: Hex, waitForTransaction: boolean) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.license.linkIpToParent({
-        licenseIds: licenseIds,
+    const response = await storyClient.ipAsset.registerDerivative({
         childIpId: childIpId,
+        parentIpIds: parentIpIds,
+        licenseTermsIds: licenseTermsIds,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(JSON.stringify(response))
+    return response
+}
+
+export const registerDerivativeWithLicenseTokens = async function (wallet: keyof typeof storyClients, childIpId: Hex, licenseTokenIds: string[], waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAsset.registerDerivativeWithLicenseTokens({
+        childIpId: childIpId,
+        licenseTokenIds: licenseTokenIds,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(JSON.stringify(response))
+    return response
+}
+
+export const registerNonComSocialRemixingPIL = async function (wallet: keyof typeof storyClients, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.registerNonComSocialRemixingPIL({
+        txOptions: {
+            waitForTransaction: waitForTransaction,
+        }
+    })
+    console.log(JSON.stringify(response))
+    return response
+}
+
+export const registerCommercialRemixPIL = async function (wallet: keyof typeof storyClients, mintingFee: string, commercialRevShare: number, currency: Hex, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.registerCommercialRemixPIL({
+        mintingFee: mintingFee,
+        commercialRevShare: commercialRevShare,
+        currency: currency,
+        txOptions: {
+            waitForTransaction: waitForTransaction,
+        }
+    })
+    console.log(JSON.stringify(response))
+    return response
+}
+
+export const registerCommercialUsePIL = async function (wallet: keyof typeof storyClients, mintingFee: string, currency: Hex, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.registerCommercialUsePIL({
+        mintingFee: mintingFee,
+        currency: currency,
+        txOptions: {
+            waitForTransaction: waitForTransaction,
+        }
+    })
+    console.log(JSON.stringify(response))
+    return response
+}
+
+export const attachLicenseTerms = async function (wallet: keyof typeof storyClients, ipId: Hex, licenseTermsId: string, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.attachLicenseTerms({
+        ipId: ipId,
+        licenseTermsId: licenseTermsId,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(JSON.stringify(response))
+    return response
+}
+
+export const mintLicenseTokens = async function (wallet: keyof typeof storyClients, licensorIpId: Hex, licenseTermsId: string, amount: number, receiver: Hex, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.mintLicenseTokens({
+        licensorIpId: licensorIpId,
+        licenseTermsId: licenseTermsId,
+        amount: amount,
+        receiver: receiver,
         txOptions: {
             waitForTransaction: waitForTransaction,
         }
@@ -106,6 +130,59 @@ export const setPermission = async function (wallet: keyof typeof storyClients, 
         permission: permission,
         txOptions: {
             waitForTransaction: waitForTransaction,
+        }
+    })
+    console.log(JSON.stringify(response));
+    return response;
+}
+
+export const royaltySnapshot = async function (wallet: keyof typeof storyClients, royaltyVaultIpId: Hex, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.snapshot({
+        royaltyVaultIpId: royaltyVaultIpId,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(JSON.stringify(response));
+    return response;
+}
+export const payRoyaltyOnBehalf = async function (wallet: keyof typeof storyClients, receiverIpId: Hex, payerIpId: Hex, token: Address, amount: bigint, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.payRoyaltyOnBehalf({
+        receiverIpId: receiverIpId,
+        payerIpId: payerIpId,
+        token: token,
+        amount: amount,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(JSON.stringify(response));
+    return response;
+}
+
+export const collectRoyaltyTokens = async function (wallet: keyof typeof storyClients, ancestorIpId: Hex, royaltyVaultIpId: Hex, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.collectRoyaltyTokens({
+        ancestorIpId: ancestorIpId,
+        royaltyVaultIpId: royaltyVaultIpId,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    console.log(JSON.stringify(response));
+    return response;
+}
+export const royaltyClaimableRevenue = async function (wallet: keyof typeof storyClients, royaltyVaultIpId: Hex, account: Address, snapshotId: string, token: Address, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.claimableRevenue({
+        royaltyVaultIpId: royaltyVaultIpId,
+        account: account,
+        snapshotId: snapshotId,
+        token: token,
+        txOptions: {
+            waitForTransaction: waitForTransaction
         }
     })
     console.log(JSON.stringify(response));

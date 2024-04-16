@@ -1,6 +1,6 @@
 import { privateKeyA, accountB, privateKeyB, nftContractAddress, royaltyPolicyAddress } from '../../config/config'
 import { mintNFT, captureConsoleLogs } from '../../utils/utils'
-import { registerRootIp, mintLicense, registerPILPolicy, addPolicyToIp, registerDerivativeIp } from '../../utils/sdkUtils'
+import { registerIpAsset, mintLicense, registerPILPolicy, addPolicyToIp, linkIpToParent } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import chai from 'chai';
@@ -11,6 +11,7 @@ import addContext = require("mochawesome/addContext");
 let tokenIdA: any
 let tokenIdB: any
 let ipIdA: any 
+let ipIdB: any 
 let policyId1: any
 let policyId2: any
 let policyId3: any
@@ -81,7 +82,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet A register a root IP Asset with policyId1, get an ipId (ipIdA)", async function () {
                 const response = await expect(
-                    registerRootIp("A", policyId1, nftContractAddress, tokenIdA, waitForTransaction)
+                    registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
                 ).to.not.be.rejected
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -151,10 +152,23 @@ describe('SDK E2E Test', function () {
                 expect(tokenIdB).not.empty
             });
 
+            step("Wallet B register an IP Asset with tokenIdB and get an ipId (ipIdB)", async function () {
+                const response = await expect(
+                    registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
+                ).to.not.be.rejected;
+                        
+                expect(response.txHash).to.be.a("string");
+                expect(response.txHash).not.empty;
+                expect(response.ipId).to.be.a("string");
+                expect(response.ipId).not.empty;
+                
+                ipIdB = response.ipId
+            });
+
             // licenseIdA with policyId1 (derivativesAllowed: true) and licenseIdB with policyId2 (derivativesAllowed: false) are conflicting
             step("Wallet B can NOT register a derivative IP asset with licenseIdA and licenseIdB as policy conflicts", async function () {
                 const response = await expect(
-                    registerDerivativeIp("B", [licenseIdA, licenseIdB], nftContractAddress, tokenIdB, waitForTransaction)
+                    linkIpToParent("B", [licenseIdA, licenseIdB], ipIdB, waitForTransaction)
                 ).to.be.rejectedWith("Failed to register derivative IP: The contract function \"registerDerivativeIp\" reverted.",
                                      "Error: LicensingModule__LinkParentParamFailed()");
             });
