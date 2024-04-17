@@ -10,7 +10,7 @@ export let nftContractAddress: Hex;
 export let royaltyPolicyAddress: Hex;
 export let royaltyPolicyLAPAddress: Hex;
 export let royaltyApproveAddress: Hex;
-export let mintFeeTokenAddress: Hex;
+export let mintingFeeTokenAddress: Hex;
 export let rpcProviderUrl: string;
 
 if (String(TEST_ENV) === "sepolia") {
@@ -20,7 +20,7 @@ if (String(TEST_ENV) === "sepolia") {
   royaltyPolicyAddress = process.env.SEPOLIA_ROYALTY_POLICY_ADDRESS as Hex;
   royaltyPolicyLAPAddress = process.env.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS as Hex;
   royaltyApproveAddress = process.env.SEPOLIA_ROYALTY_ERC20 as Hex;
-  mintFeeTokenAddress = process.env.SEPOLIA_MINT_FEE_TOKEN as Hex;
+  mintingFeeTokenAddress = process.env.SEPOLIA_MINTING_FEE_TOKEN as Hex;
 } else if (String(TEST_ENV) === "storyTestnet") {
   rpcProviderUrl = process.env.STORY_RPC_PROVIDER_URL as string;
   licenseModuleAddress = process.env.STORY_LICENSE_MODULE_ADDRESS as Hex;
@@ -28,7 +28,7 @@ if (String(TEST_ENV) === "sepolia") {
   royaltyPolicyAddress = process.env.STORY_ROYALTY_POLICY_ADDRESS as Hex;
   royaltyPolicyLAPAddress = process.env.STORY_ROYALTY_POLICY_LAP_ADDRESS as Hex;
   royaltyApproveAddress = process.env.STORY_ROYALTY_ERC20 as Hex;
-  mintFeeTokenAddress = process.env.STORY_MINT_FEE_TOKEN as Hex;
+  mintingFeeTokenAddress = process.env.STORY_MINTING_FEE_TOKEN as Hex;
 } else {
   throw new Error(`Unknown TEST_ENV value: ${TEST_ENV}`);
 }
