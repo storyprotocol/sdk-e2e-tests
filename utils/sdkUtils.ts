@@ -144,9 +144,10 @@ export const royaltySnapshot = async function (wallet: keyof typeof storyClients
             waitForTransaction: waitForTransaction
         }
     })
-    console.log(JSON.stringify(response));
+
     return response;
 }
+
 export const payRoyaltyOnBehalf = async function (wallet: keyof typeof storyClients, receiverIpId: Hex, payerIpId: Hex, token: Address, amount: bigint, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.payRoyaltyOnBehalf({
@@ -185,7 +186,7 @@ export const royaltyClaimableRevenue = async function (wallet: keyof typeof stor
             waitForTransaction: waitForTransaction
         }
     })
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(String(response)));
     return response;
 }
 
