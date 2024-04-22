@@ -22,7 +22,7 @@ let licenseTokenIdB: string;
 const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function () {
-    describe("Register derivative IP Asset", function () {
+    describe("Register Derivative IP Asset witn Non-Commercial Social Remixing PIL", function () {
         before("Register Non-Commercial Social Remixing PIL", async function () {
             const responsePolicy = await expect(
                 registerNonComSocialRemixingPIL("A", waitForTransaction)
@@ -417,7 +417,7 @@ describe('SDK E2E Test', function () {
             });
 
             // Wallet C is not the licensee of licenseTokenIdA
-            step("ipIdC can NOT link to ipIdA and ipIdB as their derivative IP Asset", async function () {
+            step("Wallet C can NOT register derivative IP asset with licenseTokenIdA", async function () {
                 const response = await expect(
                     registerDerivativeWithLicenseTokens("C", ipIdC, [licenseTokenIdA, licenseTokenIdB], waitForTransaction)
                 ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted with the following signature:");
