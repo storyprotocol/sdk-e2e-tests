@@ -1,6 +1,6 @@
-import { accountA, accountB, privateKeyA, licenseModuleAddress, nftContractAddress} from '../../config/config';
+import { privateKeyA, accountB, licenseModuleAddress, nftContractAddress, mintingFeeTokenAddress} from '../../config/config';
 import { mintNFTWithRetry } from '../../utils/utils';
-import { mintLicenseTokens, registerIpAsset, setPermission, registerNonComSocialRemixingPIL, attachLicenseTerms } from '../../utils/sdkUtils';
+import { registerNonComSocialRemixingPIL, registerCommercialUsePIL, registerIpAsset, setPermission, attachLicenseTerms } from '../../utils/sdkUtils';
 import { expect } from 'chai';
 import { Hex } from 'viem';
 import '../setup';
@@ -10,50 +10,62 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 let tokenIdA: string;
+let tokenIdB: string;
 let ipIdA: Hex;
+let ipIdB: Hex;
 let licenseTermsId1: string;
+let licenseTermsId2: string;
 
 const waitForTransaction: boolean = true;
 
-
 describe('SDK E2E Test', function () {
-    describe("[smoke]Set Permissions Functions", async function () {
-        before("Create non-commercial social remixing PIL",async function () {
-            const responsePolicy = await expect(
+    describe("[smoke]Set Permissions", async function () {
+        this.beforeAll("Register 2 license terms and 2 IP assets", async function () {
+            const responselicenseTerms1 = await expect(
                 registerNonComSocialRemixingPIL("A", waitForTransaction)
             ).to.not.be.rejected;
     
-            licenseTermsId1 = responsePolicy.licenseTermsId;        
+            licenseTermsId1 = responselicenseTerms1.licenseTermsId;
+
+            const responselicenseTerms2 = await expect(
+                registerCommercialUsePIL("A", "100", mintingFeeTokenAddress, waitForTransaction)
+            ).to.not.be.rejected;
+    
+            licenseTermsId2 = responselicenseTerms2.licenseTermsId;
+                        
+            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            if (tokenIdA === '') {
+                throw new Error('Unable to mint NFT');
+            }
+            expect(tokenIdA).not.empty;
+        
+            const responseRegisterIpA = await expect(
+                registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
+            ).to.not.be.rejected;
+    
+            expect(responseRegisterIpA.txHash).to.be.a("string").and.not.empty;
+            expect(responseRegisterIpA.ipId).to.be.a("string").and.not.empty;
+    
+            ipIdA = responseRegisterIpA.ipId;
+                        
+            tokenIdB = await mintNFTWithRetry(privateKeyA);
+            if (tokenIdB === '') {
+                throw new Error('Unable to mint NFT');
+            }
+            expect(tokenIdB).not.empty;
+        
+            const responseRegisterIpB = await expect(
+                registerIpAsset("A", nftContractAddress, tokenIdB, waitForTransaction)
+            ).to.not.be.rejected;
+    
+            expect(responseRegisterIpB.txHash).to.be.a("string").and.not.empty;
+            expect(responseRegisterIpB.ipId).to.be.a("string").and.not.empty;
+    
+            ipIdB = responseRegisterIpB.ipId;
         })
 
         describe("Set permission - 1 ALLOW", async function (){
-            step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
-                tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === '') {
-                    throw new Error('Unable to mint NFT');
-                }
-                expect(tokenIdA).not.empty;                
-            });
-        
-            step("Wallet A register a root IP Asset and get an ipId (ipIdA)", async function () {
-                const response = await expect(
-                    registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
-                ).to.not.be.rejected;
-        
-                expect(response.txHash).to.be.a("string").and.not.empty.and.not.empty;
-        
-                ipIdA = response.ipId;
-            });
-
-            step("Wallet A attach licenseTermsId1(non-commercial social remixing PIL) to ipIdA", async function () {
-                const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
-                ).to.not.be.rejected;
-
-                expect(response.txHash).to.be.a("string").and.not.empty;
-            });
-        
-            step("Wallet A set permission to allow Wallet B to call license Module", async function () {
+            step("Wallet A set permission (permission id: 1) to allow Wallet B to call license Module for ipIdA", async function () {
                 const response = await expect(
                     setPermission("A", ipIdA, accountB.address, licenseModuleAddress, 1, waitForTransaction)
                 ).to.not.be.rejected;
@@ -61,46 +73,24 @@ describe('SDK E2E Test', function () {
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.success).to.be.true;
             });
-        
-            step("Wallet B can mint a license token with ipIdA", async function () {
+
+            step("Wallet B can attach licenseTermsId1 to ipIdA", async function () {
                 const response = await expect(
-                    mintLicenseTokens("B", ipIdA, licenseTermsId1, 2, accountA.address, waitForTransaction)
+                    attachLicenseTerms("B", ipIdA, licenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
-        
+
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+            });
+
+            step("Wallet B can NOT attach licenseTermsId1 to ipIdB", async function () {
+                const response = await expect(
+                    attachLicenseTerms("B", ipIdB, licenseTermsId1, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0xb3e96921");
             });
         });
         
-        describe("Set permission - 2 DENY", async function (){
-            step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
-                tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === '') {
-                    throw new Error('Unable to mint NFT');
-                }
-                expect(tokenIdA).not.empty;
-            });
-        
-            step("Wallet A register a root IP asset and get an ipId (ipIdA)", async function () {
-                const response = await expect(
-                    registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
-                ).to.not.be.rejected;
-        
-                expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.ipId).to.be.a("string").and.not.empty;
-        
-                ipIdA = response.ipId;
-            });
-
-            step("Wallet A attach licenseTermsId1(non-commercial social remixing PIL) to ipIdA", async function () {
-                const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
-                ).to.not.be.rejected;
-
-                expect(response.txHash).to.be.a("string").and.not.empty;
-            });
-        
-            step("Wallet A set permission to NOT allow Wallet B to call license Module", async function () {
+        describe("Set permission - 2 DENY", async function (){                            
+            step("Wallet A set permission (permission id: 2) to NOT allow Wallet B to call license Module for ipIdA", async function () {
                 const response = await expect(
                     setPermission("A", ipIdA, accountB.address, licenseModuleAddress, 2, waitForTransaction)
                 ).to.not.be.rejected;
@@ -109,11 +99,44 @@ describe('SDK E2E Test', function () {
                 expect(response.success).to.be.true;
             });
             
-            step("Wallet B can NOT mint a license token with ipIdA", async function () {
+            step("Wallet B can NOT attach licenseTermsId1 to ipIdA", async function () {
                 const response = await expect(
-                    mintLicenseTokens("B", ipIdA, licenseTermsId1, 1, accountA.address, waitForTransaction)
-                ).to.be.rejectedWith("Failed to mint license: The contract function \"mintLicense\" reverted.",
-                                     "Error: LicensingModule__CallerNotLicensorAndPolicyNotSet()");
+                    attachLicenseTerms("B", ipIdA, licenseTermsId2, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0xb3e96921");
+            });
+        });
+        
+        describe("Set permission - 0 ABSTAIN", async function (){
+            step("Wallet A set permission (permission id: 1) to allow Wallet B to call license Module for ipIdB", async function () {
+                const response = await expect(
+                    setPermission("A", ipIdB, accountB.address, licenseModuleAddress, 1, waitForTransaction)
+                ).to.not.be.rejected;
+        
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.success).to.be.true;
+            });
+
+            step("Wallet B can attach licenseTermsId1 to ipIdB", async function () {
+                const response = await expect(
+                    attachLicenseTerms("B", ipIdB, licenseTermsId1, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+            });
+            
+            step("Wallet A set permission (permission id: 0) to NOT allow Wallet B to call license Module for ipIdB", async function () {
+                const response = await expect(
+                    setPermission("A", ipIdB, accountB.address, licenseModuleAddress, 0, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.success).to.be.true;
+            });
+            
+            step("Wallet B can NOT attach licenseTermsId2 to ipIdB", async function () {
+                const response = await expect(
+                    attachLicenseTerms("B", ipIdB, licenseTermsId2, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0xb3e96921");
             });
         });
     });

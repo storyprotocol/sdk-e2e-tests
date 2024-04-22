@@ -22,7 +22,7 @@ let licenseTokenIdB: string;
 const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function () {
-    describe("Register Derivative IP Asset witn Non-Commercial Social Remixing PIL", function () {
+    describe("Register Derivative IP Asset with Non-Commercial Social Remixing PIL", function () {
         before("Register Non-Commercial Social Remixing PIL", async function () {
             const responsePolicy = await expect(
                 registerNonComSocialRemixingPIL("A", waitForTransaction)
