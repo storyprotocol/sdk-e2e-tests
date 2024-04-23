@@ -163,10 +163,10 @@ export const payRoyaltyOnBehalf = async function (wallet: keyof typeof storyClie
     return response;
 }
 
-export const collectRoyaltyTokens = async function (wallet: keyof typeof storyClients, ancestorIpId: Hex, royaltyVaultIpId: Hex, waitForTransaction: boolean) {
+export const collectRoyaltyTokens = async function (wallet: keyof typeof storyClients, parentIpId: Hex, royaltyVaultIpId: Hex, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.collectRoyaltyTokens({
-        ancestorIpId: ancestorIpId,
+        parentIpId: parentIpId,
         royaltyVaultIpId: royaltyVaultIpId,
         txOptions: {
             waitForTransaction: waitForTransaction
@@ -175,6 +175,7 @@ export const collectRoyaltyTokens = async function (wallet: keyof typeof storyCl
     console.log(JSON.stringify(response));
     return response;
 }
+
 export const royaltyClaimableRevenue = async function (wallet: keyof typeof storyClients, royaltyVaultIpId: Hex, account: Address, snapshotId: string, token: Address, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.claimableRevenue({
@@ -190,4 +191,15 @@ export const royaltyClaimableRevenue = async function (wallet: keyof typeof stor
     return response;
 }
 
-
+export const royaltyClaimRevenue = async function (wallet: keyof typeof storyClients, snapshotIds: string[], royaltyVaultIpId: Hex, token: Address, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.claimRevenue({
+        snapshotIds: snapshotIds,
+        royaltyVaultIpId: royaltyVaultIpId,
+        token: token,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    })
+    return response;
+}
