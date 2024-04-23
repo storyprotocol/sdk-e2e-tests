@@ -244,3 +244,9 @@ export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex): Promise<string>
 
   return tokenId;
 }
+
+export async function checkMintResult(tokenIdA: string){
+  if (tokenIdA === '') {
+    throw new Error('Unable to mint NFT');
+  };
+}
