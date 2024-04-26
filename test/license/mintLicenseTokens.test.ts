@@ -1,7 +1,7 @@
 import { privateKeyA, accountB, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
 import { attachLicenseTerms, mintLicenseTokens, registerCommercialRemixPIL, registerCommercialUsePIL, registerIpAsset, registerNonComSocialRemixingPIL } from '../../utils/sdkUtils';
 import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);

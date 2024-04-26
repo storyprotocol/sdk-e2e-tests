@@ -9,8 +9,8 @@ const TEST_ENV = process.env.TEST_ENV as string | undefined;
 let chainId: Chain;
 if (TEST_ENV == "sepolia") {
   chainId = sepolia;
-} else if (TEST_ENV == "storyTestnet") {
-  chainId = chainStringToViemChain("storyTestnet");
+// } else if (TEST_ENV == "storyTestnet") {
+//   chainId = chainStringToViemChain("storyTestnet");
 } else {
   throw new Error(`Unknown TEST_ENV value: ${TEST_ENV}`);
 };

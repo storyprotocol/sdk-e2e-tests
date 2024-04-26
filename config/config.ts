@@ -66,8 +66,8 @@ export const clientC = StoryClient.newClient(configC)
 export function chainStringToViemChain(chainId: SupportedChainIds): Chain {
   switch (chainId) {
     case "sepolia":
-    case "storyTestnet":
-      return storyTestnet;
+    // case "storyTestnet":
+    //   return storyTestnet;
     default:
       throw new Error(`chainId ${chainId as string} not supported`);
   }

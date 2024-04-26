@@ -1,4 +1,4 @@
-import { privateKeyA, accountB, licenseModuleAddress, nftContractAddress, mintingFeeTokenAddress} from '../../config/config';
+import { privateKeyA, accountB, licensingModuleAddress, nftContractAddress, mintingFeeTokenAddress} from '../../config/config';
 import { mintNFTWithRetry } from '../../utils/utils';
 import { registerNonComSocialRemixingPIL, registerCommercialUsePIL, registerIpAsset, setPermission, attachLicenseTerms } from '../../utils/sdkUtils';
 import { expect } from 'chai';
@@ -67,7 +67,7 @@ describe('SDK E2E Test', function () {
         describe("Set permission - 1 ALLOW", async function (){
             step("Wallet A set permission (permission id: 1) to allow Wallet B to call license Module for ipIdA", async function () {
                 const response = await expect(
-                    setPermission("A", ipIdA, accountB.address, licenseModuleAddress, 1, waitForTransaction)
+                    setPermission("A", ipIdA, accountB.address, licensingModuleAddress, 1, waitForTransaction)
                 ).to.not.be.rejected;
         
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -92,7 +92,7 @@ describe('SDK E2E Test', function () {
         describe("Set permission - 2 DENY", async function (){                            
             step("Wallet A set permission (permission id: 2) to NOT allow Wallet B to call license Module for ipIdA", async function () {
                 const response = await expect(
-                    setPermission("A", ipIdA, accountB.address, licenseModuleAddress, 2, waitForTransaction)
+                    setPermission("A", ipIdA, accountB.address, licensingModuleAddress, 2, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -109,7 +109,7 @@ describe('SDK E2E Test', function () {
         describe("Set permission - 0 ABSTAIN", async function (){
             step("Wallet A set permission (permission id: 1) to allow Wallet B to call license Module for ipIdB", async function () {
                 const response = await expect(
-                    setPermission("A", ipIdB, accountB.address, licenseModuleAddress, 1, waitForTransaction)
+                    setPermission("A", ipIdB, accountB.address, licensingModuleAddress, 1, waitForTransaction)
                 ).to.not.be.rejected;
         
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -126,7 +126,7 @@ describe('SDK E2E Test', function () {
             
             step("Wallet A set permission (permission id: 0) to NOT allow Wallet B to call license Module for ipIdB", async function () {
                 const response = await expect(
-                    setPermission("A", ipIdB, accountB.address, licenseModuleAddress, 0, waitForTransaction)
+                    setPermission("A", ipIdB, accountB.address, licensingModuleAddress, 0, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
