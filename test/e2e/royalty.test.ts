@@ -23,7 +23,7 @@ const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function () {
     describe("Royalty", function () {
-        describe.skip("Commercial Use PIL - Claim Minting Fee", function () {
+        describe("Commercial Use PIL - Claim Minting Fee", function () {
             const mintingFee: string = "100";
 
             before("Register parent and derivative IP assets", async function () {
@@ -113,7 +113,7 @@ describe('SDK E2E Test', function () {
             });            
         })
 
-        describe.skip('Commercial Use PIL - Claim Minting Fee and Pay on Behalf', async function () {
+        describe('Commercial Use PIL - Claim Minting Fee and Pay on Behalf', async function () {
             let mintingFee: string = "60";
             let payAmount: string = "100";
 
@@ -250,7 +250,7 @@ describe('SDK E2E Test', function () {
             });
         });
 
-        describe.skip("Commercial Remix PIL - Claim Minting Fee", function () {
+        describe("Commercial Remix PIL - Claim Minting Fee", function () {
             const mintingFee: string = "80";
             const commercialRevShare: number = 200;
 
@@ -351,7 +351,7 @@ describe('SDK E2E Test', function () {
             });
         })
 
-        describe.skip('Commercial Remix PIL - Claim Minting Fee and Pay on Behalf', async function () {
+        describe('Commercial Remix PIL - Claim Minting Fee and Pay on Behalf', async function () {
             let mintingFee: string = "90";
             let payAmount: string = "600";
             let commercialRevShare: number = 100;
