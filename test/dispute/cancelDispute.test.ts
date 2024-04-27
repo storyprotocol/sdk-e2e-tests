@@ -15,8 +15,8 @@ let disputeId2: string;
 let disputeId3: string;
 
 describe("SDK Test", function () {
-    describe("Test dispute.raiseDispute Function", async function () {
-        before("Register IP assets", async function () {
+    describe("Test dispute.cancelDispute Function", async function () {
+        before("Register IP assets and raise disputes", async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
             expect(tokenIdA).not.empty;
