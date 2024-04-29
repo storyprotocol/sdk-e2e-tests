@@ -203,30 +203,30 @@ export const royaltyClaimRevenue = async function (wallet: keyof typeof storyCli
     return response;
 }
 
-export const raiseDispute = async function (wallet: keyof typeof storyClients, targetIpId: Hex, arbitrationPolicy: Hex, linkToDisputeEvidence: string, targetTag: string, calldata: Hex, waitForTransaction: boolean) {
+export const raiseDispute = async function (wallet: keyof typeof storyClients, targetIpId: Hex, arbitrationPolicy: Hex, linkToDisputeEvidence: string, targetTag: string, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.dispute.raiseDispute({
         targetIpId: targetIpId,
         arbitrationPolicy: arbitrationPolicy,
         linkToDisputeEvidence: linkToDisputeEvidence,
         targetTag: targetTag,
-        calldata: calldata,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
-    })
+    });
+    console.log(JSON.stringify(response));
     return response;
 }
 
-export const cancelDispute = async function (wallet: keyof typeof storyClients, disputeId: string | number | bigint, calldata: Hex, waitForTransaction: boolean) {
+export const cancelDispute = async function (wallet: keyof typeof storyClients, disputeId: string | number | bigint, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.dispute.cancelDispute({
         disputeId: disputeId,
-        calldata: calldata,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
-    })
+    });
+    console.log(JSON.stringify(response));
     return response;
 }
 
@@ -238,6 +238,7 @@ export const resolveDispute = async function (wallet: keyof typeof storyClients,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
-    })
+    });
+    console.log(JSON.stringify(response));
     return response;
 }
