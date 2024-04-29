@@ -19,8 +19,8 @@ let ipIdC: Hex;
 let licenseTermsId1: string;
 
 describe("SDK Test", function () {
-    describe("Test dispute.raiseDispute Function", async function () {
-        before("Register IP assets", async function () {
+    describe("Test royalty.snapshot function", async function () {
+        before("Register parent and derivative IP assets", async function () {
             const responseLicenseTerm1 = await expect(
                 registerCommercialUsePIL("A", "100", mintingFeeTokenAddress, waitForTransaction)
             ).to.not.be.rejected;
