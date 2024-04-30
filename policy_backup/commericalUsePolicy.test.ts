@@ -1,10 +1,10 @@
-import { clientA } from '../../config/config'
+import { clientA } from '../config/config'
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai'
 chai.use(chaiAsPromised);
 import addContext = require("mochawesome/addContext");
-import { captureConsoleLogs } from '../../utils/utils'
+import { captureConsoleLogs } from '../utils/utils'
 
 describe("SDK Test", function () {
     describe("Register PIL Commercial Use Policy (policy.registerPILCommercialUsePolicy)", async function () {
