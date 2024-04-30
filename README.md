@@ -39,7 +39,6 @@ test:story:smoke
 ```
 npm run test:sepolia:e2e
 ```
-```
 
 - Run e2e test in Story Network:
 
@@ -61,4 +60,3 @@ npm run test:story
 ```
 npm run open:report
 ```
-
