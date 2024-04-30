@@ -5,7 +5,7 @@ import { SupportedChainIds } from "@story-protocol/core-sdk/dist/declarations/sr
 
 const TEST_ENV = process.env.TEST_ENV as SupportedChainIds;
 
-export let licenseModuleAddress: Hex;
+export let licensingModuleAddress: Hex;
 export let nftContractAddress: Hex;
 export let royaltyPolicyAddress: Hex;
 export let royaltyPolicyLAPAddress: Hex;
@@ -16,7 +16,7 @@ export let rpcProviderUrl: string;
 
 if (String(TEST_ENV) === "sepolia") {
   rpcProviderUrl = process.env.SEPOLIA_RPC_PROVIDER_URL as string;
-  licenseModuleAddress = process.env.SEPOLIA_LICENSE_MODULE_ADDRESS as Hex;
+  licensingModuleAddress = process.env.SEPOLIA_LICENSING_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.SEPOLIA_NFT_CONTRACT_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.SEPOLIA_ROYALTY_POLICY_ADDRESS as Hex;
   royaltyPolicyLAPAddress = process.env.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS as Hex;
@@ -25,7 +25,7 @@ if (String(TEST_ENV) === "sepolia") {
   arbitrationPolicyAddress = process.env.SEPOLIA_ARBITRATION_POLICY_ADDRESS as Hex;
 } else if (String(TEST_ENV) === "storyTestnet") {
   rpcProviderUrl = process.env.STORY_RPC_PROVIDER_URL as string;
-  licenseModuleAddress = process.env.STORY_LICENSE_MODULE_ADDRESS as Hex;
+  licensingModuleAddress = process.env.STORY_LICENSING_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.STORY_NFT_CONTRACT_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.STORY_ROYALTY_POLICY_ADDRESS as Hex;
   royaltyPolicyLAPAddress = process.env.STORY_ROYALTY_POLICY_LAP_ADDRESS as Hex;
