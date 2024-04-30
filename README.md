@@ -18,21 +18,45 @@ This project dedicates to perform e2e test for the story protocol typescript sdk
 
 - Run specific test:
 
-        run `mocha -r ts-node/register -r mocha-steps ./test/**/**/*.test.ts --timeout 240000`
+```
+mocha -r ts-node/register -r mocha-steps ./test/**/**/*.test.ts --timeout 240000
+```
 
-- Run smoke test:
+- Run smoke test in Sepolia:
 
-        run `npm run test:smoke`
+```
+test:sepolia:smoke
+```
 
-- Run e2e test:
+- Run smoke test in Story Network:
 
-        run `npm run test:e2e`
+```
+test:story:smoke
+```
 
-- Run all test together:
+- Run e2e test in Sepolia:
 
-        run `npm run test`
+```
+npm run test:sepolia:e2e
+```
+
+- Run e2e test in Story Network:
+
+```
+npm run test:story:e2e
+```
+
+- Run all tests in Sepolia:
+```
+npm run test:sepolia
+```
+
+- Run all tests in Story:
+```
+npm run test:story
+```
 
 - Open report, test report is under ./mochawesome-report folder
-
-        run `npm run open:report`
-
+```
+npm run open:report
+```
