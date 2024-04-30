@@ -7,19 +7,16 @@
     "test:smoke": "mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:e2e": "mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test": "mocha -r ts-node/register -r mocha-steps './test/**/**/**.test.ts' --timeout 240000 --reporter mochawesome",
-    "test:sepolia": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
-    "test:story": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
+    "test:sepolia": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/**/**.test.ts' --timeout 240000 --reporter mochawesome",
+    "test:story": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/**/**.test.ts' --timeout 240000 --reporter mochawesome",
     "open:report": "open mochawesome-report/mochawesome.html"
-  },
-  "engines": {
-    "node": "20.0.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/storyprotocol/sdk-e2e-tests.git"
   },
   "dependencies": {
-    "@story-protocol/core-sdk": "0.0.1-beta-rc.12",
+    "@story-protocol/core-sdk": "1.0.0-rc.6",
     "viem": "^2.8.12"
   },
   "devDependencies": {
@@ -36,6 +33,7 @@
     "mocha": "^10.2.0",
     "mocha-steps": "^1.3.0",
     "mochawesome": "^7.1.3",
+    "nyc": "^15.1.0",
     "prettier": "^2.8.8",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.1",

@@ -144,11 +144,11 @@ export const royaltySnapshot = async function (wallet: keyof typeof storyClients
             waitForTransaction: waitForTransaction
         }
     })
-
+    console.log(JSON.stringify(response));
     return response;
 }
 
-export const payRoyaltyOnBehalf = async function (wallet: keyof typeof storyClients, receiverIpId: Hex, payerIpId: Hex, token: Address, amount: bigint, waitForTransaction: boolean) {
+export const payRoyaltyOnBehalf = async function (wallet: keyof typeof storyClients, receiverIpId: Hex, payerIpId: Hex, token: Address, amount: string, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.payRoyaltyOnBehalf({
         receiverIpId: receiverIpId,
@@ -182,24 +182,63 @@ export const royaltyClaimableRevenue = async function (wallet: keyof typeof stor
         royaltyVaultIpId: royaltyVaultIpId,
         account: account,
         snapshotId: snapshotId,
-        token: token,
-        txOptions: {
-            waitForTransaction: waitForTransaction
-        }
+        token: token
     })
-    // console.log(JSON.stringify(String(response)));
+    console.log(JSON.stringify(String(response)));
     return response;
 }
 
-export const royaltyClaimRevenue = async function (wallet: keyof typeof storyClients, snapshotIds: string[], royaltyVaultIpId: Hex, token: Address, waitForTransaction: boolean) {
+export const royaltyClaimRevenue = async function (wallet: keyof typeof storyClients, snapshotIds: string[], royaltyVaultIpId: Hex, account: Hex, token: Hex, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.claimRevenue({
         snapshotIds: snapshotIds,
         royaltyVaultIpId: royaltyVaultIpId,
+        account: account,
         token: token,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
     })
+    console.log(JSON.stringify(response));
+    return response;
+}
+
+export const raiseDispute = async function (wallet: keyof typeof storyClients, targetIpId: Hex, arbitrationPolicy: Hex, linkToDisputeEvidence: string, targetTag: string, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.dispute.raiseDispute({
+        targetIpId: targetIpId,
+        arbitrationPolicy: arbitrationPolicy,
+        linkToDisputeEvidence: linkToDisputeEvidence,
+        targetTag: targetTag,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    });
+    console.log(JSON.stringify(response));
+    return response;
+}
+
+export const cancelDispute = async function (wallet: keyof typeof storyClients, disputeId: string | number | bigint, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.dispute.cancelDispute({
+        disputeId: disputeId,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    });
+    console.log(JSON.stringify(response));
+    return response;
+}
+
+export const resolveDispute = async function (wallet: keyof typeof storyClients, disputeId: string | number | bigint, data: Hex, waitForTransaction: boolean) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.dispute.resolveDispute({
+        disputeId: disputeId,
+        data: data,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    });
+    console.log(JSON.stringify(response));
     return response;
 }
