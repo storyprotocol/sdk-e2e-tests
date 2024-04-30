@@ -1,5 +1,5 @@
 {
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "policy_backup"],
   "compilerOptions": {
     "composite": true,
     "module": "commonjs",
