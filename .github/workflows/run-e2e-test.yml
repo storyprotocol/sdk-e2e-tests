@@ -41,11 +41,11 @@ jobs:
       
     - name: Run E2E Test in Sepolia
       run: |
-        npm run test:sepolia:e2e
+        npm run test:sepolia:smoke
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4
       with:
         name: sdk-sepolia-test-report
         path: |
-          ./mochawesome-report/mochawesome.html
+          ./mochawesome-report
