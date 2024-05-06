@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:sepolia:smoke": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
+    "test:sepolia:smoke": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps --parallel --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:story:smoke": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps --parallel --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:sepolia:e2e": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:story:e2e": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome",
