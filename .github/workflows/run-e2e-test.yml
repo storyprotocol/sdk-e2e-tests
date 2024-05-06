@@ -1,0 +1,57 @@
+name: Run E2E Test
+
+on:
+  push:
+    branches: [ "add-workflow" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+      inputs: 
+        nodeVersion:
+          description: 'Node Version'     
+          required: true
+          default: '[20.x]'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: ${{ github.event.inputs.nodeVersion }}
+
+    steps:
+    - name: Check Out Repository Code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install Dependencies
+      run: |
+        npm install
+    - name: 'Create env file'
+      run: |
+        touch .env
+        echo WALLET_PRIVATE_KEY_A = ${{ secrets.WALLET_PRIVATE_KEY_A }} >> .env
+        echo WALLET_PRIVATE_KEY_B = ${{ secrets.WALLET_PRIVATE_KEY_B }} >> .env
+        echo WALLET_PRIVATE_KEY_C = ${{ secrets.WALLET_PRIVATE_KEY_C }} >> .env
+        echo SEPOLIA_MINTING_FEE_TOKEN = ${{ secrets.SEPOLIA_MINTING_FEE_TOKEN }} >> .env
+        echo SEPOLIA_RPC_PROVIDER_URL = ${{ vars.SEPOLIA_RPC_PROVIDER_URL }} >> .env
+        echo SEPOLIA_NFT_CONTRACT_ADDRESS = ${{ vars.SEPOLIA_NFT_CONTRACT_ADDRESS }} >> .env
+        echo SEPOLIA_LICENSING_MODULE_ADDRESS = ${{ vars.SEPOLIA_LICENSING_MODULE_ADDRESS }} >> .env
+        echo SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS = ${{ vars.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS }} >> .env
+        cat .env
+      
+    - name: Run E2E Test in Sepolia
+      run: |
+        npm run test:sepolia:smoke
+
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: sdk-sepolia-test-report
+        path: |
+          ./mochawesome-report
