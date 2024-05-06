@@ -2,15 +2,15 @@ name: Run E2E Test
 
 on:
   push:
-    branches: [ "add-workflow" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
       inputs: 
         nodeVersion:
-          description: 'Node Version'     
+          description: "Node Version"     
           required: true
-          default: '[20.x]'
+          default: "20.x"
 
 jobs:
   build:
@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: ${{ github.event.inputs.nodeVersion }}
+        node-version: ["${{ github.event.inputs.nodeVersion }}"]
 
     steps:
     - name: Check Out Repository Code
