@@ -1,6 +1,6 @@
-import { privateKeyA, nftContractAddress, arbitrationPolicyAddress } from '../../config/config';
-import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
-import { registerIpAsset, raiseDispute, cancelDispute, resolveDispute } from '../../utils/sdkUtils';
+import { privateKeyA, nftContractAddress, arbitrationPolicyAddress, privateKeyC } from '../../config/config';
+import { mintNFTWithRetry, checkMintResult, setDisputeJudgement, sleep } from '../../utils/utils';
+import { registerIpAsset, raiseDispute, resolveDispute } from '../../utils/sdkUtils';
 import { Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -11,13 +11,13 @@ import '../setup';
 let tokenIdA: string;
 let ipIdA: Hex;
 let disputeId1: string;
+let disputeId2: string;
 
 describe("SDK Test", function () {
     describe("Test dispute.resolveDispute Function", async function () {
         before("Register IP assets and raise disputes", async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
-            expect(tokenIdA).not.empty;
 
             const responseRegisterIpAsset = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdA, true)
@@ -36,6 +36,15 @@ describe("SDK Test", function () {
             expect(responseRaiseDispute1.disputeId).to.be.a("string").and.not.empty;
 
             disputeId1 = responseRaiseDispute1.disputeId;
+
+            const responseRaiseDispute2 = await expect(
+                raiseDispute("B", ipIdA, arbitrationPolicyAddress, "test2", "PLAGIARISM", true)
+            ).to.not.be.rejected;
+
+            expect(responseRaiseDispute2.txHash).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute2.disputeId).to.be.a("string").and.not.empty;
+
+            disputeId2 = responseRaiseDispute2.disputeId;            
         });
 
         it("Resolve dispute fail as undefined disputeId", async function () {
@@ -72,18 +81,39 @@ describe("SDK Test", function () {
                                  "Error: DisputeModule__NotDisputeInitiator()");
         });
 
-        it("Resolve dispute with waitForTransaction: true", async function () {
+        it("Resolve dispute fail as not set judgement", async function () {
             const response = await expect(                              
                 resolveDispute("B", disputeId1, "0x0000", true)
             ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
-                                     "Error: DisputeModule__NotAbleToResolve()");
+                                 "Error: DisputeModule__NotAbleToResolve()");
+        });
+
+        it("Resolve dispute fail as judgement decision is false", async function () {
+            await setDisputeJudgement(privateKeyC, disputeId1, false, "0x");
+            await sleep(10);
+
+            const response = await expect(                              
+                resolveDispute("B", disputeId1, "0x0000", true)
+            ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
+                                 "Error: DisputeModule__NotAbleToResolve()");
         });
 
         it("Resolve dispute faile as already resolved", async function () {
             const response = await expect(                
-                resolveDispute("B", disputeId1, "0x0000", true)
+                resolveDispute("B", disputeId1, "0x0000", false)
             ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
                                  "Error: DisputeModule__NotDisputeInitiator()");
+        });
+
+        it("Resolve dispute with waitForTransaction: false", async function () {
+            await setDisputeJudgement(privateKeyC, disputeId2, true, "0x");
+            await sleep(10);
+
+            const response = await expect(                              
+                resolveDispute("B", disputeId2, "0x0000", false)
+            ).to.not.be.rejected;
+
+            expect(response.txHash).to.be.a("string").and.not.empty;
         });
     });
 });

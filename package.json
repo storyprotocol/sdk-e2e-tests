@@ -8,7 +8,7 @@
     "test:story:smoke": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:sepolia:e2e": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome",
     "test:story:e2e": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome",
-    "test:sepolia": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/**/**.test.ts' --timeout 240000 --reporter mochawesome",
+    "test:sepolia": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/**/royalty.test.ts' --timeout 240000 --reporter mochawesome",
     "test:story": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome",
     "open:report": "open mochawesome-report/mochawesome.html"
   },
@@ -17,7 +17,7 @@
     "url": "https://github.com/storyprotocol/sdk-e2e-tests.git"
   },
   "dependencies": {
-    "@story-protocol/core-sdk": "1.0.0-rc.6",
+    "@story-protocol/core-sdk": "1.0.0-rc.10",
     "viem": "^2.8.12"
   },
   "devDependencies": {

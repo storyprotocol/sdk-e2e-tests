@@ -1,6 +1,6 @@
-import { privateKeyA, privateKeyB, privateKeyC, accountA, accountB, accountC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config'
-import { mintNFTWithRetry } from '../../utils/utils'
-import { registerCommercialRemixPIL, registerIpAsset, attachLicenseTerms, mintLicenseTokens, registerDerivative, registerDerivativeWithLicenseTokens } from '../../utils/sdkUtils'
+import { privateKeyA, privateKeyB, privateKeyC, accountA, accountB, accountC, nftContractAddress } from '../../config/config'
+import { checkMintResult, mintNFTWithRetry } from '../../utils/utils'
+import { registerIpAsset, attachLicenseTerms, mintLicenseTokens, registerDerivative, registerDerivativeWithLicenseTokens } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import chai from 'chai';
@@ -8,6 +8,7 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 import { Hex } from 'viem';
+import { comRemixLicenseTermsId1 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
@@ -15,7 +16,6 @@ let tokenIdC: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
 let ipIdC: Hex;
-let licenseTermsId1: string;
 let licenseTokenIdA: string;
 let licenseTokenIdB: string;
 
@@ -23,20 +23,11 @@ const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function () {
     describe("Register Derivative IP Asset with Commercial Remix PIL", function () {
-        before("Register commercial remix PIL", async function () {
-            const responsePolicy = await expect(
-                registerCommercialRemixPIL("A", "1", 100, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responsePolicy.licenseTermsId;
-        });
-
         describe("[smoke]Register a derivative IP asset with/without license tokens", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === '') {
-                    throw new Error('Unable to mint NFT');
-                };
+                checkMintResult(tokenIdA);
+
                 expect(tokenIdA).not.empty;
             });
 
@@ -51,9 +42,9 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -61,7 +52,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet A mint a license token with the receiverAddress set as Wallet B, get a licenseTokenId (licenseTokenIdA)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId1, 2, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId1, 2, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -72,9 +63,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
+                checkMintResult(tokenIdB);
+
                 expect(tokenIdB).not.empty;
             });
 
@@ -99,9 +89,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletC and get a tokenId(tokenIdC)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyC);
-                if (tokenIdC === '') {
-                    throw new Error('Unable to mint NFT');
-                }
+                checkMintResult(tokenIdC);
+
                 expect(tokenIdC).not.empty;
             });
 
@@ -125,7 +114,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet C can register a derivative IP asset without licenseTokenId", async function () {
                 const response = await expect(
-                    registerDerivative("C", ipIdC, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("C", ipIdC, [ipIdA], [comRemixLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -135,9 +124,8 @@ describe('SDK E2E Test', function () {
         describe('Register a derivative IP asset with multiple parent IP assets', async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === "") {
-                    throw new Error("Unable to mint NFT");
-                };
+                checkMintResult(tokenIdA);
+
                 expect(tokenIdA).not.empty;
             });
 
@@ -152,9 +140,9 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -162,9 +150,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletB, get a tokenId (tokenidB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
+                checkMintResult(tokenIdB);
+
                 expect(tokenIdB).not.empty;
             });
 
@@ -179,9 +166,9 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet B attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("B", ipIdB, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -189,9 +176,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletC, get a tokenId (tokenidC)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyC);
-                if (tokenIdC === '') {
-                    throw new Error('Unable to mint NFT');
-                };
+                checkMintResult(tokenIdC);
+
                 expect(tokenIdC).not.empty;
             });
 
@@ -208,7 +194,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet C can register a derivative IP asset with multiple parent IP assets", async function () {
                 const response = await expect(
-                    registerDerivative("C", ipIdC, [ipIdA, ipIdB], [licenseTermsId1, licenseTermsId1], waitForTransaction)
+                    registerDerivative("C", ipIdC, [ipIdA, ipIdB], [comRemixLicenseTermsId1, comRemixLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;                
@@ -218,9 +204,8 @@ describe('SDK E2E Test', function () {
         describe("Register a derivative IP assets with multiple license tokens", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === "") {
-                    throw new Error("Unable to mint NFT");
-                };
+                checkMintResult(tokenIdA);
+
                 expect(tokenIdA).not.empty;
             });
 
@@ -235,9 +220,9 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -245,7 +230,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet A mint a license token with the receiverAddress set as Wallet B, get a licenseId (licenseTokenIdA)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId1, 2, accountC.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId1, 2, accountC.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -256,9 +241,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletB, get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdB);
+
                 expect(tokenIdB).not.empty;
             });
 
@@ -273,9 +257,9 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B attach licenseTermsId1(commercial remix PIL) to ipIdB", async function () {
+            step("Wallet B attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdB", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("B", ipIdB, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -283,7 +267,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet B mint a license token with the receiverAddress set as Wallet C, get a licenseTokenId (licenseTokenIdB)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("B", ipIdB, licenseTermsId1, 2, accountC.address, waitForTransaction)
+                    mintLicenseTokens("B", ipIdB, comRemixLicenseTermsId1, 2, accountC.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -294,9 +278,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletC, get a tokenId (tokenIdC)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyC);
-                if (tokenIdC === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdC);
+
                 expect(tokenIdC).not.empty;
             });
 
@@ -323,9 +306,8 @@ describe('SDK E2E Test', function () {
         describe("Register a derivative IP assets with multiple license tokens, the sender is not licensee", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === "") {
-                    throw new Error("Unable to mint NFT");
-                };
+                checkMintResult(tokenIdA);
+
                 expect(tokenIdA).not.empty;
             });
 
@@ -340,9 +322,9 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -350,7 +332,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet A mint a license token with the receiverAddress set as Wallet B, get a licenseId (licenseTokenIdA)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId1, 2, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId1, 2, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -361,9 +343,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletB, get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdB);
+
                 expect(tokenIdB).not.empty;
             });
 
@@ -378,9 +359,9 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B attach licenseTermsId1(commercial remix PIL) to ipIdB", async function () {
+            step("Wallet B attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdB", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("B", ipIdB, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -388,7 +369,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet B mint a license token with the receiverAddress set as Wallet C, get a licenseTokenId (licenseTokenIdB)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("B", ipIdB, licenseTermsId1, 2, accountC.address, waitForTransaction)
+                    mintLicenseTokens("B", ipIdB, comRemixLicenseTermsId1, 2, accountC.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -399,9 +380,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletC, get a tokenId (tokenIdC)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyC);
-                if (tokenIdC === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdC);
+
                 expect(tokenIdC).not.empty;
             });
 
@@ -427,9 +407,8 @@ describe('SDK E2E Test', function () {
         describe("Register multiple derivative IP assets with license token, registered amount larger than mint amount of license token", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdA);
+
                 expect(tokenIdA).not.empty;
             });
 
@@ -444,9 +423,9 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -454,7 +433,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet A mint a license token with ipIdA and get a licenseTokenId (licenseTokenIdA)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId1, 1, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId1, 1, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -465,9 +444,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletB and get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdB);
+
                 expect(tokenIdB).not.empty;
             });
 
@@ -492,9 +470,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletB and get a tokenId (tokenIdB)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdC === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdC);
+
                 expect(tokenIdC).not.empty;
             });
 
@@ -519,9 +496,8 @@ describe('SDK E2E Test', function () {
         describe("Register derivative IP asset with an IP that already has license", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdA);
+
                 expect(tokenIdA).not.empty;
             });
 
@@ -536,9 +512,9 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -546,7 +522,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet A mint a license token with ipIdA and get a licenseTokenId (licenseTokenIdA)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId1, 1, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId1, 1, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -557,9 +533,8 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to WalletB and get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === "") {
-                    throw new Error("Unable to mint NFT");
-                }
+                checkMintResult(tokenIdB);
+                
                 expect(tokenIdB).not.empty;
             });
 
@@ -574,9 +549,9 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B attach licenseTermsId1(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet B attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("B", ipIdB, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -584,7 +559,7 @@ describe('SDK E2E Test', function () {
 
             step("Wallet B mint a license token with ipIdB and get a licenseTokenId (licenseTokenIdB)", async function () {
                 const response = await expect(
-                    mintLicenseTokens("B", ipIdB, licenseTermsId1, 1, accountA.address, waitForTransaction)
+                    mintLicenseTokens("B", ipIdB, comRemixLicenseTermsId1, 1, accountA.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;

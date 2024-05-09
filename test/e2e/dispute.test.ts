@@ -1,56 +1,31 @@
-import { privateKeyA, privateKeyB, accountB, nftContractAddress, arbitrationPolicyAddress, mintingFeeTokenAddress } from '../../config/config';
-import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
-import { registerIpAsset, raiseDispute, registerNonComSocialRemixingPIL, attachLicenseTerms, registerCommercialUsePIL, registerCommercialRemixPIL, mintLicenseTokens, registerDerivativeWithLicenseTokens, payRoyaltyOnBehalf, collectRoyaltyTokens, royaltySnapshot, royaltyClaimableRevenue, royaltyClaimRevenue, registerDerivative } from '../../utils/sdkUtils';
+import { privateKeyA, privateKeyB, accountB, nftContractAddress, arbitrationPolicyAddress, mintingFeeTokenAddress, privateKeyC, accountA } from '../../config/config';
+import { mintNFTWithRetry, checkMintResult, setDisputeJudgement, sleep } from '../../utils/utils';
+import { registerIpAsset, raiseDispute, attachLicenseTerms, mintLicenseTokens, registerDerivativeWithLicenseTokens, payRoyaltyOnBehalf, collectRoyaltyTokens, royaltySnapshot, royaltyClaimableRevenue, royaltyClaimRevenue, registerDerivative, resolveDispute } from '../../utils/sdkUtils';
 import { Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
+import { nonComLicenseTermsId, comUseLicenseTermsId1, comRemixLicenseTermsId2, mintingFee1, mintingFee2, commercialRevShare2 } from '../setup';
 
 const waitForTransaction: boolean = true;
 
-let tokenIdA: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
-let licenseTermsId1: string;
-let licenseTermsId2: string;
-let licenseTermsId3: string;
+let ipIdC: Hex;
+let disputeId1: string;
+let disputeId2: string;
+let disputeId3: string;
+let licenseTokenId1: string;
+let licenseTokenId2: string;
 let licenseTokenId3: string;
-const mintingFee1: string = "60";
-const mintingFee2: string = "100";
-const commercialRevShare: number = 200;
 
-describe("SDK Test", function () {
+describe("SDK E2E Test", function () {
     describe("IP Asset is IN_DISPUTE", async function () {
-        before("Register license terms and IP assets, raise dispute", async function () {
-            const responseLicenseTerms1 = await expect(
-                registerNonComSocialRemixingPIL("A", waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(responseLicenseTerms1.licenseTermsId).to.be.a("string").and.not.empty;
-
-            licenseTermsId1 = responseLicenseTerms1.licenseTermsId;
-
-            const responseLicenseTerms2 = await expect(
-                registerCommercialUsePIL("A", mintingFee1, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(responseLicenseTerms2.licenseTermsId).to.be.a("string").and.not.empty;
-
-            licenseTermsId2 = responseLicenseTerms2.licenseTermsId;
-
-            const responseLicenseTerms3 = await expect(
-                registerCommercialRemixPIL("A", mintingFee2, commercialRevShare, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(responseLicenseTerms3.licenseTermsId).to.be.a("string").and.not.empty;
-
-            licenseTermsId3 = responseLicenseTerms3.licenseTermsId;
-
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+        before("Register IP assets and raise dispute", async function () {
+            const tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
-            expect(tokenIdA).not.empty;
 
             const responseRegisterIpAsset = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
@@ -61,6 +36,18 @@ describe("SDK Test", function () {
 
             ipIdA = responseRegisterIpAsset.ipId;
 
+            const tokenIdB = await mintNFTWithRetry(privateKeyB);
+            checkMintResult(tokenIdB);
+
+            const response = await expect(
+                registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
+            ).to.not.be.rejected;
+
+            expect(response.txHash).to.be.a("string").and.not.empty;
+            expect(response.ipId).to.be.a("string").and.not.empty;
+
+            ipIdB = response.ipId;
+
             const responseRaiseDispute = await expect(
                 raiseDispute("B", ipIdA, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
             ).to.not.be.rejected;
@@ -70,53 +57,53 @@ describe("SDK Test", function () {
         });
 
         describe("Attach License Terms to IN_DISPUTE IP Asset", async function () {
-            it("Attach non-commerical social remixing PIL to an IN_DISPUTE IP asset", async function () {
+            it("Attach non-commerical social remixing PIL to IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
     
-            it("Attach commercial use PIL to an IN_DISPUTE IP asset", async function () {
+            it("Attach commercial use PIL to IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId2, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
     
-            it("Attach commericial remix PIL to an IN_DISPUTE IP asset", async function () {
+            it("Attach commericial remix PIL to IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId3, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });            
         });
 
-        describe("Mint License Tokens", async function () {
-            it("Mint license tokens with non-commerical social remixing PIL for an IN_DISPUTE IP asset", async function () {
+        describe("Mint License Tokens for IN_DISPUTE IP asset", async function () {
+            it("Mint license tokens with non-commerical social remixing PIL for IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId1, 2, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.licenseTokenId).to.be.a("string").and.not.empty;
             });
 
-            it("Mint license tokens with commercial use PIL for an IN_DISPUTE IP asset", async function () {
+            it("Mint license tokens with commercial use PIL for IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId2, 2, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comUseLicenseTermsId1, 2, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.licenseTokenId).to.be.a("string").and.not.empty;
             });
 
-            it("Mint license tokens with commericial remix PIL for an IN_DISPUTE IP asset", async function () {
+            it("Mint license tokens with commericial remix PIL for IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdA, licenseTermsId3, 2, accountB.address, waitForTransaction)
+                    mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId2, 2, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -129,20 +116,6 @@ describe("SDK Test", function () {
             let snapshotId1: string;
             const payAmount: string = "100";
             const revenueTokens: string = String(Number(payAmount) + Number(mintingFee1) * 2 + Number(mintingFee2) * 2);
-
-            before("Register IP Asset", async function () {
-                const tokenIdB = await mintNFTWithRetry(privateKeyB);
-                checkMintResult(tokenIdB);
-
-                const response = await expect(
-                    registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
-                ).to.not.be.rejected;
-
-                expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.ipId).to.be.a("string").and.not.empty;
-
-                ipIdB = response.ipId;                
-            })
 
             step("Register derivative with license tokens attached commercial remix PIL, parent IP is an IN_DISPUTE IP asset", async function () {
                 const response = await expect(
@@ -166,7 +139,7 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a("string").and.be.equal(String(commercialRevShare));
+                expect(response.royaltyTokensCollected).to.be.a("string").and.be.equal(String(commercialRevShare2));
             });
 
             step("Captue snapshot", async function () {
@@ -215,7 +188,7 @@ describe("SDK Test", function () {
     
                 step("Register derivative with non-commercial social remixing PIL, parent IP is an IN_DISPUTE IP asset", async function () {
                     const response = await expect(
-                        registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                        registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId2], waitForTransaction)
                     ).to.not.be.rejected;
     
                     expect(response.txHash).to.be.a("string").and.not.empty;
@@ -239,7 +212,7 @@ describe("SDK Test", function () {
     
                 step("Register derivative with commercial use PIL, parent IP is an IN_DISPUTE IP asset", async function () {
                     const response = await expect(
-                        registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId2], waitForTransaction)
+                        registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId1], waitForTransaction)
                     ).to.not.be.rejected;
     
                     expect(response.txHash).to.be.a("string").and.not.empty;
@@ -259,16 +232,463 @@ describe("SDK Test", function () {
                     expect(response.ipId).to.be.a("string").and.not.empty;
     
                     ipIdB = response.ipId;                
-                })
-    
+                });                
+                
                 step("Register derivative with commercial remix PIL, parent IP is an IN_DISPUTE IP asset", async function () {
                     const response = await expect(
-                        registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId3], waitForTransaction)
+                        registerDerivative("B", ipIdB, [ipIdA], [nonComLicenseTermsId], waitForTransaction)
                     ).to.not.be.rejected;
     
                     expect(response.txHash).to.be.a("string").and.not.empty;
                 });                 
             });           
+        });
+    });
+
+    describe("IP Asset is DISPUTED", async function () {
+        before("Register IP assets and raise dispute", async function () {
+            const tokenIdA = await mintNFTWithRetry(privateKeyA);
+            checkMintResult(tokenIdA);
+    
+            const responseRegisterIpAsset = await expect(
+                registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
+            ).to.not.be.rejected;
+    
+            expect(responseRegisterIpAsset.txHash).to.be.a("string").and.not.empty;
+            expect(responseRegisterIpAsset.ipId).to.be.a("string").and.not.empty;
+    
+            ipIdA = responseRegisterIpAsset.ipId;
+    
+            const tokenIdB = await mintNFTWithRetry(privateKeyB);
+            checkMintResult(tokenIdB);
+    
+            const response = await expect(
+                registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
+            ).to.not.be.rejected;
+    
+            expect(response.txHash).to.be.a("string").and.not.empty;
+            expect(response.ipId).to.be.a("string").and.not.empty;
+    
+            ipIdB = response.ipId;
+    
+            const responseRaiseDispute = await expect(
+                raiseDispute("B", ipIdA, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+            ).to.not.be.rejected;
+    
+            expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+    
+            disputeId1 = responseRaiseDispute.disputeId;
+
+            await setDisputeJudgement(privateKeyC, disputeId1, true, "0x");
+        });
+
+        describe("Attach License Terms to DISPUTED IP Asset", async function () {
+            it("Attach non-commerical social remixing PIL to a DISPUTED IP asset", async function () {
+                const response = await expect(
+                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted.",
+                                     "Error: LicensingModule__DisputedIpId()");
+            });
+    
+            it("Attach commercial use PIL to an IN_DISPUTE IP asset", async function () {
+                const response = await expect(
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted.",
+                                     "Error: LicensingModule__DisputedIpId()");
+            });
+    
+            it("Attach commericial remix PIL to an IN_DISPUTE IP asset", async function () {
+                const response = await expect(
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId2, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted.",
+                                     "Error: LicensingModule__DisputedIpId()");
+            });            
+        });
+
+        describe("Mint License Tokens for DISPUTED IP asset", async function () {
+            before("Attach license terms, raise dispute and set judgement", async function () {
+                const response1 = await expect(
+                    attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
+                ).to.not.be.rejected;
+                
+                expect(response1.txHash).to.be.a("string").and.not.empty;
+
+                const response2 = await expect(
+                    attachLicenseTerms("B", ipIdB, comUseLicenseTermsId1, waitForTransaction)
+                ).to.not.be.rejected;
+                
+                expect(response2.txHash).to.be.a("string").and.not.empty;
+
+                const response3 = await expect(
+                    attachLicenseTerms("B", ipIdB, comRemixLicenseTermsId2, waitForTransaction)
+                ).to.not.be.rejected;
+                
+                expect(response3.txHash).to.be.a("string").and.not.empty;
+
+                const responseRaiseDispute = await expect(
+                    raiseDispute("A", ipIdB, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                
+                disputeId2 = responseRaiseDispute.disputeId;
+
+                await setDisputeJudgement(privateKeyC, disputeId2, true, "0x");
+            });
+
+            it("Mint license tokens with non-commerical social remixing PIL for a DISPUTED IP asset", async function () {
+                const response = await expect(
+                    mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 2, accountB.address, waitForTransaction)
+                ).to.be.rejectedWith("Failed to mint license tokens: The contract function \"mintLicenseTokens\" reverted.",
+                                     "Error: LicensingModule__DisputedIpId()");
+            });
+
+            it("Mint license tokens with commerical use PIL for a DISPUTED IP asset", async function () {
+                const response = await expect(
+                    mintLicenseTokens("B", ipIdB, comUseLicenseTermsId1, 2, accountB.address, waitForTransaction)
+                ).to.be.rejectedWith("Failed to mint license tokens: The contract function \"mintLicenseTokens\" reverted.",
+                                     "Error: LicensingModule__DisputedIpId()");
+            });
+
+            it("Mint license tokens with commericial remix PIL for a DISPUTED IP asset", async function () {
+                const response = await expect(
+                    mintLicenseTokens("B", ipIdB, comRemixLicenseTermsId2, 2, accountB.address, waitForTransaction)
+                ).to.be.rejectedWith("Failed to mint license tokens: The contract function \"mintLicenseTokens\" reverted.",
+                                     "Error: LicensingModule__DisputedIpId()");
+            });
+        });
+
+        describe("Register Derivative IP Asset without License Tokens", async function () {
+            before("Register IP Asset", async function () {
+                const tokenIdC = await mintNFTWithRetry(privateKeyA);
+                checkMintResult(tokenIdC);
+
+                const response = await expect(
+                    registerIpAsset("A", nftContractAddress, tokenIdC, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.ipId).to.be.a("string").and.not.empty;
+
+                ipIdC = response.ipId;                
+            });
+
+            describe("Non-commerical social remixing PIL", async function () {    
+                // 0x76a26b62: LicenseRegistry__ParentIpTagged(address)
+                step("Register derivative with non-commercial social remixing PIL, parent IP is a DISPUTED IP asset", async function () {
+                    const response = await expect(
+                        registerDerivative("A", ipIdC, [ipIdB], [nonComLicenseTermsId], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted with the following signature:", "0x76a26b62");
+                });
+    
+                step("Register derivative with non-commercial social remixing PIL, derivative IP is a DISPUTED IP asset", async function () {
+                    const responseAttachLicenseTerms = await expect(
+                        attachLicenseTerms("A", ipIdC, nonComLicenseTermsId, waitForTransaction)
+                    ).to.not.be.rejected;
+                    
+                    expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
+                    
+                    const response = await expect(
+                        registerDerivative("B", ipIdB, [ipIdC], [nonComLicenseTermsId], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", "Error: LicensingModule__DisputedIpId()");
+                });
+            });
+
+            describe("Commercial use PIL", async function () {    
+                // 0x76a26b62: LicenseRegistry__ParentIpTagged(address)
+                step("Register derivative with commercial use PIL, parent IP is a DISPUTED IP asset", async function () {
+                    const response = await expect(
+                        registerDerivative("A", ipIdC, [ipIdB], [comUseLicenseTermsId1], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted with the following signature:", "0x76a26b62");
+                });
+
+                step("Register derivative with non-commercial social remixing PIL, derivative IP is a DISPUTED IP asset", async function () {
+                    const responseAttachLicenseTerms = await expect(
+                        attachLicenseTerms("A", ipIdC, comUseLicenseTermsId1, waitForTransaction)
+                    ).to.not.be.rejected;
+                    
+                    expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
+                    
+                    const response = await expect(
+                        registerDerivative("B", ipIdB, [ipIdC], [comUseLicenseTermsId1], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", "Error: LicensingModule__DisputedIpId()");
+                });
+            });           
+
+            describe("Commercial remix PIL", async function () {    
+                // 0x76a26b62: LicenseRegistry__ParentIpTagged(address)
+                step("Register derivative with commercial remix PIL, parent IP is a DISPUTED IP asset", async function () {
+                    const response = await expect(
+                        registerDerivative("A", ipIdC, [ipIdB], [comRemixLicenseTermsId2], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted with the following signature:", "0x76a26b62");
+                });
+                                                                  
+                step("Register derivative with non-commercial social remixing PIL, derivative IP is a DISPUTED IP asset", async function () {
+                    const responseAttachLicenseTerms = await expect(
+                        attachLicenseTerms("A", ipIdC, comRemixLicenseTermsId2, waitForTransaction)
+                    ).to.not.be.rejected;
+                    
+                    expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
+
+                    const response = await expect(
+                        registerDerivative("B", ipIdB, [ipIdC], [comRemixLicenseTermsId2], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", "Error: LicensingModule__DisputedIpId()");
+                });
+            });           
+        });
+
+        describe("Register Derivative IP Asset with License Tokens", async function () {
+            before("Register IP Asset", async function () {
+                const responseResolveDispute = await expect(                                                           
+                    resolveDispute("A", disputeId2, "0x0000", false)
+                ).to.not.be.rejected;
+    
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+
+                const responsemintLicenseTokens1 = await expect(
+                    mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 2, accountA.address, true)      
+                ).to.not.be.rejected;
+
+                expect(responsemintLicenseTokens1.txHash).to.be.a("string").and.not.empty;
+                expect(responsemintLicenseTokens1.licenseTokenId).to.be.a("string").and.not.empty;
+
+                licenseTokenId1 = responsemintLicenseTokens1.licenseTokenId;
+
+                const responsemintLicenseTokens2 = await expect(
+                    mintLicenseTokens("B", ipIdB, comUseLicenseTermsId1, 2, accountA.address, true)      
+                ).to.not.be.rejected;
+
+                expect(responsemintLicenseTokens2.txHash).to.be.a("string").and.not.empty;
+                expect(responsemintLicenseTokens2.licenseTokenId).to.be.a("string").and.not.empty;
+
+                licenseTokenId2 = responsemintLicenseTokens2.licenseTokenId;
+
+                const responsemintLicenseTokens3 = await expect(
+                    mintLicenseTokens("B", ipIdB, comRemixLicenseTermsId2, 2, accountA.address, true)      
+                ).to.not.be.rejected;
+
+                expect(responsemintLicenseTokens3.txHash).to.be.a("string").and.not.empty;
+                expect(responsemintLicenseTokens3.licenseTokenId).to.be.a("string").and.not.empty;
+
+                licenseTokenId3 = responsemintLicenseTokens3.licenseTokenId;
+
+                const responseRaiseDispute = await expect(
+                    raiseDispute("A", ipIdB, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                
+                disputeId2 = responseRaiseDispute.disputeId;
+
+                await setDisputeJudgement(privateKeyC, disputeId2, true, "0x");
+
+                const tokenIdC = await mintNFTWithRetry(privateKeyA);
+                checkMintResult(tokenIdC);
+
+                const response = await expect(
+                    registerIpAsset("A", nftContractAddress, tokenIdC, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.ipId).to.be.a("string").and.not.empty;
+
+                ipIdC = response.ipId;                
+            });
+
+            describe("Register derivative IP asset, parent IP is a DISPUTED IP asset, ", async function () {
+                // 0x39944339: LicenseToken__RevokedLicense(uint256)
+                step("Non-commerical social remixing PIL", async function () {
+                    const response = await expect(
+                        registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId1], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted with the following signature:", "0x39944339");                
+                });
+
+                // 0x39944339: LicenseToken__RevokedLicense(uint256)
+                step("Commercial use PIL", async function () {
+                    const response = await expect(
+                        registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId2],waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted with the following signature:", "0x39944339");
+                });
+
+                // 0x39944339: LicenseToken__RevokedLicense(uint256)
+                step("Register derivative with commercial remix PIL, parent IP is a DISPUTED IP asset", async function () {
+                    const response = await expect(
+                        registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId3],waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted with the following signature:", "0x39944339");
+                });
+            });
+
+            describe("Register derivative IP asset, derivative IP is a DISPUTED IP asset, ", async function () {                                                                  
+                before("Resolve dispute for the parent IP, raise dispute for the derivative IP", async function () {
+                    const responseResolveDispute = await expect(                                                           
+                        resolveDispute("A", disputeId2, "0x0000", false)
+                    ).to.not.be.rejected;
+        
+                    expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+                    
+                    const responseRaiseDispute = await expect(
+                        raiseDispute("B", ipIdC, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+                    ).to.not.be.rejected;
+
+                    expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+                    expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                    
+                    disputeId3 = responseRaiseDispute.disputeId;
+
+                    await setDisputeJudgement(privateKeyC, disputeId3, true, "0x");                    
+                })
+                
+                step("Non-commerical social remixing PIL", async function () {
+                    const response = await expect(
+                        registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId1], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted.", "Error: LicensingModule__DisputedIpId()");
+                });
+                
+                step("Commerical use PIL", async function () {
+                    const response = await expect(
+                        registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId2], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted.", "Error: LicensingModule__DisputedIpId()");
+                });
+                
+                step("Commerical remix PIL", async function () {
+                    const response = await expect(
+                        registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId3], waitForTransaction)
+                    ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"registerDerivativeWithLicenseTokens\" reverted.", "Error: LicensingModule__DisputedIpId()");
+                });
+            });    
+        });
+
+        describe("Register Derivative IP Asset with License Tokens and Royalty Related Process", async function () {
+            let snapshotId1: string;
+            let snapshotId2: string;
+            const payAmount: string = "100";
+            const revenueTokens: string = String(Number(payAmount) + Number(mintingFee1) * 2 + Number(mintingFee2) * 2);
+
+            before("Resolve dispute for the derivative IP", async function () {
+                const responseResolveDispute = await expect(                                                           
+                    resolveDispute("B", disputeId3, "0x0000", false)
+                ).to.not.be.rejected;
+    
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;                
+            })
+
+            step("Register derivative with license tokens attached commercial remix PIL", async function () {
+                const response = await expect(
+                    registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId3], waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+            });
+
+            step("Raise dispute for the parent IP and set dispute judgement", async function () {
+                const responseRaiseDispute = await expect(
+                    raiseDispute("A", ipIdB, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                
+                disputeId2 = responseRaiseDispute.disputeId;
+
+                await setDisputeJudgement(privateKeyC, disputeId2, true, "0x");
+            });
+
+            step("Pay royalty on behalf, parent IP is DISPUTED", async function () {
+                const response = await expect(
+                    payRoyaltyOnBehalf("A", ipIdB, ipIdC, mintingFeeTokenAddress, payAmount, waitForTransaction)
+                ).to.be.rejectedWith("Failed to pay royalty on behalf: The contract function \"payRoyaltyOnBehalf\" reverted.", "Error: RoyaltyModule__IpIsTagged()");
+            });
+
+            step("Pay royalty on behalf, derivative IP is DISPUTED", async function () {
+                const responseResolveDispute = await expect(                                                           
+                    resolveDispute("A", disputeId2, "0x0000", false)
+                ).to.not.be.rejected;
+    
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+
+                const responseRaiseDispute = await expect(
+                    raiseDispute("B", ipIdC, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                
+                disputeId3 = responseRaiseDispute.disputeId;
+
+                await setDisputeJudgement(privateKeyC, disputeId3, true, "0x");
+
+                const response = await expect(
+                    payRoyaltyOnBehalf("B", ipIdB, ipIdC, mintingFeeTokenAddress, payAmount, waitForTransaction)
+                ).to.be.rejectedWith("Failed to pay royalty on behalf: The contract function \"payRoyaltyOnBehalf\" reverted.", "Error: RoyaltyModule__IpIsTagged()");
+            });
+
+            step("Pay royalty on behalf", async function () {
+                const responseResolveDispute = await expect(                                                           
+                    resolveDispute("B", disputeId3, "0x0000", false)
+                ).to.not.be.rejected;
+    
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty; 
+
+                const response = await expect(
+                    payRoyaltyOnBehalf("B", ipIdB, ipIdC, mintingFeeTokenAddress, payAmount, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+            });
+
+            step("Raise dispute for the parent IP and set dispute judgement", async function () {
+                const responseRaiseDispute = await expect(
+                    raiseDispute("A", ipIdB, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                
+                disputeId2 = responseRaiseDispute.disputeId;
+
+                await setDisputeJudgement(privateKeyC, disputeId2, true, "0x");
+            });
+
+            step("Collect royalty tokens", async function () {
+                const response = await expect(
+                    collectRoyaltyTokens("B", ipIdB, ipIdC, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.royaltyTokensCollected).to.be.a("string").and.be.equal(String(commercialRevShare2));
+            });
+
+            step("Captue snapshot", async function () {
+                const response = await expect(
+                    royaltySnapshot("B", ipIdB, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+
+                snapshotId1 = response.snapshotId;
+            });
+
+            // IP asset is disputed, the cliaimable revenue should be 0
+            step("Check claimable revenue", async function () {
+                const response = await expect(
+                    royaltyClaimableRevenue("B", ipIdB, ipIdB, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response).to.be.a("string").and.be.equal("0");
+            });
+
+            // IP asset is disputed, the cliaimable revenue should be 0
+            step("Claim royalty tokens", async function () {
+                const response = await expect(
+                    royaltyClaimRevenue("B", [snapshotId1], ipIdB, ipIdB, mintingFeeTokenAddress, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.claimableToken).to.be.a("string").and.be.equal("0");
+            });
         });
     });
 });
