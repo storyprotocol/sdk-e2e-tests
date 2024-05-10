@@ -44,7 +44,7 @@ jobs:
         echo WALLET_PRIVATE_KEY_B = ${{ secrets.WALLET_PRIVATE_KEY_B }} >> .env
         echo WALLET_PRIVATE_KEY_C = ${{ secrets.WALLET_PRIVATE_KEY_C }} >> .env
         echo SEPOLIA_MINTING_FEE_TOKEN = ${{ secrets.SEPOLIA_MINTING_FEE_TOKEN }} >> .env
-        echo SEPOLIA_RPC_PROVIDER_URL = ${{ vars.SEPOLIA_RPC_PROVIDER_URL }} >> .env
+        echo SEPOLIA_RPC_PROVIDER_URL = http://localhost:8545 >> .env
         echo SEPOLIA_NFT_CONTRACT_ADDRESS = ${{ vars.SEPOLIA_NFT_CONTRACT_ADDRESS }} >> .env
         echo SEPOLIA_LICENSING_MODULE_ADDRESS = ${{ vars.SEPOLIA_LICENSING_MODULE_ADDRESS }} >> .env
         echo SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS = ${{ vars.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS }} >> .env
