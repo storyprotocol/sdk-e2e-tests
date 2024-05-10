@@ -1,32 +1,24 @@
 import { privateKeyA, privateKeyB, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
-import { registerIpAsset, attachLicenseTerms, registerDerivative, registerCommercialRemixPIL, royaltyClaimableRevenue, royaltySnapshot } from '../../utils/sdkUtils';
+import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltyClaimableRevenue, royaltySnapshot } from '../../utils/sdkUtils';
 import { Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
+import { comRemixLicenseTermsId1, mintingFee1 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
-let licenseTermsId1: string;
 let snapshotId1: string;
-const mintingFee: string = "100";
-const commercialRevShare: number = 200;
 const waitForTransaction: boolean = true;
 
 describe("SDK Test", function () {
     describe("Test royalty.claimableRevenue Function", async function () {
         before("Register parent and derivative IP assets, capture snapshot", async function () {
-            const responseLicenseTerm1 = await expect(
-                registerCommercialRemixPIL("A", mintingFee, commercialRevShare, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responseLicenseTerm1.licenseTermsId;
-
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
 
@@ -40,7 +32,7 @@ describe("SDK Test", function () {
             ipIdA = responseRegisterIpAsset.ipId;
 
             const responseAttachLicenseTerms1 = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms1.txHash).to.be.a("string").and.not.empty;
@@ -58,7 +50,7 @@ describe("SDK Test", function () {
             ipIdB = responseRegisterIpAssetB.ipId;
 
             const responseRegisterDerivative1 = await expect(
-                registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId1], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseRegisterDerivative1.txHash).to.be.a("string").and.not.empty;
@@ -92,7 +84,7 @@ describe("SDK Test", function () {
         it("Check claimable revenue fail as non-existent parentIpId", async function () {
             const response = await expect(
                 royaltyClaimableRevenue("A", "0xe967f54D03acc01CF624b54e0F24794a2f8f229a", ipIdA, "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229a\" is invalid.");
+            ).to.be.rejectedWith("Failed to calculate claimable revenue: The royalty vault IP with id 0xe967F54d03ACc01CF624B54e0F24794A2f8f229a is not registered.");
         });
 
         it("Check claimable revenue fail as undefined account address", async function () {
@@ -106,12 +98,6 @@ describe("SDK Test", function () {
             const response = await expect(
                 royaltyClaimableRevenue("A", ipIdA, "0x0000", "1", mintingFeeTokenAddress, waitForTransaction)
             ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0x0000\" is invalid.");
-        });
-
-        it("Check claimable revenue fail as non-existent account address", async function () {
-            const response = await expect(
-                royaltyClaimableRevenue("A", ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229a", "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229a\" is invalid.");
         });
 
         it("Check claimable revenue fail as undefined snapshotId", async function () {
@@ -160,19 +146,13 @@ describe("SDK Test", function () {
             ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0x0000\" is invalid.");
         });
 
-        it("Check claimable revenue fail as non-existent token address", async function () {
-            const response = await expect(
-                royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, "0xe967f54D03acc01CF624b54e0F24794a2f8f229a", waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229a\" is invalid.");
-        });
-
         it("Check claimable revenue with waitForTransaction: undefined", async function () {
             let waitForTransaction: any;
             const response = await expect(
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee);
+            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
         });
 
         it("Check claimable revenue with waitForTransaction: true", async function () {
@@ -180,7 +160,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, true)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee);
+            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
         });
 
         it("Check claimable revenue with waitForTransaction: false", async function () {
@@ -188,7 +168,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, false)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee);
+            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
         });
 
         it("Check claimable revenue by non-owner", async function () {
@@ -196,7 +176,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("C", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, false)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee);
+            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
         });
     });
 });

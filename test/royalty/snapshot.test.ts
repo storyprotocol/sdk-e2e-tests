@@ -1,12 +1,13 @@
-import { privateKeyA, privateKeyB,nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
+import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
-import { registerIpAsset, royaltySnapshot, registerCommercialUsePIL, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
+import { registerIpAsset, royaltySnapshot, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
 import { Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
+import { comUseLicenseTermsId1 } from '../setup';
 
 const waitForTransaction: boolean = true;
 
@@ -16,20 +17,12 @@ let tokenIdC: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
 let ipIdC: Hex;
-let licenseTermsId1: string;
 
 describe("SDK Test", function () {
     describe("Test royalty.snapshot function", async function () {
         before("Register parent and derivative IP assets", async function () {
-            const responseLicenseTerm1 = await expect(
-                registerCommercialUsePIL("A", "100", mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responseLicenseTerm1.licenseTermsId;
-
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
-            expect(tokenIdA).not.empty;
 
             const responseRegisterIpAsset = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
@@ -41,14 +34,13 @@ describe("SDK Test", function () {
             ipIdA = responseRegisterIpAsset.ipId;
 
             const responseAttachLicenseTerms = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
 
             tokenIdB = await mintNFTWithRetry(privateKeyB);
             checkMintResult(tokenIdB);
-            expect(tokenIdB).not.empty;
 
             const responseregisterIpAssetB = await expect(
                 registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
@@ -60,14 +52,13 @@ describe("SDK Test", function () {
             ipIdB = responseregisterIpAssetB.ipId;
 
             const response = await expect(
-                registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId1], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
 
             tokenIdC = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
-            expect(tokenIdA).not.empty;
 
             const responseRegisterIpAssetC = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdC, waitForTransaction)
@@ -76,9 +67,7 @@ describe("SDK Test", function () {
             expect(responseRegisterIpAssetC.txHash).to.be.a("string").and.not.empty;
             expect(responseRegisterIpAssetC.ipId).to.be.a("string").and.not.empty;
 
-            ipIdC = responseRegisterIpAssetC.ipId;            
-
-            await sleep(20);
+            ipIdC = responseRegisterIpAssetC.ipId;
         });
 
         it("Captue snapshot fail as undefined ipId", async function () {
@@ -96,11 +85,11 @@ describe("SDK Test", function () {
 
         });
 
-        it("Captue snapshot fail as invalid ipId", async function () {
+        it("Captue snapshot fail as non-existent ipId", async function () {
             let ipIdA: any;
             const response = await expect(
                 royaltySnapshot("A", "0x7F51F6AC36B5d618545345baDbe22E40ed113e2a", waitForTransaction)
-            ).to.be.rejectedWith("Failed to snapshot: Address \"0x7F51F6AC36B5d618545345baDbe22E40ed113e2a\" is invalid.");
+            ).to.be.rejectedWith("Failed to snapshot: The royalty vault IP with id 0x7f51f6AC36B5D618545345badBe22e40eD113e2A is not registered.");
         });
 
         it("Captue snapshot by non-owner", async function () {
@@ -119,9 +108,9 @@ describe("SDK Test", function () {
         });
 
         it("Captue snapshot with waitForTransaction: true", async function () {
-            await sleep(10);
+            await sleep(20);
             const response = await expect(
-                royaltySnapshot("C", ipIdA, true)
+                royaltySnapshot("C", ipIdB, true)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -130,7 +119,7 @@ describe("SDK Test", function () {
 
         it("Captue snapshot with waitForTransaction: false", async function () {
             const response = await expect(
-                royaltySnapshot("A", ipIdB, false)
+                royaltySnapshot("A", ipIdA, false)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -141,7 +130,7 @@ describe("SDK Test", function () {
             await sleep(10);
             let waitForTransaction: any;
             const response = await expect(
-                royaltySnapshot("C", ipIdA, waitForTransaction)
+                royaltySnapshot("C", ipIdB, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;

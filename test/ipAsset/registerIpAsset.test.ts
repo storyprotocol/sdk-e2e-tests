@@ -1,4 +1,4 @@
-import { nftContractAddress, privateKeyA, privateKeyB, privateKeyC } from '../../config/config';
+import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { registerIpAsset } from '../../utils/sdkUtils';
 import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai'
@@ -31,7 +31,7 @@ describe('SDK Test', function () {
         it("Register an IP asset fail as non-existent NFT contract address", async function () {
             await expect(
                 registerIpAsset("A","0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F48", tokenIdA, true)
-            ).to.be.rejectedWith("Failed to register IP: Address \"0x7ee32b8B515dEE0Ba2F25f612A04a731eEc24F48\" is invalid.");
+            ).to.be.rejectedWith("Failed to register IP: The contract function \"register\" reverted.", "Error: IPAssetRegistry__UnsupportedIERC721(address contractAddress)");
         });
 
         it("Register an IP asset fail as invalid NFT contract address", async function () {

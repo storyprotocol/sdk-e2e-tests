@@ -1,11 +1,12 @@
-import { privateKeyA, privateKeyB, privateKeyC, accountB, accountC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
-import { attachLicenseTerms, registerCommercialUsePIL, registerDerivativeWithLicenseTokens, registerIpAsset, registerNonComSocialRemixingPIL, mintLicenseTokens } from '../../utils/sdkUtils';
+import { privateKeyA, privateKeyB, privateKeyC, accountB, accountC, nftContractAddress } from '../../config/config';
+import { attachLicenseTerms, registerDerivativeWithLicenseTokens, registerIpAsset, mintLicenseTokens } from '../../utils/sdkUtils';
 import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai'
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
+import { nonComLicenseTermsId, comUseLicenseTermsId1, comUseLicenseTermsId2 } from '../setup';
 import { Hex } from 'viem';
 
 let tokenIdA: string;
@@ -14,9 +15,6 @@ let tokenIdC: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
 let ipIdC: Hex;
-let licenseTermsId1: string;
-let licenseTermsId2: string;
-let licenseTermsId3: string;
 let licenseTokenIdA: string;
 let licenseTokenIdB: string;
 let licenseTokenIdC: string;
@@ -25,21 +23,6 @@ let licenseTokenIdD: string;
 describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivativeWithLicenseTokens Function', async function () {
         before("Register license terms, register IP assets and mint license tokens",async function () {
-            const licenseTerms1 = await expect(
-                registerNonComSocialRemixingPIL("A", true)
-            ).to.not.be.rejected;
-            licenseTermsId1 = licenseTerms1.licenseTermsId;
-
-            const licenseTerms2 = await expect(
-                registerCommercialUsePIL("A", "0", mintingFeeTokenAddress, true)
-            ).to.not.be.rejected;
-            licenseTermsId2 = licenseTerms2.licenseTermsId;
-
-            const licenseTerms3 = await expect(
-                registerCommercialUsePIL("A", "100", mintingFeeTokenAddress, true)
-            ).to.not.be.rejected;
-            licenseTermsId3 = licenseTerms3.licenseTermsId;
-
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);            
             expect(tokenIdA).not.empty;
@@ -80,13 +63,13 @@ describe('SDK Test', function () {
             ipIdC = responseRegisterIpC.ipId;
 
             const responseAttachLicenseTerms1 = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId1, true)
+                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, true)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms1.txHash).to.be.a("string").and.not.empty;
 
             const responsemintLicenseTokenA = await expect(
-                mintLicenseTokens("A", ipIdA, licenseTermsId1, 2, accountB.address, true)
+                mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, accountB.address, true)
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenA.txHash).to.be.a("string").and.not.empty;
@@ -95,13 +78,13 @@ describe('SDK Test', function () {
             licenseTokenIdA = responsemintLicenseTokenA.licenseTokenId;
 
             const responseAttachLicenseTerms2 = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId2, true)
+                attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, true)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms2.txHash).to.be.a("string").and.not.empty;
 
             const responsemintLicenseTokenB = await expect(
-                mintLicenseTokens("A", ipIdA, licenseTermsId2, 2, accountB.address, true)
+                mintLicenseTokens("A", ipIdA, comUseLicenseTermsId1, 2, accountB.address, true)
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenB.txHash).to.be.a("string").and.not.empty;
@@ -110,7 +93,7 @@ describe('SDK Test', function () {
             licenseTokenIdB = responsemintLicenseTokenB.licenseTokenId;
 
             const responsemintLicenseTokenC = await expect(
-                mintLicenseTokens("A", ipIdA, licenseTermsId2, 2, accountC.address, true)
+                mintLicenseTokens("A", ipIdA, comUseLicenseTermsId1, 2, accountC.address, true)
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenC.txHash).to.be.a("string").and.not.empty;
@@ -119,13 +102,13 @@ describe('SDK Test', function () {
             licenseTokenIdC = responsemintLicenseTokenC.licenseTokenId;
 
             const responseAttachLicenseTerms3 = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId3, true)
+                attachLicenseTerms("A", ipIdA, comUseLicenseTermsId2, true)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms3.txHash).to.be.a("string").and.not.empty;
 
             const responsemintLicenseTokenD = await expect(
-                mintLicenseTokens("A", ipIdA, licenseTermsId3, 2, accountC.address, true)
+                mintLicenseTokens("A", ipIdA, comUseLicenseTermsId2, 2, accountC.address, true)
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenD.txHash).to.be.a("string").and.not.empty;
@@ -156,7 +139,7 @@ describe('SDK Test', function () {
         it("Register a derivative IP asset fail as non-existent child ipId", async function () {
             await expect(
                 registerDerivativeWithLicenseTokens("B", "0x485FCfC79Ce0A082Ab2a5e729D6e6255A540342a", [licenseTokenIdA], true)
-            ).to.be.rejectedWith("Failed to register derivative with license tokens: Address \"0x485FCfC79Ce0A082Ab2a5e729D6e6255A540342a\" is invalid.");
+            ).to.be.rejectedWith("Failed to register derivative with license tokens: The child IP with id 0x485FCfC79Ce0A082Ab2a5e729D6e6255A540342a is not registered.");
         });
 
         it("Register a derivative IP asset fail as undefined licenseTokenId", async function () {
