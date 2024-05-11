@@ -1,12 +1,13 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
-import { registerIpAsset, payRoyaltyOnBehalf, registerCommercialUsePIL, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
+import { registerIpAsset, payRoyaltyOnBehalf, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
 import { Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
+import { comUseLicenseTermsId1 } from '../setup';
 
 const waitForTransaction: boolean = true;
 
@@ -16,20 +17,12 @@ let tokenIdC: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
 let ipIdC: Hex;
-let licenseTermsId1: string;
 
 describe("SDK Test", function () {
     describe("Test royalty.payRoyaltyOnBehalf Function", async function () {
         before("Register parent and derivative IP assets", async function () {
-            const responseLicenseTerm1 = await expect(
-                registerCommercialUsePIL("A", "100", mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responseLicenseTerm1.licenseTermsId;
-
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
-            expect(tokenIdA).not.empty;
 
             const responseRegisterIpAsset = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
@@ -41,14 +34,13 @@ describe("SDK Test", function () {
             ipIdA = responseRegisterIpAsset.ipId;
 
             const responseAttachLicenseTerms = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
 
             tokenIdB = await mintNFTWithRetry(privateKeyB);
             checkMintResult(tokenIdB);
-            expect(tokenIdB).not.empty;
 
             const responseregisterIpAssetB = await expect(
                 registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
@@ -60,22 +52,19 @@ describe("SDK Test", function () {
             ipIdB = responseregisterIpAssetB.ipId;
 
             const response = await expect(
-                registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId1], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
 
             tokenIdC = await mintNFTWithRetry(privateKeyC);
             checkMintResult(tokenIdC);
-            expect(tokenIdC).not.empty;
 
             const responseregisterIpAssetC = await expect(
                 registerIpAsset("C", nftContractAddress, tokenIdB, waitForTransaction)
             ).to.not.be.rejected;
 
             ipIdC = responseregisterIpAssetC.ipId;
-
-            await sleep(20);
         });
 
         it("Pay royalty on behalf fail as undefined receiverIpId", async function () {
@@ -94,7 +83,7 @@ describe("SDK Test", function () {
         it("Pay royalty on behalf fail as non-existent receiverIpId", async function () {
             const response = await expect(
                 payRoyaltyOnBehalf("B", "0xe967f54D03acc01CF624b54e0F24794a2f8f229a", ipIdB, mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229a\" is invalid.");
+            ).to.be.rejectedWith("Failed to pay royalty on behalf: The receiver IP with id 0xe967f54D03acc01CF624b54e0F24794a2f8f229a is not registered.");
         });
 
         it("Pay royalty on behalf fail as undefined payerIpId", async function () {
@@ -113,7 +102,7 @@ describe("SDK Test", function () {
         it("Pay royalty on behalf fail as non-existent payerIpId", async function () {
             const response = await expect(
                 payRoyaltyOnBehalf("B", ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229b", mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229b\" is invalid.");
+            ).to.be.rejectedWith("Failed to pay royalty on behalf: The payer IP with id 0xe967f54D03acc01CF624b54e0F24794a2f8f229b is not registered.");
         });
 
         it("Pay royalty on behalf fail as undefined token address", async function () {
@@ -132,7 +121,7 @@ describe("SDK Test", function () {
         it("Pay royalty on behalf fail as non-existent token address", async function () {
             const response = await expect(
                 payRoyaltyOnBehalf("B", ipIdA, ipIdB, "0xe967f54D03acc01CF624b54e0F24794a2f8f229c", "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229c\" is invalid.");
+            ).to.be.rejectedWith("Failed to pay royalty on behalf: The contract function \"payRoyaltyOnBehalf\" reverted.", "Error: RoyaltyModule__NotWhitelistedRoyaltyToken()");
         });
 
         it("Pay royalty on behalf fail as undefined pay amount", async function () {

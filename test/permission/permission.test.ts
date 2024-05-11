@@ -1,6 +1,6 @@
 import { nftContractAddress, privateKeyA, accountB, licensingModuleAddress } from '../../config/config';
 import { registerIpAsset, setPermission } from '../../utils/sdkUtils';
-import { mintNFTWithRetry } from '../../utils/utils';
+import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai';
 import { Hex } from 'viem';
 import chai from 'chai';
@@ -15,10 +15,7 @@ describe('SDK Test', function () {
     describe('Test ipAsset.register Function', async function () {
         before("Mint NFT and Register IP Asset",async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
-            if(tokenIdA == ""){      
-                throw new Error('Unable to mint NFT');
-            }
-            expect(tokenIdA).not.empty;
+            checkMintResult(tokenIdA);
 
             const response = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdA, true)

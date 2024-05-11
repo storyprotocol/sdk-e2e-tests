@@ -1,6 +1,6 @@
-import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config'
+import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config'
 import { mintNFTWithRetry } from '../../utils/utils'
-import { registerNonComSocialRemixingPIL, registerCommercialUsePIL, registerCommercialRemixPIL, registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils'
+import { registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import '../setup';
@@ -9,63 +9,22 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 import { Hex } from 'viem';
+import { nonComLicenseTermsId, comUseLicenseTermsId1, comUseLicenseTermsId2, comRemixLicenseTermsId1, comRemixLicenseTermsId2 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
-let tokenIdD: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
 let ipIdC: Hex;
-let ipIdD: Hex;
-let licenseTermsId1: string;
-let licenseTermsId2: string;
-let licenseTermsId3: string;
-let licenseTermsId4: string;
-let licenseTermsId5: string;
 
 const waitForTransaction: boolean = true;
 
 describe('SDK E2E Test', function () {
     describe("Register Derivative IP Asset with multiple PILs", function () {
-        this.beforeAll("Register non-commercial social remixing, commercial use and commercial remix PILs", async function () {
-            const responseLicenseTerms1 = await expect(
-                registerCommercialUsePIL("A", "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responseLicenseTerms1.licenseTermsId;
-
-            const responseLicenseTerms2 = await expect(
-                registerCommercialUsePIL("A", "20", mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId2 = responseLicenseTerms2.licenseTermsId;
-
-            const responseLicenseTerms3 = await expect(
-                registerCommercialRemixPIL("A", "60", 200, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId3 = responseLicenseTerms3.licenseTermsId;
-
-            const responseLicenseTerms4 = await expect(
-                registerCommercialRemixPIL("A", "16", 100, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId4 = responseLicenseTerms4.licenseTermsId;
-
-            const responseLicenseTerms5 = await expect(
-                registerNonComSocialRemixingPIL("A", waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId5 = responseLicenseTerms5.licenseTermsId;
-        });
-
         describe("[smoke]Register derivative IP assets, parent IP asset with multiple commercial use PILs", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdA).not.empty;
             });
 
@@ -80,17 +39,17 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1 (commercial use PIL) to ipIdA", async function () {
+            step("Wallet A attach comUseLicenseTermsId1 (commercial use PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
 
-            step("Wallet A attach licenseTermsId2 (commercial use PIL) to ipIdA", async function () {
+            step("Wallet A attach comUseLicenseTermsId2 (commercial use PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId2, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -98,9 +57,6 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdB).not.empty;
             });
 
@@ -115,9 +71,9 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B can use licenseTermsId1 to register ipIdB as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can use comUseLicenseTermsId1 to register ipIdB as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -125,9 +81,6 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdC).not.empty;
             });
 
@@ -142,15 +95,15 @@ describe('SDK E2E Test', function () {
                 ipIdC = response.ipId;
             });
 
-            step("Wallet B can NOT use licenseTermsId3 to register ipIdC as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can NOT use comRemixLicenseTermsId1 to register ipIdC as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdC, [ipIdA], [licenseTermsId3], waitForTransaction)
-                ).to.be.rejectedWith("Failed to register derivative: License terms id " + licenseTermsId3 + " must be attached to the parent ipId " + ipIdA + " before registering derivative.");
+                    registerDerivative("B", ipIdC, [ipIdA], [comRemixLicenseTermsId1], waitForTransaction)
+                ).to.be.rejectedWith("Failed to register derivative: License terms id " + comRemixLicenseTermsId1 + " must be attached to the parent ipId " + ipIdA + " before registering derivative.");
             });
 
-            step("Wallet B can use licenseTermsId1 and licenseTermsId2 to register ipIdC as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can use comUseLicenseTermsId1 and comUseLicenseTermsId2 to register ipIdC as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdC, [ipIdA, ipIdA], [licenseTermsId1, licenseTermsId2], waitForTransaction)
+                    registerDerivative("B", ipIdC, [ipIdA, ipIdA], [comUseLicenseTermsId1, comUseLicenseTermsId2], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -160,9 +113,6 @@ describe('SDK E2E Test', function () {
         describe("[smoke]Register derivative IP assets, parent IP asset with multiple commercial remix PILs", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdA).not.empty;
             });
 
@@ -177,17 +127,17 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId3(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId3, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
 
-            step("Wallet A attach licenseTermsId4(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId2(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId4, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -195,9 +145,6 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdB).not.empty;
             });
 
@@ -212,9 +159,9 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B can use licenseTermsId4 to register ipIdB as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can use comRemixLicenseTermsId2 to register ipIdB as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId4], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId2], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -222,9 +169,6 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
                 tokenIdC = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdC).not.empty;
             });
 
@@ -239,15 +183,15 @@ describe('SDK E2E Test', function () {
                 ipIdC = response.ipId;
             });
 
-            step("Wallet B can NOT use licenseTermsId5 to register ipIdC as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can NOT use nonComLicenseTermsId to register ipIdC as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdC, [ipIdA], [licenseTermsId5], waitForTransaction)
-                ).to.be.rejectedWith("Failed to register derivative: License terms id " + licenseTermsId5 + " must be attached to the parent ipId " + ipIdA + " before registering derivative.");
+                    registerDerivative("B", ipIdC, [ipIdA], [nonComLicenseTermsId], waitForTransaction)
+                ).to.be.rejectedWith("Failed to register derivative: License terms id " + nonComLicenseTermsId + " must be attached to the parent ipId " + ipIdA + " before registering derivative.");
             });
 
-            step("Wallet B can use licenseTermsId3 and licenseTermsId4 to register ipIdC as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can use comRemixLicenseTermsId1 and comRemixLicenseTermsId2 to register ipIdC as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdC, [ipIdA, ipIdA], [licenseTermsId3, licenseTermsId4], waitForTransaction)
+                    registerDerivative("B", ipIdC, [ipIdA, ipIdA], [comRemixLicenseTermsId1, comRemixLicenseTermsId2], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -257,9 +201,6 @@ describe('SDK E2E Test', function () {
         describe("Register a derivative IP asset, parent IP asset with multiple non-commericial and commercial PILs", async function () {
             step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
-                if (tokenIdA === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdA).not.empty;
             });
 
@@ -274,25 +215,25 @@ describe('SDK E2E Test', function () {
                 ipIdA = response.ipId;
             });
 
-            step("Wallet A attach licenseTermsId1(commercial use PIL) to ipIdA", async function () {
+            step("Wallet A attach comUseLicenseTermsId1(commercial use PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
 
-            step("Wallet A attach licenseTermsId3(commercial remix PIL) to ipIdA", async function () {
+            step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId3, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
 
-            step("Wallet A attach licenseTermsId5(non-commercial social remixing PIL) to ipIdA", async function () {
+            step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId5, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -300,9 +241,6 @@ describe('SDK E2E Test', function () {
 
             step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
-                if (tokenIdB === '') {
-                    throw new Error('Unable to mint NFT');
-                };
                 expect(tokenIdB).not.empty;
             });
 
@@ -317,30 +255,30 @@ describe('SDK E2E Test', function () {
                 ipIdB = response.ipId;
             });
 
-            step("Wallet B can NOT use licenseTermsId1, licenseTermsId3 to register ipIdB as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can NOT use comUseLicenseTermsId1, comRemixLicenseTermsId1 to register ipIdB as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA, ipIdA], [licenseTermsId1, licenseTermsId3], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA, ipIdA], [comUseLicenseTermsId1, comRemixLicenseTermsId1], waitForTransaction)
                 ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", 
                                      "Error: LicensingModule__LicenseNotCompatibleForDerivative");
             });
 
-            step("Wallet B can NOT use licenseTermsId1, licenseTermsId5 to register ipIdB as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can NOT use comUseLicenseTermsId1, nonComLicenseTermsId to register ipIdB as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA, ipIdA], [licenseTermsId1, licenseTermsId5], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA, ipIdA], [comUseLicenseTermsId1, nonComLicenseTermsId], waitForTransaction)
                 ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", 
                                      "Error: LicensingModule__LicenseNotCompatibleForDerivative");
             });
 
-            step("Wallet B can NOT use licenseTermsId3, licenseTermsId5 to register ipIdB as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can NOT use comRemixLicenseTermsId1, nonComLicenseTermsId to register ipIdB as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA, ipIdA], [licenseTermsId3, licenseTermsId5], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA, ipIdA], [comRemixLicenseTermsId1, nonComLicenseTermsId], waitForTransaction)
                 ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", 
                                      "Error: LicensingModule__LicenseNotCompatibleForDerivative");
             });
 
-            step("Wallet B can NOT use licenseTermsId1, licenseTermsId3, licenseTermsId5 to register ipIdB as ipIdA's derivative IP asset", async function () {
+            step("Wallet B can NOT use comUseLicenseTermsId1, comRemixLicenseTermsId1, nonComLicenseTermsId to register ipIdB as ipIdA's derivative IP asset", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA, ipIdA, ipIdA], [licenseTermsId1, licenseTermsId3, licenseTermsId5], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA, ipIdA, ipIdA], [comUseLicenseTermsId1, comRemixLicenseTermsId1, nonComLicenseTermsId], waitForTransaction)
                 ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted.", 
                                      "Error: LicensingModule__LicenseNotCompatibleForDerivative");
             });

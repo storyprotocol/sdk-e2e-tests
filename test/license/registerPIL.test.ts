@@ -37,7 +37,7 @@ describe("SDK Test", function () {
                 let mintingFee: any;
                 const response = await expect(
                     registerCommercialUsePIL("A", mintingFee, mintingFeeTokenAddress, true)
-                ).to.be.rejectedWith("Failed to register commercial use PIL: Cannot convert undefined to a BigInt")
+                ).to.be.rejectedWith("Failed to register commercial use PIL: mintingFee currency are required for commercial use PIL.")
             });
     
             it("Register Commercial Use PIL with an invalid mintingFee value (test)", async function () {
@@ -56,13 +56,13 @@ describe("SDK Test", function () {
                 let currency: any;
                 const response = await expect(
                     registerCommercialUsePIL("A", "0", currency, true)
-                ).to.be.rejectedWith("Failed to register commercial use PIL: Address \"undefined\" is invalid.")
+                ).to.be.rejectedWith("Failed to register commercial use PIL: mintingFee currency are required for commercial use PIL.")
             });
     
             it("Register Commercial Use PIL with an invalid currency address", async function () {
                 const response = await expect(
                     registerCommercialUsePIL("A", "0", "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB", true)
-                ).to.be.rejectedWith("Failed to register commercial use PIL: Address \"0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB\" is invalid.")
+                ).to.be.rejectedWith("Failed to register commercial use PIL: The contract function \"registerLicenseTerms\" reverted.", "Error: PILicenseTemplate__CurrencyTokenNotWhitelisted()")
             });
     
             it("Register Commercial Use PIL with waitForTransaction: undefined", async function () {
@@ -93,7 +93,7 @@ describe("SDK Test", function () {
                 let mintingFee: any;
                 const response = await expect(
                     registerCommercialRemixPIL("A", mintingFee, 100, mintingFeeTokenAddress, true)
-                ).to.be.rejectedWith("Failed to register commercial remix PIL: Cannot convert undefined to a BigInt")
+                ).to.be.rejectedWith("Failed to register commercial remix PIL: mintingFee, currency and commercialRevShare are required for commercial remix PIL.")
             });
     
             it("Register Commercial Remix PIL with an invalid mintingFee value (test)", async function () {
@@ -112,7 +112,7 @@ describe("SDK Test", function () {
                 let commercialRevShare: any;
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", commercialRevShare, mintingFeeTokenAddress, true)
-                ).to.be.rejectedWith("Failed to register commercial remix PIL: Cannot convert undefined to a BigInt")
+                ).to.be.rejectedWith("Failed to register commercial remix PIL: mintingFee, currency and commercialRevShare are required for commercial remix PIL.")
             });
     
             it("Register Commercial Remix PIL with an invalid commercialRevShare value (-1)", async function () {
@@ -125,13 +125,13 @@ describe("SDK Test", function () {
                 let currency: any;
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", 0, currency, true)
-                ).to.be.rejectedWith("Failed to register commercial remix PIL: Address \"undefined\" is invalid.")
+                ).to.be.rejectedWith("Failed to register commercial remix PIL: mintingFee, currency and commercialRevShare are required for commercial remix PIL.")
             });
     
             it("Register Commercial Remix PIL with an invalid currency address", async function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", 0, "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB", true)
-                ).to.be.rejectedWith("Failed to register commercial remix PIL: Address \"0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB\" is invalid.")
+                ).to.be.rejectedWith("Failed to register commercial remix PIL: The contract function \"registerLicenseTerms\" reverted.", "Error: PILicenseTemplate__CurrencyTokenNotWhitelisted()")
             });
     
             it("Register Commercial Remix PIL with waitForTransaction: undefined", async function () {

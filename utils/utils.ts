@@ -2,7 +2,7 @@ import { Hex, http, Address, createWalletClient, createPublicClient, Chain } fro
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains';
 import fs from 'fs';
-import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress } from "../config/config";
+import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress } from "../config/config";
 
 const TEST_ENV = process.env.TEST_ENV as string | undefined;
 
@@ -202,6 +202,48 @@ export async function mintAmount(WALLET_PRIVATE_KEY: Hex, amount: number){
   await publicClient.waitForTransactionReceipt({
     hash: hash
   });
+};
+
+export async function setDisputeJudgement(WALLET_PRIVATE_KEY: Hex, disputeId: string, decision: boolean, data: Hex) {
+  try {
+    const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+    const baseConfig = {
+      chain: chainId,
+      transport: http(rpcProviderUrl)    
+    };
+    const walletClient = createWalletClient({
+      ...baseConfig,
+      account
+    });
+    const publicClient = createPublicClient(baseConfig);
+    const contractAbi = {
+      inputs: [
+        { internalType: "uint256", name: "disputeId", type: "uint256" },
+        { internalType: "bool", name: "decision", type: "bool" },
+        { internalType: "bytes", name: "data", type: "bytes" }
+      ],
+      name: 'setDisputeJudgement',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    };
+
+    const requestArgs = {
+      address: disputeModuleAddress,
+      functionName: 'setDisputeJudgement',
+      args: [BigInt(disputeId), decision, data],
+      abi: [contractAbi],
+      account: account    
+    };
+
+    await publicClient.simulateContract(requestArgs);
+    const hash = await walletClient.writeContract(requestArgs);
+    await publicClient.waitForTransactionReceipt({
+      hash: hash
+    });
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export async function getLatestTokenId(): Promise<number> {

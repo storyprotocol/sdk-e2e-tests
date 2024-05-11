@@ -1,12 +1,13 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config'
 import { checkMintResult, mintNFTWithRetry, sleep } from '../../utils/utils'
-import { registerIpAsset, attachLicenseTerms, registerDerivative, registerCommercialUsePIL, registerCommercialRemixPIL, payRoyaltyOnBehalf, royaltySnapshot, collectRoyaltyTokens, royaltyClaimableRevenue, royaltyClaimRevenue } from '../../utils/sdkUtils'
+import { registerIpAsset, attachLicenseTerms, registerDerivative, payRoyaltyOnBehalf, royaltySnapshot, collectRoyaltyTokens, royaltyClaimableRevenue, royaltyClaimRevenue } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
+import { comUseLicenseTermsId1, comRemixLicenseTermsId2, mintingFee1, mintingFee2, commercialRevShare2, comUseLicenseTermsId2, comRemixLicenseTermsId1, commercialRevShare1 } from '../setup';
 import { Hex } from 'viem';
 
 let tokenIdA: string;
@@ -15,7 +16,6 @@ let tokenIdC: string;
 let ipIdA: Hex;
 let ipIdB: Hex;
 let ipIdC: Hex;
-let licenseTermsId1: string;
 let snapshotId1: string;
 let snapshotId2: string;
 
@@ -24,18 +24,9 @@ const waitForTransaction: boolean = true;
 describe('SDK E2E Test', function () {
     describe("Royalty", function () {
         describe("Commercial Use PIL - Claim Minting Fee", function () {
-            const mintingFee: string = "100";
-
             before("Register parent and derivative IP assets", async function () {
-                const responseLicenseTerm1 = await expect(
-                    registerCommercialUsePIL("A", mintingFee, mintingFeeTokenAddress, waitForTransaction)
-                ).to.not.be.rejected;
-    
-                licenseTermsId1 = responseLicenseTerm1.licenseTermsId;
-    
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
                 checkMintResult(tokenIdA);
-                expect(tokenIdA).not.empty;
     
                 const responseRegisterIpAsset = await expect(
                     registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
@@ -47,14 +38,13 @@ describe('SDK E2E Test', function () {
                 ipIdA = responseRegisterIpAsset.ipId;
     
                 const responseAttachLicenseTerms = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
     
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
                 checkMintResult(tokenIdB);
-                expect(tokenIdB).not.empty;
     
                 const responseregisterIpAssetB = await expect(
                     registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
@@ -66,12 +56,19 @@ describe('SDK E2E Test', function () {
                 ipIdB = responseregisterIpAssetB.ipId;
     
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
+            });
 
-                await sleep(20);
+            step("Collect royalty tokens", async function () {
+                const response = await expect(
+                    collectRoyaltyTokens("B", ipIdA, ipIdB, waitForTransaction)
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.royaltyTokensCollected).to.be.a('string').and.equal("0");
             });
 
             step("Capture snapshotId", async function () {
@@ -82,7 +79,7 @@ describe('SDK E2E Test', function () {
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.snapshotId).to.be.a("string").and.not.empty;
 
-                snapshotId1 = response.snapshotId;
+                snapshotId1 = String(response.snapshotId);
             });
 
             step("Check claimable revenue", async function () {
@@ -91,7 +88,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee);
+                expect(response).to.be.equal(mintingFee1);
             });
 
             step("Claim minting fee", async function () {
@@ -100,7 +97,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(mintingFee);
+                expect(response.claimableToken).to.be.equal(mintingFee1);
             });
 
             step("Check claimable revenue again", async function () {
@@ -114,19 +111,11 @@ describe('SDK E2E Test', function () {
         })
 
         describe('Commercial Use PIL - Claim Minting Fee and Pay on Behalf', async function () {
-            let mintingFee: string = "60";
             let payAmount: string = "100";
 
-            before("Register parent and derivative IP assets", async function () {
-                const responseLicenseTerms1 = await expect(
-                    registerCommercialUsePIL("A", mintingFee, mintingFeeTokenAddress, waitForTransaction)
-                ).to.not.be.rejected;
-    
-                licenseTermsId1 = responseLicenseTerms1.licenseTermsId;
-    
+            before("Register parent and derivative IP assets", async function () {    
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
                 checkMintResult(tokenIdA);
-                expect(tokenIdA).not.empty;
     
                 const responseRegisterIpAsset = await expect(
                     registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
@@ -138,14 +127,13 @@ describe('SDK E2E Test', function () {
                 ipIdA = responseRegisterIpAsset.ipId;
     
                 const responseAttachLicenseTerms = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
     
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
                 checkMintResult(tokenIdB);
-                expect(tokenIdB).not.empty;
     
                 const responseregisterIpAssetB = await expect(
                     registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
@@ -157,11 +145,10 @@ describe('SDK E2E Test', function () {
                 ipIdB = responseregisterIpAssetB.ipId;
     
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId2], waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                await sleep(20); 
             });
 
             step("Collect royalty tokens", async function () {
@@ -190,7 +177,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee);
+                expect(response).to.be.equal(mintingFee2);
             });
 
             step("Pay royalty on behalf", async function () {
@@ -199,7 +186,6 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                await sleep(20);
             });
 
             step("Capture snapshotId", async function () {
@@ -223,7 +209,7 @@ describe('SDK E2E Test', function () {
             });
 
             step("Claim revenue", async function () {
-                const claimableRevenue = String(Number(mintingFee) + Number(payAmount));
+                const claimableRevenue = String(Number(mintingFee2) + Number(payAmount));
                 const response = await expect(
                     royaltyClaimRevenue("A", [snapshotId1, snapshotId2], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
@@ -251,19 +237,9 @@ describe('SDK E2E Test', function () {
         });
 
         describe("Commercial Remix PIL - Claim Minting Fee", function () {
-            const mintingFee: string = "80";
-            const commercialRevShare: number = 200;
-
-            before("Register parent and derivative IP Assets", async function () {
-                const responsePolicy = await expect(
-                    registerCommercialRemixPIL("A", mintingFee, commercialRevShare, mintingFeeTokenAddress, waitForTransaction)
-                ).to.not.be.rejected;
-    
-                licenseTermsId1 = responsePolicy.licenseTermsId;
-    
+            before("Register parent and derivative IP Assets", async function () {    
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
                 checkMintResult(tokenIdA);
-                expect(tokenIdA).not.empty;
     
                 const responseRegisterIpAsset = await expect(
                     registerIpAsset("A", nftContractAddress, tokenIdA, waitForTransaction)
@@ -275,14 +251,13 @@ describe('SDK E2E Test', function () {
                 ipIdA = responseRegisterIpAsset.ipId;
     
                 const responseAttachLicenseTerms = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;
     
                 tokenIdB = await mintNFTWithRetry(privateKeyB);
                 checkMintResult(tokenIdB);
-                expect(tokenIdB).not.empty;
     
                 const responseregisterIpAssetB = await expect(
                     registerIpAsset("B", nftContractAddress, tokenIdB, waitForTransaction)
@@ -294,11 +269,10 @@ describe('SDK E2E Test', function () {
                 ipIdB = responseregisterIpAssetB.ipId;
     
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                await sleep(20); 
             });
 
             step("Collect royalty tokens", async function () {
@@ -309,7 +283,7 @@ describe('SDK E2E Test', function () {
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.royaltyTokensCollected).to.be.a('string').and.not.empty;
 
-                expect(Number(response.royaltyTokensCollected)).to.be.equal(commercialRevShare);
+                expect(Number(response.royaltyTokensCollected)).to.be.equal(commercialRevShare1);
             });
                         
             step("Capture snapshotId", async function () {
@@ -329,7 +303,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee);
+                expect(response).to.be.equal(mintingFee1);
             });
 
             step("Claim revenue", async function () {
@@ -338,7 +312,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(mintingFee);               
+                expect(response.claimableToken).to.be.equal(mintingFee1);               
             });
                         
             step("Check claimable revenue again", async function () {
@@ -352,19 +326,10 @@ describe('SDK E2E Test', function () {
         })
 
         describe('Commercial Remix PIL - Claim Minting Fee and Pay on Behalf', async function () {
-            let mintingFee: string = "90";
             let payAmount: string = "600";
-            let commercialRevShare: number = 100;
+            const claimableRevenue = String(Number(mintingFee2) + Number(payAmount));
 
-            const claimableRevenue = String(Number(mintingFee) + Number(payAmount));
-
-            before("Register parent and derivative IP assets", async function () {
-                const responsePolicy = await expect(
-                    registerCommercialRemixPIL("A", mintingFee, commercialRevShare, mintingFeeTokenAddress, waitForTransaction)
-                ).to.not.be.rejected;
-    
-                licenseTermsId1 = responsePolicy.licenseTermsId;
-    
+            before("Register parent and derivative IP assets", async function () {    
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
                 checkMintResult(tokenIdA);
                 expect(tokenIdA).not.empty;
@@ -379,7 +344,7 @@ describe('SDK E2E Test', function () {
                 ipIdA = responseRegisterIpAsset.ipId;
     
                 const responseAttachLicenseTerms = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty; 
@@ -398,11 +363,10 @@ describe('SDK E2E Test', function () {
                 ipIdB = responseregisterIpAssetB.ipId;
     
                 const responseB = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId2], waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseB.txHash).to.be.a("string").and.not.empty;
-                await sleep(20); 
             });
 
             step("Collect royalty tokens", async function () {
@@ -411,7 +375,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare));
+                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare2));
             });
 
             step("Capture snapshot", async function () {
@@ -431,7 +395,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee);
+                expect(response).to.be.equal(mintingFee2);
             });
 
             step("Pay royalty on behalf", async function () {
@@ -441,7 +405,7 @@ describe('SDK E2E Test', function () {
                 console.log(response);
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                await sleep(20);
+
             });
 
             step("Capture snapshot", async function () {
@@ -491,19 +455,10 @@ describe('SDK E2E Test', function () {
         });
 
         describe('Royalty - Derivative and Re-inherited IP Assets', async function () {
-            let mintingFee: string = "120";
             let payAmount: string = "800";
-            let commercialRevShare: number = 160;
+            const claimableRevenue = String(Number(mintingFee1) + Number(payAmount));
 
-            const claimableRevenue = String(Number(mintingFee) + Number(payAmount));
-
-            before("Register parent and derivative IP assets", async function () {
-                const responsePolicy = await expect(
-                    registerCommercialRemixPIL("A", mintingFee, commercialRevShare, mintingFeeTokenAddress, waitForTransaction)
-                ).to.not.be.rejected;
-    
-                licenseTermsId1 = responsePolicy.licenseTermsId;
-    
+            before("Register parent and derivative IP assets", async function () {    
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
                 checkMintResult(tokenIdA);
                 expect(tokenIdA).not.empty;
@@ -518,7 +473,7 @@ describe('SDK E2E Test', function () {
                 ipIdA = responseRegisterIpAsset.ipId;
     
                 const responseAttachLicenseTerms = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty; 
@@ -537,14 +492,13 @@ describe('SDK E2E Test', function () {
                 ipIdB = responseregisterIpAssetB.ipId;
     
                 const responseB = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseB.txHash).to.be.a("string").and.not.empty;
     
                 tokenIdC = await mintNFTWithRetry(privateKeyC);
                 checkMintResult(tokenIdC);
-                expect(tokenIdC).not.empty;
     
                 const responseregisterIpAssetC = await expect(
                     registerIpAsset("C", nftContractAddress, tokenIdC, waitForTransaction)
@@ -556,11 +510,10 @@ describe('SDK E2E Test', function () {
                 ipIdC = responseregisterIpAssetC.ipId;
     
                 const responseC = await expect(
-                    registerDerivative("C", ipIdC, [ipIdB], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("C", ipIdC, [ipIdB], [comRemixLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseC.txHash).to.be.a("string").and.not.empty;
-                await sleep(20); 
             });
 
             step("Pay royalty on behalf", async function () {
@@ -570,7 +523,6 @@ describe('SDK E2E Test', function () {
                 console.log(response);
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                await sleep(20);
             });
 
             step("Collect royalty tokens", async function () {
@@ -579,7 +531,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare));
+                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare1));
             });
 
             step("Collect royalty tokens", async function () {
@@ -588,7 +540,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare));
+                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare1));
             });
 
             step("Capture snapshot", async function () {
@@ -608,7 +560,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee);
+                expect(response).to.be.equal(mintingFee1);
             });
 
             step("Claim royalty tokens", async function () {
@@ -617,7 +569,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(mintingFee);
+                expect(response.claimableToken).to.be.equal(mintingFee1);
             })
 
             step("Check claimable revenue again", async function () {

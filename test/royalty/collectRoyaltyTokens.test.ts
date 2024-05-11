@@ -1,12 +1,13 @@
-import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
+import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
-import { registerIpAsset, attachLicenseTerms, registerDerivative, collectRoyaltyTokens, registerCommercialRemixPIL } from '../../utils/sdkUtils';
+import { registerIpAsset, attachLicenseTerms, registerDerivative, collectRoyaltyTokens } from '../../utils/sdkUtils';
 import { Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
+import { comRemixLicenseTermsId1, comRemixLicenseTermsId2, commercialRevShare1, commercialRevShare2 } from '../setup';
 
 const waitForTransaction: boolean = true;
 
@@ -20,26 +21,10 @@ let ipIdB: Hex;
 let ipIdC: Hex;
 let ipIdD: Hex;
 let ipIdE: Hex;
-let licenseTermsId1: string;
-let licenseTermsId2: string;
-const commercialRevShare1: number = 200;
-const commercialRevShare2: number = 600;
 
 describe("SDK Test", function () {
     describe("Test royalty.collectRoyaltyTokens Function", async function () {
         before("Register parent and derivative IP assets", async function () {
-            const responseLicenseTerm1 = await expect(
-                registerCommercialRemixPIL("A", "100", commercialRevShare1, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responseLicenseTerm1.licenseTermsId;
-
-            const responseLicenseTerm2 = await expect(
-                registerCommercialRemixPIL("A", "100", commercialRevShare2, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId2 = responseLicenseTerm2.licenseTermsId;
-
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
 
@@ -53,13 +38,13 @@ describe("SDK Test", function () {
             ipIdA = responseRegisterIpAsset.ipId;
 
             const responseAttachLicenseTerms1 = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms1.txHash).to.be.a("string").and.not.empty;
 
             const responseAttachLicenseTerms2 = await expect(
-                attachLicenseTerms("A", ipIdA, licenseTermsId2, waitForTransaction)
+                attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId2, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseAttachLicenseTerms2.txHash).to.be.a("string").and.not.empty;
@@ -77,7 +62,7 @@ describe("SDK Test", function () {
             ipIdB = responseregisterIpAssetB.ipId;
 
             const responseRegisterDerivative1 = await expect(
-                registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                registerDerivative("B", ipIdB, [ipIdA], [comRemixLicenseTermsId1], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseRegisterDerivative1.txHash).to.be.a("string").and.not.empty;
@@ -110,7 +95,7 @@ describe("SDK Test", function () {
         it("Collect royalty tokens fail as non-existent parentIpId", async function () {
             const response = await expect(
                 collectRoyaltyTokens("B", "0xe967f54D03acc01CF624b54e0F24794a2f8f229a", ipIdB, waitForTransaction)
-            ).to.be.rejectedWith("Failed to collect royalty tokens: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229a\" is invalid.");
+            ).to.be.rejectedWith("Failed to collect royalty tokens: The parent IP with id 0xe967f54D03acc01CF624b54e0F24794a2f8f229a is not registered.");
         });
 
         it("Collect royalty tokens fail as undefined royaltyVaultIpId", async function () {
@@ -129,7 +114,7 @@ describe("SDK Test", function () {
         it("Collect royalty tokens fail as non-existent royaltyVaultIpId", async function () {
             const response = await expect(
                 collectRoyaltyTokens("B", ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229b", waitForTransaction)
-            ).to.be.rejectedWith("Failed to collect royalty tokens: Address \"0xe967f54D03acc01CF624b54e0F24794a2f8f229b\" is invalid.");
+            ).to.be.rejectedWith("Failed to collect royalty tokens: The royalty vault IP with id 0xE967F54d03aCC01Cf624b54E0f24794A2F8F229b is not registered.");
         });
 
         it("Collect royalty tokens with waitForTransaction: true", async function () {
@@ -159,7 +144,7 @@ describe("SDK Test", function () {
             ipIdC = responseregisterIpAssetC.ipId;
 
             const responseRegisterDerivative2 = await expect(
-                registerDerivative("C", ipIdC, [ipIdA], [licenseTermsId2], waitForTransaction)
+                registerDerivative("C", ipIdC, [ipIdA], [comRemixLicenseTermsId2], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseRegisterDerivative2.txHash).to.be.a("string").and.not.empty;
@@ -183,7 +168,7 @@ describe("SDK Test", function () {
             ipIdD = responseregisterIpAssetD.ipId;
 
             const responseRegisterDerivative3 = await expect(
-                registerDerivative("B", ipIdD, [ipIdA, ipIdA], [licenseTermsId1, licenseTermsId2], waitForTransaction)
+                registerDerivative("B", ipIdD, [ipIdA, ipIdA], [comRemixLicenseTermsId1, comRemixLicenseTermsId2], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseRegisterDerivative3.txHash).to.be.a("string").and.not.empty;
@@ -218,7 +203,7 @@ describe("SDK Test", function () {
 
         it("Collect royalty tokens with waitForTransaction: false", async function () {
             const responseRegisterDerivative4 = await expect(
-                registerDerivative("C", ipIdE, [ipIdC], [licenseTermsId2], waitForTransaction)
+                registerDerivative("C", ipIdE, [ipIdC], [comRemixLicenseTermsId2], waitForTransaction)
             ).to.not.be.rejected;
 
             expect(responseRegisterDerivative4.txHash).to.be.a("string").and.not.empty;

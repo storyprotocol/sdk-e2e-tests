@@ -1,4 +1,4 @@
-import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
+import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
 import { Hex } from 'viem';
 import chai from 'chai';
@@ -6,13 +6,9 @@ import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
-import { registerNonComSocialRemixingPIL, registerCommercialUsePIL, registerCommercialRemixPIL,registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
+import { registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
+import { nonComLicenseTermsId, comUseLicenseTermsId1, comUseLicenseTermsId2, comRemixLicenseTermsId1 } from '../setup';
 
-let licenseTermsId1: string;
-let licenseTermsId2: string;
-let licenseTermsId3: string;
-let licenseTermsId4: string;
-let licenseTermsId5: string;
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
@@ -25,36 +21,6 @@ const waitForTransaction: boolean = true;
 describe("SDK Test", function () {
     describe("Register PIL", async function () {
         before("Register license terms and IP assets", async function () {
-            const responseLicenseTerms1 = await expect(
-                registerCommercialUsePIL("A", "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId1 = responseLicenseTerms1.licenseTermsId;
-
-            const responseLicenseTerms2 = await expect(
-                registerCommercialUsePIL("A", "20", mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId2 = responseLicenseTerms2.licenseTermsId;
-
-            const responseLicenseTerms3 = await expect(
-                registerCommercialRemixPIL("A", "60", 200, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId3 = responseLicenseTerms3.licenseTermsId;
-
-            const responseLicenseTerms4 = await expect(
-                registerCommercialRemixPIL("A", "16", 100, mintingFeeTokenAddress, waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId4 = responseLicenseTerms4.licenseTermsId;
-
-            const responseLicenseTerms5 = await expect(
-                registerNonComSocialRemixingPIL("A", waitForTransaction)
-            ).to.not.be.rejected;
-
-            licenseTermsId5 = responseLicenseTerms5.licenseTermsId;
-
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
 
@@ -83,27 +49,27 @@ describe("SDK Test", function () {
         describe("Attach license terms - negative tests", async function () {
             it("Non-owner attach license terms", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdA, licenseTermsId1, true)
+                    attachLicenseTerms("B", ipIdA, comUseLicenseTermsId1, true)
                 ).to.be.rejectedWith("The contract function \"attachLicenseTerms\" reverted with the following signature:");
             });
     
             it("Attach license terms with ipId: undefined", async function () {
                 let ipId: any;
                 const response = await expect(
-                    attachLicenseTerms("A", ipId, licenseTermsId1, true)
+                    attachLicenseTerms("A", ipId, comUseLicenseTermsId1, true)
                 ).to.be.rejectedWith("Address \"undefined\" is invalid.");
             });
     
             it("Attach license terms with an invalid ipId", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", "0x0000", licenseTermsId1, true)
+                    attachLicenseTerms("A", "0x0000", comUseLicenseTermsId1, true)
                 ).to.not.be.rejectedWith("InvalidAddressError: Address \"0x0000\" is invalid.");
             });
     
             it("Attach license terms with a non-existent ipId", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB", licenseTermsId1, true)
-                ).to.be.rejectedWith("Address \"0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB\" is invalid.");
+                    attachLicenseTerms("A", "0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB", comUseLicenseTermsId1, true)
+                ).to.be.rejectedWith("Failed to attach license terms: The IP with id 0xA36F2A4A02f5C215d1b3630f71A4Ff55B5492AAB is not registered.");
             });
     
             it("Attach license terms with licenseTermsId: undefined", async function () {
@@ -130,27 +96,27 @@ describe("SDK Test", function () {
             it("Attach license terms with waitForTransaction: undefined", async function () {
                 let waitForTransaction: any;
                 const response = await expect(          
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
     
             it("Attach license terms with waitForTransaction: true", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId1, true)
+                    attachLicenseTerms("B", ipIdB, comUseLicenseTermsId1, true)
                 ).to.not.be.rejected;
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
     
             it("Attach license terms that is already attached to the IP Asset", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, true)
-                ).to.be.rejectedWith("Failed to attach license terms: License terms id " + licenseTermsId1 + " is already attached to the IP with id " + ipIdA);
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, true)
+                ).to.be.rejectedWith("Failed to attach license terms: License terms id " + comUseLicenseTermsId1 + " is already attached to the IP with id " + ipIdA);
             });
     
             it("Attach license terms with waitForTransaction: false", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdC, licenseTermsId1, false)
+                    attachLicenseTerms("A", ipIdC, comUseLicenseTermsId1, false)
                 ).to.not.be.rejected;
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.ipId).to.not.be.exist;
@@ -180,9 +146,9 @@ describe("SDK Test", function () {
                 ipIdA = response.ipId;
             })
 
-            step("Wallet A attach licenseTermsId1(commercial use PIL) to ipIdA", async function () {
+            step("Wallet A attach comUseLicenseTermsId1(commercial use PIL) to ipIdA", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId1, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -199,9 +165,9 @@ describe("SDK Test", function () {
                 ipIdB = response.ipId;                
             })
 
-            step("Wallet B register a derivative IP asset with ipIdA and licenseTermsId1", async function () {
+            step("Wallet B register a derivative IP asset with ipIdA and comUseLicenseTermsId1", async function () {
                 const response = await expect(
-                    registerDerivative("B", ipIdB, [ipIdA], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("B", ipIdB, [ipIdA], [comUseLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -209,13 +175,13 @@ describe("SDK Test", function () {
 
             step("Derivative IP asset can NOT attach more license terms", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId2, waitForTransaction)
+                    attachLicenseTerms("B", ipIdB, comUseLicenseTermsId2, waitForTransaction)
                 ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0x1ae3058f");
             });
 
             step("Parent IP asset can attach more license terms（commercial PIL）", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId3, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, comUseLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -223,7 +189,7 @@ describe("SDK Test", function () {
 
             step("Parent IP asset can attach more license terms（non-commercial PIL）", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, licenseTermsId5, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -240,9 +206,9 @@ describe("SDK Test", function () {
                 ipIdC = response.ipId;
             })
 
-            step("Wallet C register a derivative IP asset with ipIdC and licenseTermsId1", async function () {
+            step("Wallet C register a derivative IP asset with ipIdC and comUseLicenseTermsId1", async function () {
                 const response = await expect(
-                    registerDerivative("C", ipIdC, [ipIdB], [licenseTermsId1], waitForTransaction)
+                    registerDerivative("C", ipIdC, [ipIdB], [comUseLicenseTermsId1], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -250,13 +216,13 @@ describe("SDK Test", function () {
 
             step("Derivative IP asset (ipIdB) can NOT attach more license terms", async function () {
                 const response = await expect(
-                    attachLicenseTerms("B", ipIdB, licenseTermsId2, waitForTransaction)
+                    attachLicenseTerms("B", ipIdB, comUseLicenseTermsId2, waitForTransaction)
                 ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0x1ae3058f");
             });
 
             step("Derivative IP asset (ipIdC) can NOT attach more license terms", async function () {
                 const response = await expect(
-                    attachLicenseTerms("C", ipIdC, licenseTermsId4, waitForTransaction)
+                    attachLicenseTerms("C", ipIdC, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0x1ae3058f");
             });
         });
