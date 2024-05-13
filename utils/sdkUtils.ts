@@ -1,5 +1,6 @@
 import { Hex, Address } from "viem";
 import { clientA, clientB, clientC, } from '../config/config'
+import { SpgClient } from "@story-protocol/core-sdk/dist/declarations/src/abi/generated";
 
 const storyClients = {
     A: clientA,
@@ -15,10 +16,17 @@ interface PolicyOptions {
     [key: string]: any;
 }
 
-export const registerIpAsset = async function (wallet: keyof typeof storyClients, tokenContractAddress: Address, tokenId: string, waitForTransaction: boolean) {
+function formatValue(value: any): string {
+    if (typeof value === 'bigint') {
+      return value.toString() + 'n';
+    }
+    return String(value);
+};
+
+export const registerIpAsset = async function (wallet: keyof typeof storyClients, nftContractAddress: Address, tokenId: string, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.register({
-        tokenContract: tokenContractAddress,
+        nftContract: nftContractAddress,
         tokenId: tokenId,
         txOptions: {
             waitForTransaction: waitForTransaction
@@ -42,7 +50,7 @@ export const registerDerivative = async function (wallet: keyof typeof storyClie
     return response
 }
 
-export const registerDerivativeWithLicenseTokens = async function (wallet: keyof typeof storyClients, childIpId: Hex, licenseTokenIds: string[], waitForTransaction: boolean) {
+export const registerDerivativeWithLicenseTokens = async function (wallet: keyof typeof storyClients, childIpId: Address, licenseTokenIds: string[] | bigint[] | number[], waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.registerDerivativeWithLicenseTokens({
         childIpId: childIpId,
@@ -61,8 +69,18 @@ export const registerNonComSocialRemixingPIL = async function (wallet: keyof typ
         txOptions: {
             waitForTransaction: waitForTransaction,
         }
-    })
-    console.log(JSON.stringify(response))
+    });
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
     return response
 }
 
@@ -73,11 +91,21 @@ export const registerCommercialRemixPIL = async function (wallet: keyof typeof s
         commercialRevShare: commercialRevShare,
         currency: currency,
         txOptions: {
-            waitForTransaction: waitForTransaction,
+            waitForTransaction: waitForTransaction
         }
-    })
-    console.log(JSON.stringify(response))
-    return response
+    });
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
+    return response;
 }
 
 export const registerCommercialUsePIL = async function (wallet: keyof typeof storyClients, mintingFee: string, currency: Hex, waitForTransaction: boolean) {
@@ -88,9 +116,19 @@ export const registerCommercialUsePIL = async function (wallet: keyof typeof sto
         txOptions: {
             waitForTransaction: waitForTransaction,
         }
-    })
-    console.log(JSON.stringify(response))
-    return response
+    });
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
+    return response;
 }
 
 export const attachLicenseTerms = async function (wallet: keyof typeof storyClients, ipId: Hex, licenseTermsId: string, waitForTransaction: boolean) {
@@ -106,6 +144,13 @@ export const attachLicenseTerms = async function (wallet: keyof typeof storyClie
     return response
 }
 
+export const getLicenseTerms = async function (wallet: keyof typeof storyClients, selectedLicenseTermsId: string | number | bigint) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.license.getLicenseTerms(selectedLicenseTermsId);
+    console.log(JSON.stringify(response));
+    return response;
+}
+
 export const mintLicenseTokens = async function (wallet: keyof typeof storyClients, licensorIpId: Hex, licenseTermsId: string, amount: number, receiver: Hex, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.mintLicenseTokens({
@@ -117,8 +162,18 @@ export const mintLicenseTokens = async function (wallet: keyof typeof storyClien
             waitForTransaction: waitForTransaction,
         }
     })
-    console.log(JSON.stringify(response))
-    return response
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
+    return response;
 }
 
 export const setPermission = async function (wallet: keyof typeof storyClients, ipId: Hex, signer: Hex, to: Hex, permission: number, waitForTransaction: boolean) {
@@ -143,8 +198,18 @@ export const royaltySnapshot = async function (wallet: keyof typeof storyClients
         txOptions: {
             waitForTransaction: waitForTransaction
         }
-    })
-    console.log(JSON.stringify(response));
+    });
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
     return response;
 }
 
@@ -171,12 +236,22 @@ export const collectRoyaltyTokens = async function (wallet: keyof typeof storyCl
         txOptions: {
             waitForTransaction: waitForTransaction
         }
-    })
-    console.log(JSON.stringify(response));
+    });
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
     return response;
 }
 
-export const royaltyClaimableRevenue = async function (wallet: keyof typeof storyClients, royaltyVaultIpId: Hex, account: Address, snapshotId: string, token: Address, waitForTransaction: boolean) {
+export const royaltyClaimableRevenue = async function (wallet: keyof typeof storyClients, royaltyVaultIpId: Address, account: Address, snapshotId: string | number | bigint, token: Address, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.claimableRevenue({
         royaltyVaultIpId: royaltyVaultIpId,
@@ -184,11 +259,20 @@ export const royaltyClaimableRevenue = async function (wallet: keyof typeof stor
         snapshotId: snapshotId,
         token: token
     })
-    console.log(JSON.stringify(String(response)));
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
     return response;
 }
 
-export const royaltyClaimRevenue = async function (wallet: keyof typeof storyClients, snapshotIds: string[], royaltyVaultIpId: Hex, account: Hex, token: Hex, waitForTransaction: boolean) {
+export const royaltyClaimRevenue = async function (wallet: keyof typeof storyClients, snapshotIds:string[] | bigint[] | number[], royaltyVaultIpId: Hex, account: Hex, token: Hex, waitForTransaction: boolean) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.claimRevenue({
         snapshotIds: snapshotIds,
@@ -198,8 +282,18 @@ export const royaltyClaimRevenue = async function (wallet: keyof typeof storyCli
         txOptions: {
             waitForTransaction: waitForTransaction
         }
-    })
-    console.log(JSON.stringify(response));
+    });
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
     return response;
 }
 
@@ -214,7 +308,17 @@ export const raiseDispute = async function (wallet: keyof typeof storyClients, t
             waitForTransaction: waitForTransaction
         }
     });
-    console.log(JSON.stringify(response));
+
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson[key] = value.toString() + 'n';
+        } else {
+            responseJson[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
     return response;
 }
 
@@ -241,4 +345,4 @@ export const resolveDispute = async function (wallet: keyof typeof storyClients,
     });
     console.log(JSON.stringify(response));
     return response;
-}
+};

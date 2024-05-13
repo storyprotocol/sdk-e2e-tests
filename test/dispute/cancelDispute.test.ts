@@ -35,7 +35,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute1.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute1.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute1.disputeId).to.be.a("bigint").and.to.be.ok;
 
             disputeId1 = responseRaiseDispute1.disputeId;
 
@@ -44,7 +44,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute2.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute2.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute2.disputeId).to.be.a("bigint").and.to.be.ok;
 
             disputeId2 = responseRaiseDispute2.disputeId;
 
@@ -53,7 +53,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute3.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute3.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute3.disputeId).to.be.a("bigint").and.to.be.ok;
 
             disputeId3 = responseRaiseDispute3.disputeId;
         });

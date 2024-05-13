@@ -1,5 +1,5 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config'
-import { checkMintResult, mintNFTWithRetry, sleep } from '../../utils/utils'
+import { checkMintResult, mintNFTWithRetry } from '../../utils/utils'
 import { registerIpAsset, attachLicenseTerms, registerDerivative, payRoyaltyOnBehalf, royaltySnapshot, collectRoyaltyTokens, royaltyClaimableRevenue, royaltyClaimRevenue } from '../../utils/sdkUtils'
 import { expect } from 'chai'
 
@@ -68,7 +68,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal("0");
+                expect(response.royaltyTokensCollected).to.be.a('bigint').and.equal(0n);
             });
 
             step("Capture snapshotId", async function () {
@@ -77,7 +77,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId1 = String(response.snapshotId);
             });
@@ -157,7 +157,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal("0");
+                expect(response.royaltyTokensCollected).to.be.a('bigint').and.equal(0n);
             });
             
             step("Capture snapshotId", async function () {
@@ -166,7 +166,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId1 = response.snapshotId;
             });
@@ -194,7 +194,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId2 = response.snapshotId;
             });
@@ -281,7 +281,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.not.empty;
+                expect(response.royaltyTokensCollected).to.be.a('bigint').and.to.be.ok;
 
                 expect(Number(response.royaltyTokensCollected)).to.be.equal(commercialRevShare1);
             });
@@ -292,7 +292,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId1 = response.snapshotId;
             });
@@ -375,7 +375,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare2));
+                expect(response.royaltyTokensCollected).to.be.a('bigint').and.equal(BigInt(commercialRevShare2));
             });
 
             step("Capture snapshot", async function () {
@@ -531,7 +531,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare1));
+                expect(response.royaltyTokensCollected).to.be.a('bigint').and.equal(BigInt(commercialRevShare1));
             });
 
             step("Collect royalty tokens", async function () {
@@ -540,7 +540,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a('string').and.equal(String(commercialRevShare1));
+                expect(response.royaltyTokensCollected).to.be.a('bigint').and.equal(BigInt(commercialRevShare1));
             });
 
             step("Capture snapshot", async function () {

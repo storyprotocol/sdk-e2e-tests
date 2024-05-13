@@ -87,7 +87,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.disputeId).to.be.a("string").and.not.empty;
+            expect(response.disputeId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Raise dispute with invalid arbitrationPolicyAddress", async function () {
@@ -96,7 +96,7 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.disputeId).to.be.a("string").and.not.empty;
+                expect(response.disputeId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Raise dispute", async function () {
@@ -105,7 +105,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.disputeId).to.be.a("string").and.not.empty;
+            expect(response.disputeId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Raise dispute one more time", async function () {
@@ -114,7 +114,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.disputeId).to.be.a("string").and.not.empty;
+            expect(response.disputeId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Raise dispute with undefined waitForTransaction", async function () {
@@ -133,7 +133,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.disputeId).to.be.a("string").and.not.empty;
+            expect(response.disputeId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Raise dispute with undefined waitForTransaction: false", async function () {

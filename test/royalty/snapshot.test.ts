@@ -114,7 +114,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.snapshotId).to.be.a("string").and.not.empty;
+            expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Captue snapshot with waitForTransaction: false", async function () {

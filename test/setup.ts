@@ -35,7 +35,7 @@ before("Register License Terms", async function () {
       registerNonComSocialRemixingPIL("A", true)
     ).to.not.be.rejected;
 
-    expect(responseNonComLicenseTerms.licenseTermsId).to.be.a("string").and.not.empty;
+    expect(responseNonComLicenseTerms.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     nonComLicenseTermsId = responseNonComLicenseTerms.licenseTermsId;
   });
 
@@ -44,14 +44,14 @@ before("Register License Terms", async function () {
       registerCommercialUsePIL("A", mintingFee1, mintingFeeTokenAddress, true)
     ).to.not.be.rejected;
 
-    expect(responseComUseLicenseTerms1.licenseTermsId).to.be.a("string").and.not.empty;
-
+    expect(responseComUseLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     comUseLicenseTermsId1 = responseComUseLicenseTerms1.licenseTermsId;
 
     const responseComUseLicenseTerms2 = await expect(
       registerCommercialUsePIL("A", mintingFee2, mintingFeeTokenAddress, true)
     ).to.not.be.rejected;
 
+    expect(responseComUseLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     comUseLicenseTermsId2 = responseComUseLicenseTerms2.licenseTermsId;    
   });
 
@@ -60,14 +60,14 @@ before("Register License Terms", async function () {
       registerCommercialRemixPIL("A", mintingFee1, commercialRevShare1, mintingFeeTokenAddress, true)
     ).to.not.be.rejected;
 
-    expect(responseComRemixLicenseTerms1.licenseTermsId).to.be.a("string").and.not.empty;
-
+    expect(responseComRemixLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     comRemixLicenseTermsId1 = responseComRemixLicenseTerms1.licenseTermsId;
 
     const responseComRemixLicenseTerms2 = await expect(
       registerCommercialRemixPIL("A", mintingFee2, commercialRevShare2, mintingFeeTokenAddress, true)
     ).to.not.be.rejected;
 
+    expect(responseComRemixLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     comRemixLicenseTermsId2 = responseComRemixLicenseTerms2.licenseTermsId;    
   });
 });
