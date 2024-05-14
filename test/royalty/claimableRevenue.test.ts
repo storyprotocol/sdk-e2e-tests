@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
 import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltyClaimableRevenue, royaltySnapshot } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -11,9 +11,9 @@ import { comRemixLicenseTermsId1, mintingFee1 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let snapshotId1: string;
+let ipIdA: Address;
+let ipIdB: Address;
+let snapshotId1: bigint;
 const waitForTransaction: boolean = true;
 
 describe("SDK Test", function () {
@@ -63,7 +63,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseSnapshot.txHash).to.be.a("string").and.not.empty;
-            expect(responseSnapshot.snapshotId).to.be.a("string").and.not.empty;
+            expect(responseSnapshot.snapshotId).to.be.a("bigint").and.to.be.ok;
 
             snapshotId1 = responseSnapshot.snapshotId;
         });
@@ -152,7 +152,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
+            expect(response).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
         });
 
         it("Check claimable revenue with waitForTransaction: true", async function () {
@@ -160,7 +160,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, true)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
+            expect(response).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
         });
 
         it("Check claimable revenue with waitForTransaction: false", async function () {
@@ -168,7 +168,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, false)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
+            expect(response).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
         });
 
         it("Check claimable revenue by non-owner", async function () {
@@ -176,7 +176,7 @@ describe("SDK Test", function () {
                 royaltyClaimableRevenue("C", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, false)
             ).to.not.be.rejected;
 
-            expect(response).to.be.a("string").and.to.be.equal(mintingFee1);
+            expect(response).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
         });
     });
 });

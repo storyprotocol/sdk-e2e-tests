@@ -1,7 +1,7 @@
 import { privateKeyA, nftContractAddress, arbitrationPolicyAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
 import { registerIpAsset, raiseDispute } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -11,7 +11,7 @@ import '../setup';
 const waitForTransaction: boolean = true;
 
 let tokenIdA: string;
-let ipIdA: Hex;
+let ipIdA: Address;
 
 describe("SDK Test", function () {
     describe("Test dispute.raiseDispute Function", async function () {

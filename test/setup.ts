@@ -5,11 +5,11 @@ import { registerNonComSocialRemixingPIL, registerCommercialUsePIL, registerComm
 import { expect } from 'chai';
 
 let consoleLogs: string[] = [];
-let nonComLicenseTermsId: string;
-let comUseLicenseTermsId1: string;
-let comUseLicenseTermsId2: string;
-let comRemixLicenseTermsId1: string;
-let comRemixLicenseTermsId2: string;
+let nonComLicenseTermsId: bigint;
+let comUseLicenseTermsId1: bigint;
+let comUseLicenseTermsId2: bigint;
+let comRemixLicenseTermsId1: bigint;
+let comRemixLicenseTermsId2: bigint;
 
 const mintingFee1: string = "100";
 const mintingFee2: string = "60";

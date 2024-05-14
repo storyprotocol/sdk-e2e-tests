@@ -2,14 +2,14 @@ import { nftContractAddress, privateKeyA, accountB, licensingModuleAddress } fro
 import { registerIpAsset, setPermission } from '../../utils/sdkUtils';
 import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 
 let tokenIdA: string;
-let ipIdA: Hex;
+let ipIdA: Address;
 
 describe('SDK Test', function () {
     describe('Test ipAsset.register Function', async function () {

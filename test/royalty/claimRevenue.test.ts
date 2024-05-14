@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
 import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltyClaimRevenue, royaltySnapshot } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -11,9 +11,9 @@ import { comRemixLicenseTermsId1, mintingFee1 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let snapshotId1: string;
+let ipIdA: Address;
+let ipIdB: Address;
+let snapshotId1: bigint;
 const waitForTransaction: boolean = true;
 
 describe("SDK Test", function () {
@@ -63,7 +63,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseSnapshot.txHash).to.be.a("string").and.not.empty;
-            expect(responseSnapshot.snapshotId).to.be.a("string").and.not.empty;
+            expect(responseSnapshot.snapshotId).to.be.a("bigint").and.to.be.ok;
 
             snapshotId1 = responseSnapshot.snapshotId;
         });
@@ -114,7 +114,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.claimableToken).to.be.a("string").and.equal("0");
+            expect(response.claimableToken).to.be.a("bigint").and.equal(0n);
         });
 
         it("Claim revenue fail as invalid account address", async function () {
@@ -155,7 +155,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.claimableToken).to.be.a("string").and.equal(mintingFee1);
+            expect(response.claimableToken).to.be.a("bigint").and.equal(BigInt(mintingFee1));
         });
 
         it("Claim revenue with waitForTransaction: false", async function () {

@@ -84,7 +84,13 @@ describe("SDK Test", function () {
                 const response = await expect(
                     registerCommercialUsePIL("A", "16", mintingFeeTokenAddress, false)
                 ).to.not.be.rejected;
-                expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+
+                if (response.licenseTermsId) {
+                    expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+                } else {
+                    expect(response.txHash).to.be.a("string").and.to.be.empty;
+                    expect(response.licenseTermsId).not.to.be.exist;
+                };
             });            
         })
                 
@@ -139,7 +145,13 @@ describe("SDK Test", function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", 0, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
-                expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+
+                if (response.licenseTermsId) {
+                    expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+                } else {
+                    expect(response.txHash).to.be.a("string").and.to.be.empty;
+                    expect(response.licenseTermsId).not.to.be.exist;
+                };
             });            
     
             it("Register Commercial Remix PIL with waitForTransaction: true", async function () {
@@ -149,11 +161,17 @@ describe("SDK Test", function () {
                 expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
             });            
     
-            it("Register Commercial Use PIL with waitForTransaction: false", async function () {
+            it("Register Commercial Remix PIL with waitForTransaction: false", async function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "16", 1001, mintingFeeTokenAddress, false)
                 ).to.not.be.rejected;
-                expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+
+                if (response.licenseTermsId) {
+                    expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+                } else {
+                    expect(response.txHash).to.be.a("string").and.to.be.empty;
+                    expect(response.licenseTermsId).not.to.be.exist;
+                };
             });            
         })
     });

@@ -8,16 +8,16 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 import { comUseLicenseTermsId1, comRemixLicenseTermsId2, mintingFee1, mintingFee2, commercialRevShare2, comUseLicenseTermsId2, comRemixLicenseTermsId1, commercialRevShare1 } from '../setup';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let ipIdC: Hex;
-let snapshotId1: string;
-let snapshotId2: string;
+let ipIdA: Address;
+let ipIdB: Address;
+let ipIdC: Address;
+let snapshotId1: bigint;
+let snapshotId2: bigint;
 
 const waitForTransaction: boolean = true;
 
@@ -79,7 +79,7 @@ describe('SDK E2E Test', function () {
                 expect(response.txHash).to.be.a("string").and.not.empty;
                 expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
-                snapshotId1 = String(response.snapshotId);
+                snapshotId1 = response.snapshotId;
             });
 
             step("Check claimable revenue", async function () {
@@ -87,8 +87,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee1);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(mintingFee1));
             });
 
             step("Claim minting fee", async function () {
@@ -97,7 +97,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(mintingFee1);
+                expect(response.claimableToken).to.be.equal(BigInt(mintingFee1));
             });
 
             step("Check claimable revenue again", async function () {
@@ -105,8 +105,7 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal("0");
+                expect(response).to.be.a("bigint").and.to.be.equal(0n);
             });            
         })
 
@@ -176,8 +175,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee2);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(mintingFee2));
             });
 
             step("Pay royalty on behalf", async function () {
@@ -204,8 +203,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId2, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;;
-                expect(response).to.be.equal(payAmount);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(payAmount));
             });
 
             step("Claim revenue", async function () {
@@ -213,10 +212,9 @@ describe('SDK E2E Test', function () {
                 const response = await expect(
                     royaltyClaimRevenue("A", [snapshotId1, snapshotId2], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
-                console.log(response);
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(claimableRevenue);
+                expect(response.claimableToken).to.be.a("bigint").and.to.be.equal(BigInt(claimableRevenue));
             });
 
             step("Check claimable revenue again", async function () {
@@ -228,11 +226,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId2, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
 
-                expect(responseClaimableRevenue1).to.be.a("string").and.not.empty;
-                expect(responseClaimableRevenue1).to.be.equal("0");
-
-                expect(responseClaimableRevenue2).to.be.a("string").and.not.empty;
-                expect(responseClaimableRevenue2).to.be.equal("0");
+                expect(responseClaimableRevenue1).to.be.a("bigint").and.to.be.equal(0n);
+                expect(responseClaimableRevenue2).to.be.a("bigint").and.to.be.equal(0n);
             });
         });
 
@@ -302,8 +297,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee1);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(mintingFee1));
             });
 
             step("Claim revenue", async function () {
@@ -312,7 +307,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(mintingFee1);               
+                expect(response.claimableToken).to.be.a("bigint").to.be.equal(BigInt(mintingFee1));               
             });
                         
             step("Check claimable revenue again", async function () {
@@ -320,8 +315,7 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal("0");
+                expect(response).to.be.a("bigint").and.to.be.equal(0n);
             });
         })
 
@@ -384,7 +378,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId1 = response.snapshotId;
             });
@@ -394,18 +388,16 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee2);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(mintingFee2));
             });
 
             step("Pay royalty on behalf", async function () {
                 const response = await expect(
                     payRoyaltyOnBehalf("C", ipIdA, ipIdB, mintingFeeTokenAddress, payAmount, waitForTransaction)
                 ).to.not.be.rejected;
-                console.log(response);
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-
             });
 
             step("Capture snapshot", async function () {
@@ -414,7 +406,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId2 = response.snapshotId;
             });
@@ -424,8 +416,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId2, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(payAmount);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(payAmount));
             });
 
             step("Claim royalty tokens", async function () {
@@ -434,7 +426,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(claimableRevenue);
+                expect(response.claimableToken).to.be.a("bigint").and.to.be.equal(BigInt(claimableRevenue));
             })
 
             step("Check claimable revenue again", async function () {
@@ -446,17 +438,13 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId2, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
                 
-                expect(responseClaimableRevenue1).to.be.a("string").and.not.empty;
-                expect(responseClaimableRevenue1).to.be.equal("0");
-                
-                expect(responseClaimableRevenue2).to.be.a("string").and.not.empty;
-                expect(responseClaimableRevenue2).to.be.equal("0");
+                expect(responseClaimableRevenue1).to.be.a("bigint").and.to.be.equal(0n);                
+                expect(responseClaimableRevenue2).to.be.a("bigint").and.to.be.equal(0n);
             });
         });
 
         describe('Royalty - Derivative and Re-inherited IP Assets', async function () {
             let payAmount: string = "800";
-            const claimableRevenue = String(Number(mintingFee1) + Number(payAmount));
 
             before("Register parent and derivative IP assets", async function () {    
                 tokenIdA = await mintNFTWithRetry(privateKeyA);
@@ -520,7 +508,6 @@ describe('SDK E2E Test', function () {
                 const response = await expect(
                     payRoyaltyOnBehalf("C", ipIdB, ipIdC, mintingFeeTokenAddress, payAmount, waitForTransaction)
                 ).to.not.be.rejected;
-                console.log(response);
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
@@ -549,7 +536,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.snapshotId).to.be.a("string").and.not.empty;
+                expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
 
                 snapshotId1 = response.snapshotId;
             });
@@ -559,8 +546,8 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
                 
-                expect(response).to.be.a("string").and.not.empty;
-                expect(response).to.be.equal(mintingFee1);
+                expect(response).to.be.a("bigint").and.to.be.ok;
+                expect(response).to.be.equal(BigInt(mintingFee1));
             });
 
             step("Claim royalty tokens", async function () {
@@ -569,7 +556,7 @@ describe('SDK E2E Test', function () {
                 ).to.not.be.rejected;
                 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.equal(mintingFee1);
+                expect(response.claimableToken).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
             })
 
             step("Check claimable revenue again", async function () {
@@ -577,8 +564,7 @@ describe('SDK E2E Test', function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)                
                 ).to.not.be.rejected;
                 
-                expect(responseClaimableRevenue1).to.be.a("string").and.not.empty;
-                expect(responseClaimableRevenue1).to.be.equal("0");
+                expect(responseClaimableRevenue1).to.be.a("bigint").and.to.be.equal(0n);
             });
         });
     });

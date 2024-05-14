@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
 import { registerIpAsset, royaltySnapshot, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -14,9 +14,9 @@ const waitForTransaction: boolean = true;
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let ipIdC: Hex;
+let ipIdA: Address;
+let ipIdB: Address;
+let ipIdC: Address;
 
 describe("SDK Test", function () {
     describe("Test royalty.snapshot function", async function () {
@@ -98,7 +98,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.snapshotId).to.be.a("string").and.not.empty;
+            expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
         });
 
         it("Captue snapshot for no valut account", async function () {

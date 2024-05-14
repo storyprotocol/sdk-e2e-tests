@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, accountB, nftContractAddress, arbitrationPolicyAddress, mintingFeeTokenAddress, privateKeyC, accountA } from '../../config/config';
-import { mintNFTWithRetry, checkMintResult, setDisputeJudgement } from '../../utils/utils';
+import { mintNFTWithRetry, checkMintResult, setDisputeJudgement, sleep } from '../../utils/utils';
 import { registerIpAsset, raiseDispute, attachLicenseTerms, mintLicenseTokens, registerDerivativeWithLicenseTokens, payRoyaltyOnBehalf, collectRoyaltyTokens, royaltySnapshot, royaltyClaimableRevenue, royaltyClaimRevenue, registerDerivative, resolveDispute } from '../../utils/sdkUtils';
-import { Address, Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -448,8 +448,10 @@ describe("SDK E2E Test", function () {
     
                 expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
 
+                await sleep(10);
+
                 const responsemintLicenseTokens1 = await expect(
-                    mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 2, accountA.address, true)      
+                    mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 2, accountA.address, true)    
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens1.txHash).to.be.a("string").and.not.empty;
@@ -571,12 +573,13 @@ describe("SDK E2E Test", function () {
                     resolveDispute("B", disputeId3, "0x0000", false)
                 ).to.not.be.rejected;
     
-                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;                
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+                await sleep(10);               
             })
 
             step("Register derivative with license tokens attached commercial remix PIL", async function () {
                 const response = await expect(
-                    registerDerivativeWithLicenseTokens("A", ipIdC, [BigInt(licenseTokenId3)], waitForTransaction)
+                    registerDerivativeWithLicenseTokens("A", ipIdC, [licenseTokenId3], waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -629,7 +632,8 @@ describe("SDK E2E Test", function () {
                     resolveDispute("B", disputeId3, "0x0000", false)
                 ).to.not.be.rejected;
     
-                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty; 
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+                await sleep(10);
 
                 const response = await expect(
                     payRoyaltyOnBehalf("B", ipIdB, ipIdC, mintingFeeTokenAddress, payAmount, waitForTransaction)
