@@ -146,7 +146,20 @@ export const attachLicenseTerms = async function (wallet: keyof typeof storyClie
 export const getLicenseTerms = async function (wallet: keyof typeof storyClients, selectedLicenseTermsId: string | number | bigint) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.getLicenseTerms(selectedLicenseTermsId);
-    console.log(JSON.stringify(response));
+
+    const responseJson: { [key: string]: any } = {
+        terms: {} as { [key: string]: any }
+    };
+
+    Object.entries(response.terms).forEach(([key, value]) => {
+        if (typeof value === "bigint") {
+            responseJson.terms[key] = value.toString() + 'n';
+        } else {
+            responseJson.terms[key] = value;
+        }
+    });
+
+    console.log(JSON.stringify(responseJson));
     return response;
 }
 
