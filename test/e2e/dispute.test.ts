@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, accountB, nftContractAddress, arbitrationPolicyAddress, mintingFeeTokenAddress, privateKeyC, accountA } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult, setDisputeJudgement, sleep } from '../../utils/utils';
 import { registerIpAsset, raiseDispute, attachLicenseTerms, mintLicenseTokens, registerDerivativeWithLicenseTokens, payRoyaltyOnBehalf, collectRoyaltyTokens, royaltySnapshot, royaltyClaimableRevenue, royaltyClaimRevenue, registerDerivative, resolveDispute } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -11,15 +11,15 @@ import { nonComLicenseTermsId, comUseLicenseTermsId1, comRemixLicenseTermsId2, m
 
 const waitForTransaction: boolean = true;
 
-let ipIdA: Hex;
-let ipIdB: Hex;
-let ipIdC: Hex;
-let disputeId1: string;
-let disputeId2: string;
-let disputeId3: string;
-let licenseTokenId1: string;
-let licenseTokenId2: string;
-let licenseTokenId3: string;
+let ipIdA: Address;
+let ipIdB: Address;
+let ipIdC: Address;
+let disputeId1: bigint;
+let disputeId2: bigint;
+let disputeId3: bigint;
+let licenseTokenId1: bigint;
+let licenseTokenId2: bigint;
+let licenseTokenId3: bigint;
 
 describe("SDK E2E Test", function () {
     describe("IP Asset is IN_DISPUTE", async function () {
@@ -53,7 +53,7 @@ describe("SDK E2E Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
         });
 
         describe("Attach License Terms to IN_DISPUTE IP Asset", async function () {
@@ -89,7 +89,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
 
             it("Mint license tokens with commercial use PIL for IN_DISPUTE IP asset", async function () {
@@ -98,7 +98,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
 
             it("Mint license tokens with commericial remix PIL for IN_DISPUTE IP asset", async function () {
@@ -107,7 +107,8 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+
                 licenseTokenId3 = response.licenseTokenId;
             });
         });
@@ -115,7 +116,7 @@ describe("SDK E2E Test", function () {
         describe("Register Derivative IP Asset with License Tokens and Royalty Related Process", async function () {
             let snapshotId1: string;
             const payAmount: string = "100";
-            const revenueTokens: string = String(Number(payAmount) + Number(mintingFee1) * 2 + Number(mintingFee2) * 2);
+            const revenueTokens: bigint = BigInt(Number(payAmount) + Number(mintingFee1) * 2 + Number(mintingFee2) * 2);
 
             step("Register derivative with license tokens attached commercial remix PIL, parent IP is an IN_DISPUTE IP asset", async function () {
                 const response = await expect(
@@ -139,7 +140,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a("string").and.be.equal(String(commercialRevShare2));
+                expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2));
             });
 
             step("Captue snapshot", async function () {
@@ -147,7 +148,7 @@ describe("SDK E2E Test", function () {
                     royaltySnapshot("A", ipIdA, waitForTransaction)
                 ).to.not.be.rejected;
 
-                expect(response.txHash).to.be.a("string").and.not.empty;
+                expect(response.txHash).to.be.a("String").and.not.empty;
 
                 snapshotId1 = response.snapshotId;
             });
@@ -157,7 +158,7 @@ describe("SDK E2E Test", function () {
                     royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
 
-                expect(response).to.be.a("string").and.be.equal(revenueTokens);
+                expect(response).to.be.a("bigint").and.be.equal(revenueTokens);
             });
 
             step("Claim royalty tokens", async function () {
@@ -166,7 +167,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.a("string").and.be.equal(revenueTokens);
+                expect(response.claimableToken).to.be.a("bigint").and.be.equal(revenueTokens);
             });
         });
 
@@ -276,7 +277,7 @@ describe("SDK E2E Test", function () {
             ).to.not.be.rejected;
     
             expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
     
             disputeId1 = responseRaiseDispute.disputeId;
 
@@ -331,7 +332,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
                 
                 disputeId2 = responseRaiseDispute.disputeId;
 
@@ -447,12 +448,14 @@ describe("SDK E2E Test", function () {
     
                 expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
 
+                await sleep(10);
+
                 const responsemintLicenseTokens1 = await expect(
-                    mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 2, accountA.address, true)      
+                    mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 2, accountA.address, true)    
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens1.txHash).to.be.a("string").and.not.empty;
-                expect(responsemintLicenseTokens1.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(responsemintLicenseTokens1.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
                 licenseTokenId1 = responsemintLicenseTokens1.licenseTokenId;
 
@@ -461,7 +464,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens2.txHash).to.be.a("string").and.not.empty;
-                expect(responsemintLicenseTokens2.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(responsemintLicenseTokens2.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
                 licenseTokenId2 = responsemintLicenseTokens2.licenseTokenId;
 
@@ -470,7 +473,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens3.txHash).to.be.a("string").and.not.empty;
-                expect(responsemintLicenseTokens3.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(responsemintLicenseTokens3.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
                 licenseTokenId3 = responsemintLicenseTokens3.licenseTokenId;
 
@@ -479,7 +482,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
                 
                 disputeId2 = responseRaiseDispute.disputeId;
 
@@ -534,7 +537,7 @@ describe("SDK E2E Test", function () {
                     ).to.not.be.rejected;
 
                     expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-                    expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                    expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
                     
                     disputeId3 = responseRaiseDispute.disputeId;
 
@@ -562,17 +565,16 @@ describe("SDK E2E Test", function () {
         });
 
         describe("Register Derivative IP Asset with License Tokens and Royalty Related Process", async function () {
-            let snapshotId1: string;
-            let snapshotId2: string;
+            let snapshotId1: bigint;
             const payAmount: string = "100";
-            const revenueTokens: string = String(Number(payAmount) + Number(mintingFee1) * 2 + Number(mintingFee2) * 2);
 
             before("Resolve dispute for the derivative IP", async function () {
                 const responseResolveDispute = await expect(                                                           
                     resolveDispute("B", disputeId3, "0x0000", false)
                 ).to.not.be.rejected;
     
-                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;                
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+                await sleep(10);               
             })
 
             step("Register derivative with license tokens attached commercial remix PIL", async function () {
@@ -589,7 +591,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
                 
                 disputeId2 = responseRaiseDispute.disputeId;
 
@@ -614,7 +616,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
                 
                 disputeId3 = responseRaiseDispute.disputeId;
 
@@ -630,7 +632,8 @@ describe("SDK E2E Test", function () {
                     resolveDispute("B", disputeId3, "0x0000", false)
                 ).to.not.be.rejected;
     
-                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty; 
+                expect(responseResolveDispute.txHash).to.be.a("string").and.not.empty;
+                await sleep(10);
 
                 const response = await expect(
                     payRoyaltyOnBehalf("B", ipIdB, ipIdC, mintingFeeTokenAddress, payAmount, waitForTransaction)
@@ -645,7 +648,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(responseRaiseDispute.txHash).to.be.a("string").and.not.empty;
-                expect(responseRaiseDispute.disputeId).to.be.a("string").and.not.empty;
+                expect(responseRaiseDispute.disputeId).to.be.a("bigint").and.to.be.ok;
                 
                 disputeId2 = responseRaiseDispute.disputeId;
 
@@ -658,7 +661,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a("string").and.be.equal(String(commercialRevShare2));
+                expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2));
             });
 
             step("Captue snapshot", async function () {
@@ -674,10 +677,10 @@ describe("SDK E2E Test", function () {
             // IP asset is disputed, the cliaimable revenue should be 0
             step("Check claimable revenue", async function () {
                 const response = await expect(
-                    royaltyClaimableRevenue("B", ipIdB, ipIdB, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
+                    royaltyClaimableRevenue("B", ipIdB, ipIdB, BigInt(snapshotId1), mintingFeeTokenAddress, waitForTransaction)
                 ).to.not.be.rejected;
 
-                expect(response).to.be.a("string").and.be.equal("0");
+                expect(response).to.be.a("bigint").and.be.equal(0n);
             });
 
             // IP asset is disputed, the cliaimable revenue should be 0
@@ -687,8 +690,9 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.claimableToken).to.be.a("string").and.be.equal("0");
+                expect(response.claimableToken).to.be.a("bigint").and.be.equal(0n);
             });
         });
     });
 });
+

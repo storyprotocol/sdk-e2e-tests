@@ -1,7 +1,7 @@
 import { privateKeyA, nftContractAddress, arbitrationPolicyAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
 import { registerIpAsset, raiseDispute, cancelDispute } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -9,10 +9,10 @@ chai.use(chaiAsPromised);
 import '../setup';
 
 let tokenIdA: string;
-let ipIdA: Hex;
-let disputeId1: string;
-let disputeId2: string;
-let disputeId3: string;
+let ipIdA: Address;
+let disputeId1: bigint;
+let disputeId2: bigint;
+let disputeId3: bigint;
 
 describe("SDK Test", function () {
     describe("Test dispute.cancelDispute Function", async function () {
@@ -35,7 +35,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute1.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute1.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute1.disputeId).to.be.a("bigint").and.to.be.ok;
 
             disputeId1 = responseRaiseDispute1.disputeId;
 
@@ -44,7 +44,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute2.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute2.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute2.disputeId).to.be.a("bigint").and.to.be.ok;
 
             disputeId2 = responseRaiseDispute2.disputeId;
 
@@ -53,7 +53,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(responseRaiseDispute3.txHash).to.be.a("string").and.not.empty;
-            expect(responseRaiseDispute3.disputeId).to.be.a("string").and.not.empty;
+            expect(responseRaiseDispute3.disputeId).to.be.a("bigint").and.to.be.ok;
 
             disputeId3 = responseRaiseDispute3.disputeId;
         });

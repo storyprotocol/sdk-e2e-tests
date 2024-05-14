@@ -1,6 +1,6 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -12,9 +12,9 @@ import { nonComLicenseTermsId, comUseLicenseTermsId1, comUseLicenseTermsId2, com
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let ipIdC: Hex;
+let ipIdA: Address;
+let ipIdB: Address;
+let ipIdC: Address;
 
 const waitForTransaction: boolean = true;
 

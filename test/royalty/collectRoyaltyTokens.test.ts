@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
 import { registerIpAsset, attachLicenseTerms, registerDerivative, collectRoyaltyTokens } from '../../utils/sdkUtils';
-import { Hex } from 'viem';
+import { Address, Hex } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { expect } from 'chai';
@@ -16,11 +16,11 @@ let tokenIdB: string;
 let tokenIdC: string;
 let tokenIdD: string;
 let tokenIdE: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let ipIdC: Hex;
-let ipIdD: Hex;
-let ipIdE: Hex;
+let ipIdA: Address;
+let ipIdB: Address;
+let ipIdC: Address;
+let ipIdD: Address;
+let ipIdE: Address;
 
 describe("SDK Test", function () {
     describe("Test royalty.collectRoyaltyTokens Function", async function () {
@@ -123,7 +123,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("string").and.equal(String(commercialRevShare1));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1));
         });
 
         it("Collect royalty tokens fail as already claimed", async function () {
@@ -154,7 +154,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("string").and.equal(String(commercialRevShare2));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare2));
         });
 
         it("Collect royalty tokens for derivative IP attached multiple license terms", async function () {
@@ -178,7 +178,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("string").and.equal(String(commercialRevShare1 + commercialRevShare2));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1 + commercialRevShare2));
         });
 
         it("Collect royalty tokens fail as royaltyVaultIpId is not derivative IP", async function () {

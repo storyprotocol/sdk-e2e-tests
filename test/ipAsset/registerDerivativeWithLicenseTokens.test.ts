@@ -7,18 +7,18 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 import { nonComLicenseTermsId, comUseLicenseTermsId1, comUseLicenseTermsId2 } from '../setup';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
-let ipIdC: Hex;
-let licenseTokenIdA: string;
-let licenseTokenIdB: string;
-let licenseTokenIdC: string;
-let licenseTokenIdD: string;
+let ipIdA: Address;
+let ipIdB: Address;
+let ipIdC: Address;
+let licenseTokenIdA: bigint;
+let licenseTokenIdB: bigint;
+let licenseTokenIdC: bigint;
+let licenseTokenIdD: bigint;
 
 describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivativeWithLicenseTokens Function', async function () {
@@ -73,7 +73,7 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenA.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenA.licenseTokenId).to.be.a("string").and.not.empty;
+            expect(responsemintLicenseTokenA.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
             licenseTokenIdA = responsemintLicenseTokenA.licenseTokenId;
 
@@ -88,7 +88,7 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenB.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenB.licenseTokenId).to.be.a("string").and.not.empty;
+            expect(responsemintLicenseTokenB.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
             licenseTokenIdB = responsemintLicenseTokenB.licenseTokenId;
 
@@ -97,7 +97,7 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenC.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenC.licenseTokenId).to.be.a("string").and.not.empty;
+            expect(responsemintLicenseTokenC.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
             licenseTokenIdC = responsemintLicenseTokenC.licenseTokenId;
 
@@ -112,7 +112,7 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenD.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenD.licenseTokenId).to.be.a("string").and.not.empty;
+            expect(responsemintLicenseTokenD.licenseTokenId).to.be.a("bigint").and.to.be.ok;
 
             licenseTokenIdD = responsemintLicenseTokenD.licenseTokenId;
         });

@@ -6,11 +6,12 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
+import { Address } from 'viem';
 
 let tokenIdA: string;
 let tokenIdB: string;
 let tokenIdC: string;
-let ipIdA: string;
+let ipIdA: Address;
 
 describe('SDK Test', function () {
     describe('Test ipAsset.register Function', async function () {

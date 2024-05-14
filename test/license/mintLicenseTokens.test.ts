@@ -6,13 +6,13 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 import { nonComLicenseTermsId, comUseLicenseTermsId1, comRemixLicenseTermsId1 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
-let ipIdA: Hex;
-let ipIdB: Hex;
+let ipIdA: Address;
+let ipIdB: Address;
 
 const waitForTransaction: boolean = true;
 
@@ -117,7 +117,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
 
             it("Mint a license token with amount: 0", async function () {
@@ -126,7 +126,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
             
             it("Mint a license token by non-owner", async function () {
@@ -135,7 +135,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
                         
             it("Mint a license token with undefined receiver address", async function () {
@@ -145,7 +145,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
                         
             it("Mint a license token with waitForTransaction:true", async function () {
@@ -154,7 +154,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
 
             it("Mint a license token with the same parameters before", async function () {
@@ -163,7 +163,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
 
             it("Mint a license token with undefined waitForTransaction", async function () {
@@ -203,7 +203,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
                         
             it("Mint a license token with ipIdB and comUsenonComLicenseTermsId", async function () {
@@ -212,7 +212,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("string").and.not.empty;
+                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
             });
                         
             it("Mint a license token with ipIdB and comRemixnonComLicenseTermsId", async function () {

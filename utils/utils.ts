@@ -204,7 +204,7 @@ export async function mintAmount(WALLET_PRIVATE_KEY: Hex, amount: number){
   });
 };
 
-export async function setDisputeJudgement(WALLET_PRIVATE_KEY: Hex, disputeId: string, decision: boolean, data: Hex) {
+export async function setDisputeJudgement(WALLET_PRIVATE_KEY: Hex, disputeId: bigint, decision: boolean, data: Hex) {
   try {
     const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
     const baseConfig = {
@@ -231,7 +231,7 @@ export async function setDisputeJudgement(WALLET_PRIVATE_KEY: Hex, disputeId: st
     const requestArgs = {
       address: disputeModuleAddress,
       functionName: 'setDisputeJudgement',
-      args: [BigInt(disputeId), decision, data],
+      args: [disputeId, decision, data],
       abi: [contractAbi],
       account: account    
     };
