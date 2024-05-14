@@ -88,7 +88,7 @@ describe("SDK Test", function () {
                 if (response.licenseTermsId) {
                     expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
                 } else {
-                    expect(response.txHash).to.be.a("string").and.to.be.empty;
+                    expect(response.txHash).to.be.a("string").and.not.to.be.empty;
                     expect(response.licenseTermsId).not.to.be.exist;
                 };
             });            
@@ -149,7 +149,7 @@ describe("SDK Test", function () {
                 if (response.licenseTermsId) {
                     expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
                 } else {
-                    expect(response.txHash).to.be.a("string").and.to.be.empty;
+                    expect(response.txHash).to.be.a("string").and.not.to.be.empty;
                     expect(response.licenseTermsId).not.to.be.exist;
                 };
             });            
@@ -169,7 +169,7 @@ describe("SDK Test", function () {
                 if (response.licenseTermsId) {
                     expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
                 } else {
-                    expect(response.txHash).to.be.a("string").and.to.be.empty;
+                    expect(response.txHash).to.be.a("string").and.not.to.be.empty;
                     expect(response.licenseTermsId).not.to.be.exist;
                 };
             });            
