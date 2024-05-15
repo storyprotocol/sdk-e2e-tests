@@ -358,3 +358,23 @@ export const resolveDispute = async function (wallet: keyof typeof storyClients,
     console.log(JSON.stringify(response));
     return response;
 };
+
+export const createNFTCollection = async function (
+    wallet: keyof typeof storyClients, 
+    name: string, 
+    symbol: string, 
+    waitForTransaction: boolean,
+    options?: { [key: string]: any }
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.nftClient.createNFTCollection({
+        name: name,
+        symbol: symbol,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        },
+        ...options
+    });
+    console.log(JSON.stringify(response));
+    return response;
+};
