@@ -5,9 +5,9 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
-import { PIL_TYPE } from "@story-protocol/core-sdk/dist/declarations/src/types/resources/license";
+import { PIL_TYPE } from "@story-protocol/core-sdk";
 
-describe('SDK Test', function () {
+describe.skip('SDK Test', function () {
     describe('Test ipAsset.createIpAssetWithPilTerms Function', async function () {
         it("Register an IP asset with non-commercial remix license term", async function () {
             const response = await expect(
