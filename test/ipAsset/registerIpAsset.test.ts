@@ -1,6 +1,6 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { registerIpAsset } from '../../utils/sdkUtils';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
+import { checkMintResult, isRegistered, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai'
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -15,7 +15,7 @@ let ipIdA: Address;
 
 describe('SDK Test', function () {
     describe('Test ipAsset.register Function', async function () {
-        before("Mint 2 NFTs to Wallet A",async function () {
+        before("Mint 3 NFTs to Wallet A",async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);            
             expect(tokenIdA).not.empty;
@@ -62,6 +62,10 @@ describe('SDK Test', function () {
             expect(response.ipId).to.be.a("string").and.not.empty;
 
             ipIdA = response.ipId;
+
+            // call contract to check isRegistered
+            const checkIpIdRegistered = await isRegistered(ipIdA);
+            expect(checkIpIdRegistered).to.be.equal(true);
         }); 
 
         it("Register an IP asset that is already registered", async function () {            

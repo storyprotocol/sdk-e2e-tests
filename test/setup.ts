@@ -13,8 +13,8 @@ let comRemixLicenseTermsId2: bigint;
 
 const mintingFee1: string = "100";
 const mintingFee2: string = "60";
-const commercialRevShare1: number = 100;
-const commercialRevShare2: number = 200;
+const commercialRevShare1: number = 10;
+const commercialRevShare2: number = 20;
 
 beforeEach(function () {
   consoleLogs = captureConsoleLogs(consoleLogs);

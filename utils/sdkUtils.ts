@@ -61,6 +61,42 @@ export const registerDerivative = async function (
     return response;
 };
 
+export const registerDerivativeIp = async function (
+    wallet: keyof typeof storyClients, 
+    nftContract: Hex, 
+    tokenId: string | number | bigint, 
+    parentIpIds: `0x${string}`[], 
+    licenseTermsIds: string[] | bigint[] | number[],
+    waitForTransaction?: boolean,
+    licenseTemplate?: `0x${string}` | undefined,
+    metadataURI?: string | undefined,
+    metadataHash?: `0x${string}` | undefined,
+    nftMetadataHash?: `0x${string}` | undefined,
+    deadline?: string | number | bigint | undefined
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAsset.registerDerivativeIp({
+        nftContract: nftContract,
+        tokenId: tokenId,
+        derivData: {
+            parentIpIds: parentIpIds,
+            licenseTermsIds: licenseTermsIds,
+            licenseTemplate: licenseTemplate
+        },
+        metadata: {
+            metadataURI: metadataURI,
+            metadataHash: metadataHash,
+            nftMetadataHash: nftMetadataHash,
+        },
+        deadline: deadline,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    });
+    console.log(JSON.stringify(response));
+    return response;
+};
+
 export const registerDerivativeWithLicenseTokens = async function (
     wallet: keyof typeof storyClients, 
     childIpId: Address, 
@@ -79,17 +115,6 @@ export const registerDerivativeWithLicenseTokens = async function (
     return response;
 };
 
-export const getIpIdAddress = async function (
-    wallet: keyof typeof storyClients, 
-    nftContract: Address, 
-    tokenId: string | number | bigint
-) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.ipAsset.getIpIdAddress(nftContract, tokenId);
-    console.log(JSON.stringify(response));
-    return response;
-};
-
 export const createIpAssetWithPilTerms = async function (
     wallet: keyof typeof storyClients, 
     nftContract: Address, 
@@ -98,87 +123,9 @@ export const createIpAssetWithPilTerms = async function (
     options?: { [key: string]: any }
 ) {
     const storyClient = getStoryClient(wallet);
-    const response = await storyClient.ipAsset.createIpAssetWithPilTerms({
+    const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         nftContract: nftContract,
         pilType: pilType,
-        txOptions: {
-            waitForTransaction: waitForTransaction
-        },
-        ...options
-    });
-    console.log(JSON.stringify(response));
-    return response;
-};
-
-export const registerDerivativeIp = async function (
-    wallet: keyof typeof storyClients, 
-    nftContract: Address, tokenId: string | number | bigint, 
-    parentIpIds: `0x${string}`[], 
-    licenseTermsIds: string[] | bigint[] | number[],
-    licenseTemplate: Address | undefined,
-    waitForTransaction: boolean | undefined,
-    signer: Address,
-    deadline: string | number | bigint,
-    signature: Address,
-    options?: { [key: string]: any }
-) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.ipAsset.registerDerivativeIp({
-        nftContract: nftContract,
-        tokenId: tokenId,
-        derivData: {
-            parentIpIds: parentIpIds,
-            licenseTermsIds: licenseTermsIds,
-            licenseTemplate: licenseTemplate
-        },
-        sigRegister: {
-            signer: signer,
-            deadline: deadline, 
-            signature: signature
-        },
-        txOptions: {
-            waitForTransaction: waitForTransaction
-        },
-        ...options
-    });
-    console.log(JSON.stringify(response));
-    return response;
-};
-
-export const registerIpAndAttachPilTerms = async function (
-    wallet: keyof typeof storyClients, 
-    nftContract: Address, 
-    tokenId: string | number | bigint,
-    pilType: PIL_TYPE,
-    metadataURI: string, 
-    metadata: string,
-    nftMetadata: string,
-    waitForTransaction: boolean | undefined,
-    signer: Address,
-    deadline: string | number | bigint,
-    signature: Address,
-    options?: { [key: string]: any }
-) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.ipAsset.registerIpAndAttachPilTerms({
-        nftContract: nftContract,
-        tokenId: tokenId,
-        pilType: pilType,
-        metadata: {
-            metadataURI: metadataURI,
-            metadata: metadata,
-            nftMetadata: nftMetadata
-        },
-        sigMetadata: {
-            signer: signer,
-            deadline: deadline, 
-            signature: signature            
-        },
-        sigAttach: {
-            signer: signer,
-            deadline: deadline, 
-            signature: signature            
-        },
         txOptions: {
             waitForTransaction: waitForTransaction
         },
@@ -286,7 +233,7 @@ export const attachLicenseTerms = async function (
     });
     console.log(JSON.stringify(response));
     return response;
-}
+};
 
 export const getLicenseTerms = async function (
     wallet: keyof typeof storyClients, 
