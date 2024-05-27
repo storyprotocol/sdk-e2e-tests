@@ -332,3 +332,16 @@ export async function getBlockTimestamp(): Promise<bigint> {
 
   return (await publicClient.getBlock()).timestamp;
 };
+
+export function processResponse(response: any):{ [key: string]: string | bigint } {
+  const responseJson: { [key: string]: string | bigint } = {};
+  Object.entries(response).forEach(([key, value]) => {
+    if (typeof value === "bigint") {
+      responseJson[key] = value.toString() + 'n';
+    } else {
+      responseJson[key] = value as string;
+    }
+  });
+  return responseJson;
+};
+

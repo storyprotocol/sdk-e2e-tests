@@ -13,6 +13,7 @@ export let royaltyApproveAddress: Hex;
 export let mintingFeeTokenAddress: Hex;
 export let arbitrationPolicyAddress: Hex;
 export let disputeModuleAddress: Hex;
+export let ipAssetRegistryAddress: Hex;
 export let rpcProviderUrl: string;
 
 if (String(TEST_ENV) === "sepolia") {
@@ -25,6 +26,7 @@ if (String(TEST_ENV) === "sepolia") {
   mintingFeeTokenAddress = process.env.SEPOLIA_MINTING_FEE_TOKEN as Hex;
   arbitrationPolicyAddress = process.env.SEPOLIA_ARBITRATION_POLICY_ADDRESS as Hex;
   disputeModuleAddress = process.env.SEPOLIA_DISPUTE_MODULE_ADDRESS as Hex;
+  ipAssetRegistryAddress = process.env.SEPOLIA_IPASSET_REGISTRY_ADDRESS as Hex;
 } else if (String(TEST_ENV) === "storyTestnet") {
   rpcProviderUrl = process.env.STORY_RPC_PROVIDER_URL as string;
   licensingModuleAddress = process.env.STORY_LICENSING_MODULE_ADDRESS as Hex;
@@ -34,6 +36,7 @@ if (String(TEST_ENV) === "sepolia") {
   royaltyApproveAddress = process.env.STORY_ROYALTY_ERC20 as Hex;
   mintingFeeTokenAddress = process.env.STORY_MINTING_FEE_TOKEN as Hex;
   arbitrationPolicyAddress = process.env.STORY_ARBITRATION_POLICY_ADDRESS as Hex;
+  ipAssetRegistryAddress = process.env.STORY_IPASSET_REGISTRY_ADDRESS as Hex;
   disputeModuleAddress = process.env.STORY_DISPUTE_MODULE_ADDRESS as Hex;
 } else {
   throw new Error(`Unknown TEST_ENV value: ${TEST_ENV}`);

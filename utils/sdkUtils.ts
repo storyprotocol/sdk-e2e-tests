@@ -1,6 +1,7 @@
 import { Hex, Address } from "viem";
 import { clientA, clientB, clientC, } from '../config/config';
 import { PIL_TYPE } from "@story-protocol/core-sdk";
+import { processResponse } from "./utils";
 
 const storyClients = {
     A: clientA,
@@ -115,23 +116,39 @@ export const registerDerivativeWithLicenseTokens = async function (
     return response;
 };
 
-export const createIpAssetWithPilTerms = async function (
+export const mintAndRegisterIpAssetWithPilTerms = async function (
     wallet: keyof typeof storyClients, 
     nftContract: Address, 
     pilType: PIL_TYPE, 
-    waitForTransaction: boolean, 
-    options?: { [key: string]: any }
+    waitForTransaction?: boolean, 
+    metadataURI?: string | undefined,
+    metadataHash?: `0x${string}` | undefined,
+    nftMetadataHash?: `0x${string}` | undefined,
+    recipient?: `0x${string}` | undefined,
+    mintingFee?: string | undefined,
+    commercialRevShare?: number | undefined,
+    currency?: `0x${string}` | undefined
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
         nftContract: nftContract,
         pilType: pilType,
+        metadata: {
+            metadataURI: metadataURI,
+            metadataHash: metadataHash,
+            nftMetadataHash: nftMetadataHash,
+        },
+        recipient: recipient,
+        mintingFee: mintingFee,
+        commercialRevShare: commercialRevShare,
+        currency: currency,
         txOptions: {
             waitForTransaction: waitForTransaction
-        },
-        ...options
+        }
     });
-    console.log(JSON.stringify(response));
+
+    const responseJson = processResponse(response);
+    console.log(JSON.stringify(responseJson));
     return response;
 };
 
@@ -146,15 +163,7 @@ export const registerNonComSocialRemixingPIL = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -176,15 +185,7 @@ export const registerCommercialRemixPIL = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -204,15 +205,7 @@ export const registerCommercialUsePIL = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -242,18 +235,7 @@ export const getLicenseTerms = async function (
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.getLicenseTerms(selectedLicenseTermsId);
 
-    const responseJson: { [key: string]: any } = {
-        terms: {} as { [key: string]: any }
-    };
-
-    Object.entries(response.terms).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson.terms[key] = value.toString() + 'n';
-        } else {
-            responseJson.terms[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -275,17 +257,9 @@ export const mintLicenseTokens = async function (
         txOptions: {
             waitForTransaction: waitForTransaction,
         }
-    })
-
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
     });
 
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -325,15 +299,7 @@ export const royaltySnapshot = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -375,15 +341,7 @@ export const collectRoyaltyTokens = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -404,15 +362,8 @@ export const royaltyClaimableRevenue = async function (
         token: token
     })
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
+    console.log(JSON.stringify(responseJson));
     return response;
 };
 
@@ -435,15 +386,7 @@ export const royaltyClaimRevenue = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -467,15 +410,7 @@ export const raiseDispute = async function (
         }
     });
 
-    const responseJson: { [key: string]: string | bigint } = {};
-    Object.entries(response).forEach(([key, value]) => {
-        if (typeof value === "bigint") {
-            responseJson[key] = value.toString() + 'n';
-        } else {
-            responseJson[key] = value;
-        }
-    });
-
+    const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
     return response;
 };
@@ -522,6 +457,7 @@ export const createNFTCollection = async function (
     options?: { [key: string]: any }
 ) {
     const storyClient = getStoryClient(wallet);
+    storyClient.nftClient.spgClient
     const response = await storyClient.nftClient.createNFTCollection({
         name: name,
         symbol: symbol,
@@ -533,3 +469,4 @@ export const createNFTCollection = async function (
     console.log(JSON.stringify(response));
     return response;
 };
+
