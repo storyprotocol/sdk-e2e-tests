@@ -2,7 +2,7 @@ import { Hex, http, Address, createWalletClient, createPublicClient, Chain } fro
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains';
 import fs from 'fs';
-import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress } from "../config/config";
+import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress } from "../config/config";
 
 const TEST_ENV = process.env.TEST_ENV as string | undefined;
 
@@ -36,7 +36,7 @@ export function captureConsoleLogs(consoleLogs:string[]){
   return consoleLogs;
 };
 
-export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
+export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
     chain: chainId,
@@ -58,9 +58,10 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
   };
 
   const requestArgs = {
-    address: nftContractAddress as Address,
+    address: NFT_COLLECTION_ADDRESS || nftContractAddress,
     functionName: 'mint',
     args: [account.address],
+    account: walletClient.account,
     abi: [contractAbi]    
   };
 
@@ -78,9 +79,39 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
 
   console.log(`Minted NFT successful with hash: ` + JSON.stringify(hash) + `\nMinted NFT tokenId: ` + JSON.stringify(tokenId));
   return String(tokenId);
-}
+};
 
-export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number): Promise<string> {
+export async function isRegistered(ipId: Address): Promise<boolean> {
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+
+  const publicClient = createPublicClient(baseConfig);
+  const contractAbi = {
+    inputs: [{ internalType: 'address', name: 'id', type: 'address' }],
+    name: 'isRegistered',
+    outputs: [
+      { internalType: 'bool', name: '', type: 'bool' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  };
+
+  const requestArgs = {
+    address: ipAssetRegistryAddress as Address,
+    functionName: 'isRegistered',
+    args: [ipId as Address],
+    abi: [contractAbi]
+  };
+
+  const result = await publicClient.readContract(requestArgs);
+  console.log(result);
+
+  return Boolean(result);
+};
+
+export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
     chain: chainId,
@@ -105,9 +136,10 @@ export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number): P
   };
 
   const requestArgs = {
-    address: nftContractAddress as Address,
+    address: NFT_COLLECTION_ADDRESS || nftContractAddress,
     functionName: 'mintId',
     args: [account.address, BigInt(id)],
+    account: walletClient.account,
     abi: [contractAbi]   
   };
 
@@ -126,7 +158,7 @@ export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number): P
 
   console.log(`Minted NFT successful with hash: ` + JSON.stringify(hash) + `\nMinted NFT tokenId: ` + JSON.stringify(tokenId));
   return String(tokenId);
-}
+};
 
 export async function approveSpender(WALLET_PRIVATE_KEY: Hex, value: number) {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
@@ -264,31 +296,54 @@ export async function getLatestTokenId(): Promise<number> {
   return Number(latestTokenId);
 };
 
-export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex): Promise<string> {
+export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   let tokenId: string = '';
 
   for (let i = 0; i < 3; i++) {
     try {
-      tokenId = await mintNFT(WALLET_PRIVATE_KEY);
+      tokenId = await mintNFT(WALLET_PRIVATE_KEY, NFT_COLLECTION_ADDRESS);
       break;
     } catch (error) {      
       if (i === 1) {
         try{
           const latestTokenId = await getLatestTokenId();
-          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1);
+          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1, NFT_COLLECTION_ADDRESS);
           break;
         } catch (error) {
           tokenId = '';
-        }        
-      }
-    }
-  }
+        };       
+      };
+    };
+  };
 
   return tokenId;
-}
+};
 
 export async function checkMintResult(tokenIdA: string){
   if (tokenIdA === '') {
     throw new Error('Unable to mint NFT');
   };
-}
+};
+
+export async function getBlockTimestamp(): Promise<bigint> {
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+  const publicClient = createPublicClient(baseConfig);
+
+  return (await publicClient.getBlock()).timestamp;
+};
+
+export function processResponse(response: any):{ [key: string]: string | bigint } {
+  const responseJson: { [key: string]: string | bigint } = {};
+  Object.entries(response).forEach(([key, value]) => {
+    if (typeof value === "bigint") {
+      responseJson[key] = value.toString() + 'n';
+    } else {
+      responseJson[key] = value as string;
+    }
+  });
+  return responseJson;
+};
+
