@@ -140,7 +140,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2));
+                expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2 * 1000000));
             });
 
             step("Captue snapshot", async function () {
@@ -661,7 +661,7 @@ describe("SDK E2E Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2));
+                expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2 * 1000000));
             });
 
             step("Captue snapshot", async function () {
