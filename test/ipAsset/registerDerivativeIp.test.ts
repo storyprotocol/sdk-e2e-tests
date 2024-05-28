@@ -1,5 +1,5 @@
-import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config';
-import { attachLicenseTerms, registerDerivativeIp, register, createNFTCollection } from '../../utils/sdkUtils';
+import { privateKeyA, nftContractAddress } from '../../config/config';
+import { attachLicenseTerms, registerDerivativeIp, registerIpAsset, createNFTCollection } from '../../utils/sdkUtils';
 import { checkMintResult, getBlockTimestamp, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai'
 import chai from 'chai';
@@ -34,7 +34,7 @@ describe('SDK Test', function () {
             checkMintResult(tokenIdB);
             
             const responseRegisterIpA = await expect(
-                register("A", nftCollectionAddress, tokenIdA, true)
+                registerIpAsset("A", nftCollectionAddress, tokenIdA, true)
             ).to.not.be.rejected;
 
             expect(responseRegisterIpA.txHash).to.be.a("string").and.not.empty;

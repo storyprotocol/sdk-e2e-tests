@@ -36,7 +36,7 @@ export function captureConsoleLogs(consoleLogs:string[]){
   return consoleLogs;
 };
 
-export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
+export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
     chain: chainId,
@@ -58,9 +58,10 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex): Promise<string> {
   };
 
   const requestArgs = {
-    address: nftContractAddress as Address,
+    address: NFT_COLLECTION_ADDRESS || nftContractAddress,
     functionName: 'mint',
     args: [account.address],
+    account: walletClient.account,
     abi: [contractAbi]    
   };
 
@@ -110,7 +111,7 @@ export async function isRegistered(ipId: Address): Promise<boolean> {
   return Boolean(result);
 };
 
-export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number): Promise<string> {
+export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
     chain: chainId,
@@ -135,9 +136,10 @@ export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number): P
   };
 
   const requestArgs = {
-    address: nftContractAddress as Address,
+    address: NFT_COLLECTION_ADDRESS || nftContractAddress,
     functionName: 'mintId',
     args: [account.address, BigInt(id)],
+    account: walletClient.account,
     abi: [contractAbi]   
   };
 
@@ -294,25 +296,25 @@ export async function getLatestTokenId(): Promise<number> {
   return Number(latestTokenId);
 };
 
-export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex): Promise<string> {
+export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   let tokenId: string = '';
 
   for (let i = 0; i < 3; i++) {
     try {
-      tokenId = await mintNFT(WALLET_PRIVATE_KEY);
+      tokenId = await mintNFT(WALLET_PRIVATE_KEY, NFT_COLLECTION_ADDRESS);
       break;
     } catch (error) {      
       if (i === 1) {
         try{
           const latestTokenId = await getLatestTokenId();
-          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1);
+          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1, NFT_COLLECTION_ADDRESS);
           break;
         } catch (error) {
           tokenId = '';
-        }        
-      }
-    }
-  }
+        };       
+      };
+    };
+  };
 
   return tokenId;
 };

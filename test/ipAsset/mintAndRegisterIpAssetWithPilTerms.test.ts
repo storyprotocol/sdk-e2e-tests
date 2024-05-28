@@ -42,7 +42,7 @@ describe('SDK Test', function () {
         it("Register an IP asset fail as non-existent NFT contract address", async function () {
             await expect(
                 mintAndRegisterIpAssetWithPilTerms("A", "0x121022F354787754f39f55b9795178dA291348Ba", PIL_TYPE.NON_COMMERCIAL_REMIX)
-            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: Execution reverted for an unknown reason.`);
+            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: The contract function "mintAndRegisterIpAndAttachPILTerms" reverted.`);
         });
 
         it("Register an IP asset fail as undefined pilType", async function () {

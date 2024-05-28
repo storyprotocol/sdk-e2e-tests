@@ -28,12 +28,22 @@ export const registerIpAsset = async function (
     wallet: keyof typeof storyClients, 
     nftContractAddress: Address, 
     tokenId: string | number | bigint, 
-    waitForTransaction: boolean | undefined
+    waitForTransaction: boolean | undefined,
+    metadataURI?: string | undefined,
+    metadataHash?: `0x${string}` | undefined,
+    nftMetadataHash?: `0x${string}` | undefined,
+    deadline?: string | number | bigint | undefined
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.register({
         nftContract: nftContractAddress,
         tokenId: tokenId,
+        metadata: {
+            metadataURI: metadataURI,
+            metadataHash: metadataHash,
+            nftMetadataHash: nftMetadataHash
+        },
+        deadline: deadline,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
@@ -139,6 +149,44 @@ export const mintAndRegisterIpAssetWithPilTerms = async function (
             nftMetadataHash: nftMetadataHash,
         },
         recipient: recipient,
+        mintingFee: mintingFee,
+        commercialRevShare: commercialRevShare,
+        currency: currency,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    });
+
+    const responseJson = processResponse(response);
+    console.log(JSON.stringify(responseJson));
+    return response;
+};
+
+export const registerIpAndAttachPilTerms = async function (
+    wallet: keyof typeof storyClients, 
+    nftContract: Address, 
+    tokenId: string | number | bigint,
+    pilType: PIL_TYPE, 
+    waitForTransaction?: boolean, 
+    metadataURI?: string | undefined,
+    metadataHash?: `0x${string}` | undefined,
+    nftMetadataHash?: `0x${string}` | undefined,
+    deadline?: string | number | bigint | undefined,
+    mintingFee?: string | undefined,
+    commercialRevShare?: number | undefined,
+    currency?: `0x${string}` | undefined
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAsset.registerIpAndAttachPilTerms({
+        nftContract: nftContract,
+        tokenId: tokenId,
+        pilType: pilType,
+        metadata: {
+            metadataURI: metadataURI,
+            metadataHash: metadataHash,
+            nftMetadataHash: nftMetadataHash,
+        },
+        deadline: deadline,
         mintingFee: mintingFee,
         commercialRevShare: commercialRevShare,
         currency: currency,
@@ -362,8 +410,7 @@ export const royaltyClaimableRevenue = async function (
         token: token
     })
 
-    const responseJson = processResponse(response);
-    console.log(JSON.stringify(responseJson));
+    console.log(response);
     return response;
 };
 

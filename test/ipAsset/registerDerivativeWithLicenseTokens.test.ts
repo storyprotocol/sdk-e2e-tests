@@ -25,15 +25,12 @@ describe('SDK Test', function () {
         before("Register license terms, register IP assets and mint license tokens",async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);            
-            expect(tokenIdA).not.empty;
             
             tokenIdB = await mintNFTWithRetry(privateKeyB);
             checkMintResult(tokenIdB);
-            expect(tokenIdB).not.empty;
             
             tokenIdC = await mintNFTWithRetry(privateKeyC);
             checkMintResult(tokenIdC);
-            expect(tokenIdC).not.empty;
             
             const responseRegisterIpA = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdA, true)

@@ -19,7 +19,7 @@ export let rpcProviderUrl: string;
 if (String(TEST_ENV) === "sepolia") {
   rpcProviderUrl = process.env.SEPOLIA_RPC_PROVIDER_URL as string;
   licensingModuleAddress = process.env.SEPOLIA_LICENSING_MODULE_ADDRESS as Hex;
-  nftContractAddress = process.env.SEPOLIA_NFT_CONTRACT_ADDRESS as Hex;
+  nftContractAddress = process.env.SEPOLIA_MOCK_ERC721_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.SEPOLIA_ROYALTY_POLICY_ADDRESS as Hex;
   royaltyPolicyLAPAddress = process.env.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS as Hex;
   royaltyApproveAddress = process.env.SEPOLIA_ROYALTY_ERC20 as Hex;
@@ -30,7 +30,7 @@ if (String(TEST_ENV) === "sepolia") {
 } else if (String(TEST_ENV) === "storyTestnet") {
   rpcProviderUrl = process.env.STORY_RPC_PROVIDER_URL as string;
   licensingModuleAddress = process.env.STORY_LICENSING_MODULE_ADDRESS as Hex;
-  nftContractAddress = process.env.STORY_NFT_CONTRACT_ADDRESS as Hex;
+  nftContractAddress = process.env.STORY_MOCK_ERC721_ADDRESS as Hex;
   royaltyPolicyAddress = process.env.STORY_ROYALTY_POLICY_ADDRESS as Hex;
   royaltyPolicyLAPAddress = process.env.STORY_ROYALTY_POLICY_LAP_ADDRESS as Hex;
   royaltyApproveAddress = process.env.STORY_ROYALTY_ERC20 as Hex;
