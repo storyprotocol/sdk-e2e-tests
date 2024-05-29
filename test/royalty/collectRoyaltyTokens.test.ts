@@ -123,7 +123,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1 * 1000000));
         });
 
         it("Collect royalty tokens fail as already claimed", async function () {
@@ -154,7 +154,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare2));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare2 * 1000000));
         });
 
         it("Collect royalty tokens for derivative IP attached multiple license terms", async function () {
@@ -178,7 +178,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1 + commercialRevShare2));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt((commercialRevShare1 + commercialRevShare2) * 1000000));
         });
 
         it("Collect royalty tokens fail as royaltyVaultIpId is not derivative IP", async function () {

@@ -89,7 +89,7 @@ describe("SDK Test", function () {
                 expect(response.terms.derivativesApproval).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesReciprocal).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.mintingFee).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
-                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(commercialRevShare1);
+                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(commercialRevShare1 * 1000000);
                 expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
             });                
         });

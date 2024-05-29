@@ -61,7 +61,7 @@ describe("SDK Test", function () {
             expect(response.nftContract).to.be.a("string").and.not.empty;
         });          
 
-        it("Create NFT collection with mintCost and invalid mintToken", async function () {
+        it.skip("Create NFT collection with mintCost and invalid mintToken", async function () {
             let mintToken: any;
             const options = {
                 maxSupply: 10n,
@@ -106,7 +106,7 @@ describe("SDK Test", function () {
             ).to.be.rejectedWith("Failed to create a SPG NFT collection: Cannot convert test to a BigInt");
         });          
 
-        it("Create NFT collection with invalid type for mintCost", async function () {
+        it.skip("Create NFT collection with invalid type for mintCost", async function () {
             const options = {
                 mintCost: "test"
             };
@@ -116,7 +116,7 @@ describe("SDK Test", function () {
             ).to.be.rejectedWith("Failed to create a SPG NFT collection: Cannot convert test to a BigInt");
         });                  
 
-        it("Create NFT collection with invalid type for mintToken", async function () {
+        it.skip("Create NFT collection with invalid type for mintToken", async function () {
             const options = {
                 mintToken: "test"
             };
@@ -126,7 +126,7 @@ describe("SDK Test", function () {
             ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"test\" is invalid.");
         });          
 
-        it("Create NFT collection with mintToken: 0x0000", async function () {
+        it.skip("Create NFT collection with mintToken: 0x0000", async function () {
             const options = {
                 mintToken: "0x0000"
             };

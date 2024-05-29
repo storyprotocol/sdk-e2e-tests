@@ -145,8 +145,7 @@ describe("SDK Test", function () {
         it("Claim revenue fail as non-existent token address", async function () {
             const response = await expect(
                 royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229c", waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Failed to execute the IP Account transaction: The contract function \"execute\" reverted with the following reason:", 
-                                 "Address: call to non-contract");
+            ).to.be.rejectedWith(`Failed to claim revenue: Address "0xe967f54D03acc01CF624b54e0F24794a2f8f229c" is invalid.`);
         });
 
         it("Claim revenue with waitForTransaction: true", async function () {

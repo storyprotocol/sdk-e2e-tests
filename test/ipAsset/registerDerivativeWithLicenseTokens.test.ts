@@ -152,10 +152,11 @@ describe('SDK Test', function () {
             ).to.be.rejectedWith("Failed to register derivative with license tokens: Cannot convert test to a BigInt");
         });
 
+        // 0xd474000f - LicenseToken__NotLicenseTokenOwner(uint256,address,address)
         it("Register a derivative IP asset fail as non-existent licenseTokenId", async function () {
             await expect(
                 registerDerivativeWithLicenseTokens("B", ipIdB, ["999"], true)
-            ).to.be.rejectedWith("Failed to register derivative with license tokens: The contract function \"ownerOf\" reverted.");
+            ).to.be.rejectedWith(`Failed to register derivative with license tokens: The contract function "registerDerivativeWithLicenseTokens" reverted with the following signature:`, `0xd474000f`);
         });
 
         it("Register a derivative IP asset fail as LicenseTokenNotCompatibleForDerivative", async function () {            

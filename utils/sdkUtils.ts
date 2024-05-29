@@ -283,8 +283,16 @@ export const getLicenseTerms = async function (
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.getLicenseTerms(selectedLicenseTermsId);
 
-    const responseJson = processResponse(response);
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response["terms"]).forEach(([key, value]) => {
+      if (typeof value === "bigint") {
+        responseJson[key] = value.toString() + 'n';
+      } else {
+        responseJson[key] = value as string;
+      }
+    });
     console.log(JSON.stringify(responseJson));
+    
     return response;
 };
 
@@ -516,4 +524,3 @@ export const createNFTCollection = async function (
     console.log(JSON.stringify(response));
     return response;
 };
-
