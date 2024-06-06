@@ -319,6 +319,35 @@ export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_A
   return tokenId;
 };
 
+export async function getTotalRTSupply(): Promise<number> {
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+
+  const publicClient = createPublicClient(baseConfig);
+  const contractAbi = {
+    inputs: [],
+    name: 'TOTAL_RT_SUPPLY',
+    outputs: [
+      { internalType: 'uint32', name: '', type: 'uint32' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  };
+
+  const requestArgs = {
+    address: royaltyPolicyLAPAddress as Address,
+    functionName: 'TOTAL_RT_SUPPLY',
+    abi: [contractAbi]
+  };
+
+  const result = await publicClient.readContract(requestArgs);
+  console.log(result);
+
+  return Number(result);
+};
+
 export async function checkMintResult(tokenIdA: string){
   if (tokenIdA === '') {
     throw new Error('Unable to mint NFT');

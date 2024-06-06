@@ -21,7 +21,7 @@ let licenseTokenId1: bigint;
 let licenseTokenId2: bigint;
 let licenseTokenId3: bigint;
 
-describe("SDK E2E Test", function () {
+describe("SDK E2E Test - Dispute Module", function () {
     describe("IP Asset is IN_DISPUTE", async function () {
         before("Register IP assets and raise dispute", async function () {
             const tokenIdA = await mintNFTWithRetry(privateKeyA);
@@ -163,7 +163,7 @@ describe("SDK E2E Test", function () {
 
             step("Claim royalty tokens", async function () {
                 const response = await expect(
-                    royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                    royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, ipIdA, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -686,7 +686,7 @@ describe("SDK E2E Test", function () {
             // IP asset is disputed, the cliaimable revenue should be 0
             step("Claim royalty tokens", async function () {
                 const response = await expect(
-                    royaltyClaimRevenue("B", [snapshotId1], ipIdB, ipIdB, mintingFeeTokenAddress, waitForTransaction)
+                    royaltyClaimRevenue("B", [snapshotId1], ipIdB, mintingFeeTokenAddress, ipIdB, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -695,4 +695,5 @@ describe("SDK E2E Test", function () {
         });
     });
 });
+
 

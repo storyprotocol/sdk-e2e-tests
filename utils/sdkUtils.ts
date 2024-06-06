@@ -1,9 +1,9 @@
-import { Hex, Address } from "viem";
+import { Hex, Address, encodeFunctionData } from "viem";
 import { clientA, clientB, clientC, } from '../config/config';
 import { PIL_TYPE } from "@story-protocol/core-sdk";
 import { processResponse } from "./utils";
 
-const storyClients = {
+export const storyClients = {
     A: clientA,
     B: clientB,
     C: clientC,
@@ -315,8 +315,9 @@ export const mintLicenseTokens = async function (
         }
     });
 
-    const responseJson = processResponse(response);
-    console.log(JSON.stringify(responseJson));
+    console.log(response);
+    // const responseJson = processResponse(response);
+    // console.log(JSON.stringify(responseJson));
     return response;
 };
 
@@ -365,7 +366,7 @@ export const payRoyaltyOnBehalf = async function (
     receiverIpId: Hex, 
     payerIpId: Hex, 
     token: Address, 
-    amount: string, 
+    amount: string | number | bigint, 
     waitForTransaction: boolean
 ) {
     const storyClient = getStoryClient(wallet);
@@ -425,10 +426,10 @@ export const royaltyClaimableRevenue = async function (
 export const royaltyClaimRevenue = async function (
     wallet: keyof typeof storyClients, 
     snapshotIds:string[] | bigint[] | number[], 
-    royaltyVaultIpId: Hex, 
-    account: Hex, 
-    token: Hex, 
-    waitForTransaction: boolean
+    royaltyVaultIpId: Address,
+    token: Address,
+    account?: Address | undefined, 
+    waitForTransaction?: boolean
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.claimRevenue({
@@ -443,6 +444,17 @@ export const royaltyClaimRevenue = async function (
 
     const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
+    return response;
+};
+
+export const getRoyaltyVaultAddress = async function (
+    wallet: keyof typeof storyClients, 
+    royaltyVaultIpId: Hex
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.getRoyaltyVaultAddress(royaltyVaultIpId);
+
+    console.log(response);    
     return response;
 };
 
@@ -524,3 +536,27 @@ export const createNFTCollection = async function (
     console.log(JSON.stringify(response));
     return response;
 };
+
+
+export const ipAccountExecute = async function (
+    wallet: keyof typeof storyClients, 
+    toAddress: Address, 
+    value: number, 
+    ipId: Address,
+    data: Address,
+    waitForTransaction?: boolean
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAccount.execute({
+        to: toAddress,
+        value: value,
+        ipId: ipId,
+        data: data,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        }
+    });
+    console.log(JSON.stringify(response));
+    return response;
+};
+
