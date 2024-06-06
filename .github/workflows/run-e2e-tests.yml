@@ -39,6 +39,7 @@ jobs:
 
     - name: 'Create env file'
       run: |
+        rm -f .env
         touch .env
         echo WALLET_PRIVATE_KEY_A = ${{ secrets.WALLET_PRIVATE_KEY_A }} >> .env
         echo WALLET_PRIVATE_KEY_B = ${{ secrets.WALLET_PRIVATE_KEY_B }} >> .env
@@ -50,7 +51,6 @@ jobs:
         echo SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS = ${{ vars.SEPOLIA_ROYALTY_POLICY_LAP_ADDRESS }} >> .env
         echo SEPOLIA_DISPUTE_MODULE_ADDRESS = ${{ vars.SEPOLIA_DISPUTE_MODULE_ADDRESS }} >> .env
         echo SEPOLIA_IPASSET_REGISTRY_ADDRESS = ${{ vars.SEPOLIA_IPASSET_REGISTRY_ADDRESS }} >> .env
-        cat .env
       
     - name: Run E2E Test in Sepolia
       run: |
