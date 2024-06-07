@@ -74,14 +74,14 @@ describe("SDK Test", function () {
             let ipIdA: any;
             const response = await expect(
                 royaltySnapshot("A", ipIdA, waitForTransaction)
-            ).to.be.rejectedWith("Failed to snapshot: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to snapshot: request.royaltyVaultIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
 
         });
 
         it("Captue snapshot fail as invalid ipId", async function () {
             const response = await expect(
                 royaltySnapshot("A", "0x0000", waitForTransaction)
-            ).to.be.rejectedWith("Failed to snapshot: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to snapshot: request.royaltyVaultIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
 
         });
 

@@ -92,13 +92,13 @@ describe("SDK Test", function () {
             let royaltyVaultIpId: any;
             const response = await expect(
                 royaltyClaimRevenue("A", [snapshotId1], royaltyVaultIpId, mintingFeeTokenAddress, ipIdA, waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to claim revenue: request.royaltyVaultIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Claim revenue fail as invalid royaltyVaultIpId", async function () {
             const response = await expect(
                 royaltyClaimRevenue("A", [snapshotId1], "0x0000", mintingFeeTokenAddress, ipIdA, waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to claim revenue: request.royaltyVaultIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Claim revenue fail as non-existent royaltyVaultIpId", async function () {
@@ -120,7 +120,7 @@ describe("SDK Test", function () {
         it("Claim revenue fail as invalid account address", async function () {
             const response = await expect(
                 royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, "0x00000", waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Address \"0x00000\" is invalid.");
+            ).to.be.rejectedWith(`ailed to claim revenue: request.account address is invalid: 0x00000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Claim revenue fail as non-existent account address", async function () {

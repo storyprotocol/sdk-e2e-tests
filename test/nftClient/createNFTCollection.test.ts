@@ -143,7 +143,7 @@ describe("SDK Test", function () {
 
             const response = await expect(
                 createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"test\" is invalid.");
+            ).to.be.rejectedWith(`Failed to create a SPG NFT collection: request.owner address is invalid: test, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Create NFT collection with owner: 0x0000", async function () {
@@ -153,7 +153,7 @@ describe("SDK Test", function () {
 
             const response = await expect(
                 createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to create a SPG NFT collection: request.owner address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });          
     });
 });

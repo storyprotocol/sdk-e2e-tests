@@ -549,7 +549,7 @@ export const ipAccountExecute = async function (
     const response = await storyClient.ipAccount.execute({
         to: toAddress,
         value: value,
-        accountAddress: ipId,
+        ipId: ipId,
         data: data,
         txOptions: {
             waitForTransaction: waitForTransaction

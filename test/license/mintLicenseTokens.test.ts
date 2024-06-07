@@ -55,13 +55,13 @@ describe('SDK Test', function () {
                 let ipIdA: any;
                 const response = await expect(
                     mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, accountB.address, true)      
-                ).to.be.rejectedWith("Failed to mint license tokens: Address \"undefined\" is invalid.");
+                ).to.be.rejectedWith(`Failed to mint license tokens: request.licensorIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
             });
 
             it("Mint a license token fail as invalid ipId", async function () {
                 const response = await expect(
                     mintLicenseTokens("A", "0x0000", nonComLicenseTermsId, 2, accountB.address, true)      
-                ).to.be.rejectedWith("Failed to mint license tokens: Address \"0x0000\" is invalid.");
+                ).to.be.rejectedWith(`Failed to mint license tokens: request.licensorIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
             });
 
             it("Mint a license token fail as non-existent ipId", async function () {
@@ -99,7 +99,7 @@ describe('SDK Test', function () {
             it("Mint a license token fail as invalid receiver address", async function () {
                 const response = await expect(
                     mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, "0x0000", true)      
-                ).to.be.rejectedWith("Failed to mint license tokens: Address \"0x0000\" is invalid.");
+                ).to.be.rejectedWith(`Failed to mint license tokens: request.receiver address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
             });
 
             it("Mint a license token fail as not attached licenseTermsId", async function () {
@@ -117,7 +117,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(1);
             });
 
             it("Mint a license token with amount: 0", async function () {
@@ -126,7 +126,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(1);
             });
             
             it("Mint a license token by non-owner", async function () {
@@ -135,7 +135,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
                         
             it("Mint a license token with undefined receiver address", async function () {
@@ -145,7 +145,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
                         
             it("Mint a license token with waitForTransaction:true", async function () {
@@ -154,7 +154,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
 
             it("Mint a license token with the same parameters before", async function () {
@@ -163,7 +163,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
 
             it("Mint a license token with undefined waitForTransaction", async function () {
@@ -203,7 +203,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
                         
             it("Mint a license token with ipIdB and comUsenonComLicenseTermsId", async function () {
@@ -212,7 +212,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
                         
             it("Mint a license token with ipIdB and comRemixnonComLicenseTermsId", async function () {
@@ -221,7 +221,7 @@ describe('SDK Test', function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.not.be.exist;
+                expect(response.licenseTokenIds).to.not.be.exist;
             });
         });
     });

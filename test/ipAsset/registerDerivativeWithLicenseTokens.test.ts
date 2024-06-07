@@ -70,9 +70,9 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenA.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenA.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(responsemintLicenseTokenA.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdA = responsemintLicenseTokenA.licenseTokenId;
+            licenseTokenIdA = responsemintLicenseTokenA.licenseTokenIds[0];
 
             const responseAttachLicenseTerms2 = await expect(
                 attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, true)
@@ -85,18 +85,18 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenB.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenB.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(responsemintLicenseTokenB.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdB = responsemintLicenseTokenB.licenseTokenId;
+            licenseTokenIdB = responsemintLicenseTokenB.licenseTokenIds[0];
 
             const responsemintLicenseTokenC = await expect(
                 mintLicenseTokens("A", ipIdA, comUseLicenseTermsId1, 2, accountC.address, true)
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenC.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenC.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(responsemintLicenseTokenC.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdC = responsemintLicenseTokenC.licenseTokenId;
+            licenseTokenIdC = responsemintLicenseTokenC.licenseTokenIds[0];
 
             const responseAttachLicenseTerms3 = await expect(
                 attachLicenseTerms("A", ipIdA, comUseLicenseTermsId2, true)
@@ -109,9 +109,9 @@ describe('SDK Test', function () {
             ).to.not.be.rejected;
 
             expect(responsemintLicenseTokenD.txHash).to.be.a("string").and.not.empty;
-            expect(responsemintLicenseTokenD.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(responsemintLicenseTokenD.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdD = responsemintLicenseTokenD.licenseTokenId;
+            licenseTokenIdD = responsemintLicenseTokenD.licenseTokenIds[0];
         });
 
         it("Register a derivative IP asset fail as non-owner", async function () {
@@ -124,13 +124,13 @@ describe('SDK Test', function () {
             let ipIdB: any;
             await expect(
                 registerDerivativeWithLicenseTokens("B", ipIdB, [licenseTokenIdA], true)
-            ).to.be.rejectedWith("Failed to register derivative with license tokens: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register derivative with license tokens: ipId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as invalid child ipId", async function () {
             await expect(
                 registerDerivativeWithLicenseTokens("B", "0x0000", [licenseTokenIdA], true)
-            ).to.be.rejectedWith("Failed to register derivative with license tokens: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register derivative with license tokens: ipId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as non-existent child ipId", async function () {

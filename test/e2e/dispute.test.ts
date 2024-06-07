@@ -89,7 +89,7 @@ describe("SDK E2E Test - Dispute Module", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
 
             it("Mint license tokens with commercial use PIL for IN_DISPUTE IP asset", async function () {
@@ -98,7 +98,7 @@ describe("SDK E2E Test - Dispute Module", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
 
             it("Mint license tokens with commericial remix PIL for IN_DISPUTE IP asset", async function () {
@@ -107,9 +107,9 @@ describe("SDK E2E Test - Dispute Module", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-                expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-                licenseTokenId3 = response.licenseTokenId;
+                licenseTokenId3 = response.licenseTokenIds[0];
             });
         });
 
@@ -455,27 +455,27 @@ describe("SDK E2E Test - Dispute Module", function () {
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens1.txHash).to.be.a("string").and.not.empty;
-                expect(responsemintLicenseTokens1.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(responsemintLicenseTokens1.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-                licenseTokenId1 = responsemintLicenseTokens1.licenseTokenId;
+                licenseTokenId1 = responsemintLicenseTokens1.licenseTokenIds[0];
 
                 const responsemintLicenseTokens2 = await expect(
                     mintLicenseTokens("B", ipIdB, comUseLicenseTermsId1, 2, accountA.address, true)      
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens2.txHash).to.be.a("string").and.not.empty;
-                expect(responsemintLicenseTokens2.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(responsemintLicenseTokens2.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-                licenseTokenId2 = responsemintLicenseTokens2.licenseTokenId;
+                licenseTokenId2 = responsemintLicenseTokens2.licenseTokenIds[0];
 
                 const responsemintLicenseTokens3 = await expect(
                     mintLicenseTokens("B", ipIdB, comRemixLicenseTermsId2, 2, accountA.address, true)      
                 ).to.not.be.rejected;
 
                 expect(responsemintLicenseTokens3.txHash).to.be.a("string").and.not.empty;
-                expect(responsemintLicenseTokens3.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+                expect(responsemintLicenseTokens3.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-                licenseTokenId3 = responsemintLicenseTokens3.licenseTokenId;
+                licenseTokenId3 = responsemintLicenseTokens3.licenseTokenIds[0];
 
                 const responseRaiseDispute = await expect(
                     raiseDispute("A", ipIdB, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)

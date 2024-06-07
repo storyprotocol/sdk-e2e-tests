@@ -55,9 +55,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdA = response.licenseTokenId;
+            licenseTokenIdA= response.licenseTokenIds[0];
         });
 
         step("Mint a NFT to Wallet B and get a tokenId (tokenIdB)", async function () {
@@ -233,9 +233,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdA = response.licenseTokenId;
+            licenseTokenIdA = response.licenseTokenIds[0];
         });
 
         step("Mint a NFT to WalletB, get a tokenId (tokenIdB)", async function () {
@@ -270,9 +270,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdB = response.licenseTokenId;
+            licenseTokenIdB = response.licenseTokenIds[0];
         });
 
         step("Mint a NFT to WalletC, get a tokenId (tokenIdC)", async function () {
@@ -335,9 +335,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdA = response.licenseTokenId;
+            licenseTokenIdA = response.licenseTokenIds[0];
         });
 
         step("Mint a NFT to WalletB, get a tokenId (tokenIdB)", async function () {
@@ -372,9 +372,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
 
-            licenseTokenIdB = response.licenseTokenId;
+            licenseTokenIdB = response.licenseTokenIds[0];            
         });
 
         step("Mint a NFT to WalletC, get a tokenId (tokenIdC)", async function () {
@@ -436,9 +436,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(1);
 
-            licenseTokenIdA = response.licenseTokenId;
+            licenseTokenIdA = response.licenseTokenIds[0];
         });
 
         step("Mint a NFT to WalletB and get a tokenId (tokenIdB)", async function () {
@@ -525,9 +525,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(1);
 
-            licenseTokenIdA = response.licenseTokenId;
+            licenseTokenIdA= response.licenseTokenIds[0];
         });
 
         step("Mint a NFT to WalletB and get a tokenId (tokenIdB)", async function () {
@@ -562,9 +562,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Commercial Remix PIL"
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTokenId).to.be.a("bigint").and.to.be.ok;
+            expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(1);
 
-            licenseTokenIdB = response.licenseTokenId;
+            licenseTokenIdB = response.licenseTokenIds[0];
         });
 
         step("Wallet B can NOT register a derivative IP asset with ipIdB, LicenseRegistry__DerivativeIpAlreadyHasLicense(address)", async function () {

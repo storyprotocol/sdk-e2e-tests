@@ -364,10 +364,18 @@ export async function getBlockTimestamp(): Promise<bigint> {
   return (await publicClient.getBlock()).timestamp;
 };
 
-export function processResponse(response: any):{ [key: string]: string | bigint } {
-  const responseJson: { [key: string]: string | bigint } = {};
+export function processResponse(response: any): { [key: string]: string | string[] } {
+  const responseJson: { [key: string]: string | string[] } = {};
   Object.entries(response).forEach(([key, value]) => {
-    if (typeof value === "bigint") {
+    if (Array.isArray(value)) {
+      responseJson[key] = value.map((item: any) => {
+        if(typeof item === 'bigint') {
+          return item.toString() + 'n';
+        } else {
+          return item as string;
+        }
+      });
+    } else if (typeof value === 'bigint') {
       responseJson[key] = value.toString() + 'n';
     } else {
       responseJson[key] = value as string;
@@ -375,4 +383,5 @@ export function processResponse(response: any):{ [key: string]: string | bigint 
   });
   return responseJson;
 };
+
 

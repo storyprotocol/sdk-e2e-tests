@@ -53,13 +53,13 @@ describe('SDK Test', function () {
             let nftContractAddress: any;
             await expect(
                 registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipIdA], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith(`Failed to register derivative IP: Address "undefined" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register derivative IP: nftContract address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as invalid NFT contract address", async function () {
             await expect(
                 registerDerivativeIp("A", "0x0000", tokenIdB, [ipIdA], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith(`Failed to register derivative IP: Address "0x0000" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register derivative IP: nftContract address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         // 0x1033cd88: IPAssetRegistry__UnsupportedIERC721(address)
@@ -92,13 +92,13 @@ describe('SDK Test', function () {
             let ipId: any;
             await expect(
                 registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipId], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith(`Failed to register derivative IP: Address "undefined" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register derivative IP: request.derivData.parentIpIds address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as invalid ipId", async function () {
             await expect(
                 registerDerivativeIp("A", nftContractAddress, tokenIdB, ["0x0000"], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith(`Failed to register derivative IP: Address "0x0000" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register derivative IP: request.derivData.parentIpIds address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as undefined licenseTermsId", async function () {
@@ -129,7 +129,7 @@ describe('SDK Test', function () {
         it("Register a derivative IP asset fail as invalid licenseTemplate", async function () {
             await expect(
                 registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipIdA], [nonComLicenseTermsId], true, "0x0000")
-            ).to.be.rejectedWith(`Failed to register derivative IP: Address "0x0000" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register derivative IP: request.derivData.licenseTemplate address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as invalid metadataHash", async function () {

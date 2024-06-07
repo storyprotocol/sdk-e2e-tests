@@ -72,13 +72,13 @@ describe("SDK Test", function () {
             let royaltyVaultIpId: any;
             const response = await expect(
                 royaltyClaimableRevenue("A", royaltyVaultIpId, ipIdA, snapshotId1, mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`ailed to calculate claimable revenue: request.royaltyVaultIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Check claimable revenue fail as invalid parentIpId", async function () {
             const response = await expect(
                 royaltyClaimableRevenue("A", "0x0000", ipIdA, "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to calculate claimable revenue: request.royaltyVaultIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Check claimable revenue fail as non-existent parentIpId", async function () {
@@ -91,13 +91,13 @@ describe("SDK Test", function () {
             let account: any;
             const response = await expect(
                 royaltyClaimableRevenue("A", ipIdA, account, "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to calculate claimable revenue: request.account address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Check claimable revenue fail as invalid account address", async function () {
             const response = await expect(
                 royaltyClaimableRevenue("A", ipIdA, "0x0000", "1", mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to calculate claimable revenue: request.account address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Check claimable revenue fail as undefined snapshotId", async function () {
@@ -137,13 +137,13 @@ describe("SDK Test", function () {
             let tokenAddress: any;
             const response = await expect(
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, tokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to calculate claimable revenue: request.token address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Check claimable revenue fail as invalid token address", async function () {
             const response = await expect(
                 royaltyClaimableRevenue("A", ipIdA, ipIdA, snapshotId1, "0x0000", waitForTransaction)
-            ).to.be.rejectedWith("Failed to calculate claimable revenue: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to calculate claimable revenue: request.token address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Check claimable revenue with waitForTransaction: undefined", async function () {
