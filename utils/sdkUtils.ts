@@ -315,9 +315,8 @@ export const mintLicenseTokens = async function (
         }
     });
 
-    console.log(response);
-    // const responseJson = processResponse(response);
-    // console.log(JSON.stringify(responseJson));
+    const responseJson = processResponse(response);
+    console.log(JSON.stringify(responseJson));
     return response;
 };
 
@@ -550,7 +549,7 @@ export const ipAccountExecute = async function (
     const response = await storyClient.ipAccount.execute({
         to: toAddress,
         value: value,
-        ipId: ipId,
+        accountAddress: ipId,
         data: data,
         txOptions: {
             waitForTransaction: waitForTransaction
