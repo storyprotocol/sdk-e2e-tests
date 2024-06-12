@@ -218,7 +218,7 @@ export const registerNonComSocialRemixingPIL = async function (
 
 export const registerCommercialRemixPIL = async function (
     wallet: keyof typeof storyClients, 
-    mintingFee: string, 
+    mintingFee: string | number | bigint, 
     commercialRevShare: number, 
     currency: Hex, 
     waitForTransaction: boolean
@@ -553,7 +553,35 @@ export const ipAccountExecute = async function (
         data: data,
         txOptions: {
             waitForTransaction: waitForTransaction
-        }
+        },
+    });
+    console.log(JSON.stringify(response));
+    return response;
+};
+
+export const ipAccountExecuteWithSig = async function (
+    wallet: keyof typeof storyClients, 
+    ipId: Address,
+    to: Address,
+    value: number,
+    data: Address,
+    signer: Address,
+    deadline: number | bigint | string,
+    signature: Address,
+    waitForTransaction?: boolean | undefined
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAccount.executeWithSig({
+        ipId: ipId,
+        to: to,
+        value: value,
+        data: data,
+        deadline: deadline,
+        signer: signer,
+        signature: signature,
+        txOptions: {
+          waitForTransaction: waitForTransaction,
+        },
     });
     console.log(JSON.stringify(response));
     return response;

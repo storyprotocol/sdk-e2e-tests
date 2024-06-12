@@ -36,6 +36,17 @@ export function captureConsoleLogs(consoleLogs:string[]){
   return consoleLogs;
 };
 
+export function getWalletClient(WALLET_PRIVATE_KEY: Hex){
+  const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+  const walletClient = createWalletClient({
+    chain: chainId,
+    transport: http(rpcProviderUrl),
+    account
+  });
+
+  return walletClient;
+};
+
 export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
@@ -383,5 +394,14 @@ export function processResponse(response: any): { [key: string]: string | string
   });
   return responseJson;
 };
+
+export const getDeadline = (deadline?: bigint | number | string): bigint => {
+  if (deadline && (isNaN(Number(deadline)) || BigInt(deadline) < 0n)) {
+    throw new Error("Invalid deadline value.");
+  }
+  const timestamp = BigInt(Date.now());
+  return deadline ? timestamp + BigInt(deadline) : timestamp + 1000n;
+};
+
 
 

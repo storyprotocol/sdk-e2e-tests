@@ -15,8 +15,10 @@ export let arbitrationPolicyAddress: Hex;
 export let disputeModuleAddress: Hex;
 export let ipAssetRegistryAddress: Hex;
 export let rpcProviderUrl: string;
+export let chainId: number;
 
 if (String(TEST_ENV) === "sepolia") {
+  chainId = 11155111;
   rpcProviderUrl = process.env.SEPOLIA_RPC_PROVIDER_URL as string;
   licensingModuleAddress = process.env.SEPOLIA_LICENSING_MODULE_ADDRESS as Hex;
   nftContractAddress = process.env.SEPOLIA_MOCK_ERC721_ADDRESS as Hex;
