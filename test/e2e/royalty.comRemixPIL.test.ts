@@ -433,7 +433,7 @@ describe("SDK E2E Test - Royalty", function () {
         });
     });
             
-    describe.only("Commercial Remix PIL - Claim Minting Fee and Revenue by EOA2", function () {
+    describe("Commercial Remix PIL - Claim Minting Fee and Revenue by EOA2", function () {
         const mintingFee = 600;
         const payAmount = 2000;
         const commercialRevShare = 10;

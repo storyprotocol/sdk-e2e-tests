@@ -2,7 +2,8 @@ import { Hex, http, Address, createWalletClient, createPublicClient, Chain } fro
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains';
 import fs from 'fs';
-import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress } from "../config/config";
+import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress, licenseTokenAddress } from "../config/config";
+import { getLicenseTokenOwnerAbi, transferLicenseTokenAbi } from '../config/abi';
 
 const TEST_ENV = process.env.TEST_ENV as string | undefined;
 
@@ -401,6 +402,59 @@ export const getDeadline = (deadline?: bigint | number | string): bigint => {
   }
   const timestamp = BigInt(Date.now());
   return deadline ? timestamp + BigInt(deadline) : timestamp + 1000n;
+};
+
+export async function transferLicenseToken(WALLET_PRIVATE_KEY: Hex, from: Address, to: Address, licenseTokenId: number){
+  const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+  const walletClient = createWalletClient({
+    ...baseConfig,
+    account
+  });
+  const publicClient = createPublicClient(baseConfig);
+
+  const requestArgs = {
+    address: licenseTokenAddress,
+    functionName: 'transferFrom',
+    args: [from, to, licenseTokenId],
+    abi: [transferLicenseTokenAbi],
+    account: account    
+  };
+
+  await publicClient.simulateContract(requestArgs);
+  const hash = await walletClient.writeContract(requestArgs);
+  await publicClient.waitForTransactionReceipt({
+    hash: hash
+  });
+
+  console.log(`Transaction hash: ${hash}`);
+
+  return hash;
+};
+
+export async function getLicenseTokenOwner(tokenId: number): Promise<Address | unknown> {
+  let result: Address | unknown;
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+
+  const publicClient = createPublicClient(baseConfig);
+
+  const requestArgs = {
+    address: licenseTokenAddress as Address,
+    args: [tokenId],
+    functionName: 'ownerOf',
+    abi: [getLicenseTokenOwnerAbi]
+  };
+
+  result = await publicClient.readContract(requestArgs);
+  console.log(`Owner: ${result}`);
+
+  return result;
 };
 
 
