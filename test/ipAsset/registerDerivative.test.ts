@@ -65,13 +65,13 @@ describe('SDK Test', function () {
             let ipIdB: any;
             await expect(
                 registerDerivative("B", ipIdB, [ipIdA], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith("Failed to register derivative: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register derivative: ipId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as invalid child ipId", async function () {
             await expect(
                 registerDerivative("B", "0x0000", [ipIdA], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith("Failed to register derivative: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register derivative: ipId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as non-existent child ipId", async function () {
@@ -84,13 +84,13 @@ describe('SDK Test', function () {
             let ipIdA: any;
             await expect(
                 registerDerivative("B", ipIdB, [ipIdA], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith("Failed to register derivative: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register derivative: request.parentIpIds address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as invalid parent ipId", async function () {
             await expect(
                 registerDerivative("B", ipIdB, ["0x0000"], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith("Failed to register derivative: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register derivative: request.parentIpIds address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register a derivative IP asset fail as non-existent parent ipId", async function () {

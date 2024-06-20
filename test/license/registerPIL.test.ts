@@ -124,7 +124,13 @@ describe("SDK Test", function () {
             it("Register Commercial Remix PIL with an invalid commercialRevShare value (-1)", async function () {
                 const response = await expect(
                     registerCommercialRemixPIL("A", "0", -1, mintingFeeTokenAddress, true)
-                ).to.be.rejectedWith("Failed to register commercial remix PIL: Number \"-1\" is not in safe 256-bit unsigned integer range");
+                ).to.be.rejectedWith("Failed to register commercial remix PIL: commercialRevShare should be between 0 and 100.");
+            });
+    
+            it("Register Commercial Remix PIL with an invalid commercialRevShare value (101)", async function () {
+                const response = await expect(
+                    registerCommercialRemixPIL("A", "0", 101, mintingFeeTokenAddress, true)
+                ).to.be.rejectedWith("Failed to register commercial remix PIL: commercialRevShare should be between 0 and 100.");
             });
     
             it("Register Commercial Remix PIL with currency: undefined", async function () {
@@ -163,7 +169,7 @@ describe("SDK Test", function () {
     
             it("Register Commercial Remix PIL with waitForTransaction: false", async function () {
                 const response = await expect(
-                    registerCommercialRemixPIL("A", "16", 1001, mintingFeeTokenAddress, false)
+                    registerCommercialRemixPIL("A", "16", 100, mintingFeeTokenAddress, false)
                 ).to.not.be.rejected;
 
                 if (response.licenseTermsId) {

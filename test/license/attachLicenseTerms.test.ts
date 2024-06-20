@@ -57,7 +57,7 @@ describe("SDK Test", function () {
                 let ipId: any;
                 const response = await expect(
                     attachLicenseTerms("A", ipId, comUseLicenseTermsId1, true)
-                ).to.be.rejectedWith("Address \"undefined\" is invalid.");
+                ).to.be.rejectedWith(`Failed to attach license terms: request.ipId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
             });
     
             it("Attach license terms with an invalid ipId", async function () {

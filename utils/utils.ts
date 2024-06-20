@@ -2,7 +2,8 @@ import { Hex, http, Address, createWalletClient, createPublicClient, Chain } fro
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains';
 import fs from 'fs';
-import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress } from "../config/config";
+import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress, licenseTokenAddress } from "../config/config";
+import { getLicenseTokenOwnerAbi, transferLicenseTokenAbi } from '../config/abi';
 
 const TEST_ENV = process.env.TEST_ENV as string | undefined;
 
@@ -34,6 +35,17 @@ export function captureConsoleLogs(consoleLogs:string[]){
     originalConsoleLog.apply(console, args);
   };
   return consoleLogs;
+};
+
+export function getWalletClient(WALLET_PRIVATE_KEY: Hex){
+  const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+  const walletClient = createWalletClient({
+    chain: chainId,
+    transport: http(rpcProviderUrl),
+    account
+  });
+
+  return walletClient;
 };
 
 export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
@@ -319,6 +331,35 @@ export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_A
   return tokenId;
 };
 
+export async function getTotalRTSupply(): Promise<number> {
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+
+  const publicClient = createPublicClient(baseConfig);
+  const contractAbi = {
+    inputs: [],
+    name: 'TOTAL_RT_SUPPLY',
+    outputs: [
+      { internalType: 'uint32', name: '', type: 'uint32' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  };
+
+  const requestArgs = {
+    address: royaltyPolicyLAPAddress as Address,
+    functionName: 'TOTAL_RT_SUPPLY',
+    abi: [contractAbi]
+  };
+
+  const result = await publicClient.readContract(requestArgs);
+  console.log(result);
+
+  return Number(result);
+};
+
 export async function checkMintResult(tokenIdA: string){
   if (tokenIdA === '') {
     throw new Error('Unable to mint NFT');
@@ -335,10 +376,18 @@ export async function getBlockTimestamp(): Promise<bigint> {
   return (await publicClient.getBlock()).timestamp;
 };
 
-export function processResponse(response: any):{ [key: string]: string | bigint } {
-  const responseJson: { [key: string]: string | bigint } = {};
+export function processResponse(response: any): { [key: string]: string | string[] } {
+  const responseJson: { [key: string]: string | string[] } = {};
   Object.entries(response).forEach(([key, value]) => {
-    if (typeof value === "bigint") {
+    if (Array.isArray(value)) {
+      responseJson[key] = value.map((item: any) => {
+        if(typeof item === 'bigint') {
+          return item.toString() + 'n';
+        } else {
+          return item as string;
+        }
+      });
+    } else if (typeof value === 'bigint') {
       responseJson[key] = value.toString() + 'n';
     } else {
       responseJson[key] = value as string;
@@ -346,4 +395,67 @@ export function processResponse(response: any):{ [key: string]: string | bigint 
   });
   return responseJson;
 };
+
+export const getDeadline = (deadline?: bigint | number | string): bigint => {
+  if (deadline && (isNaN(Number(deadline)) || BigInt(deadline) < 0n)) {
+    throw new Error("Invalid deadline value.");
+  }
+  const timestamp = BigInt(Date.now());
+  return deadline ? timestamp + BigInt(deadline) : timestamp + 1000n;
+};
+
+export async function transferLicenseToken(WALLET_PRIVATE_KEY: Hex, from: Address, to: Address, licenseTokenId: number){
+  const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+  const walletClient = createWalletClient({
+    ...baseConfig,
+    account
+  });
+  const publicClient = createPublicClient(baseConfig);
+
+  const requestArgs = {
+    address: licenseTokenAddress,
+    functionName: 'transferFrom',
+    args: [from, to, licenseTokenId],
+    abi: [transferLicenseTokenAbi],
+    account: account    
+  };
+
+  await publicClient.simulateContract(requestArgs);
+  const hash = await walletClient.writeContract(requestArgs);
+  await publicClient.waitForTransactionReceipt({
+    hash: hash
+  });
+
+  console.log(`Transaction hash: ${hash}`);
+
+  return hash;
+};
+
+export async function getLicenseTokenOwner(tokenId: number): Promise<Address | unknown> {
+  let result: Address | unknown;
+  const baseConfig = {
+    chain: chainId,
+    transport: http(rpcProviderUrl)    
+  };
+
+  const publicClient = createPublicClient(baseConfig);
+
+  const requestArgs = {
+    address: licenseTokenAddress as Address,
+    args: [tokenId],
+    functionName: 'ownerOf',
+    abi: [getLicenseTokenOwnerAbi]
+  };
+
+  result = await publicClient.readContract(requestArgs);
+  console.log(`Owner: ${result}`);
+
+  return result;
+};
+
+
 

@@ -71,13 +71,13 @@ describe("SDK Test", function () {
             let receiverIpId: any;
             const response = await expect(
                 payRoyaltyOnBehalf("B", receiverIpId, ipIdB, mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to pay royalty on behalf: request.receiverIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Pay royalty on behalf fail as invalid receiverIpId", async function () {
             const response = await expect(
                 payRoyaltyOnBehalf("B", "0x0000", ipIdB, mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to pay royalty on behalf: request.receiverIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Pay royalty on behalf fail as non-existent receiverIpId", async function () {
@@ -90,13 +90,13 @@ describe("SDK Test", function () {
             let payerIpId: any;
             const response = await expect(
                 payRoyaltyOnBehalf("B", ipIdA, payerIpId, mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to pay royalty on behalf: request.payerIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Pay royalty on behalf fail as invalid payerIpId", async function () {
             const response = await expect(
                 payRoyaltyOnBehalf("B", ipIdA, "0x0000", mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to pay royalty on behalf: request.payerIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Pay royalty on behalf fail as non-existent payerIpId", async function () {
@@ -109,13 +109,13 @@ describe("SDK Test", function () {
             let mintingFeeTokenAddress: any;
             const response = await expect(
                 payRoyaltyOnBehalf("B", ipIdA, ipIdB, mintingFeeTokenAddress, "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to pay royalty on behalf: request.token address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Pay royalty on behalf fail as invalid token address", async function () {
             const response = await expect(
                 payRoyaltyOnBehalf("B", ipIdA, ipIdB, "0x0000", "100", waitForTransaction)
-            ).to.be.rejectedWith("Failed to pay royalty on behalf: Address \"0x0000\" is invalid");
+            ).to.be.rejectedWith(`Failed to pay royalty on behalf: request.token address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Pay royalty on behalf fail as non-existent token address", async function () {

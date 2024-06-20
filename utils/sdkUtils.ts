@@ -1,9 +1,9 @@
-import { Hex, Address } from "viem";
+import { Hex, Address, encodeFunctionData } from "viem";
 import { clientA, clientB, clientC, } from '../config/config';
 import { PIL_TYPE } from "@story-protocol/core-sdk";
 import { processResponse } from "./utils";
 
-const storyClients = {
+export const storyClients = {
     A: clientA,
     B: clientB,
     C: clientC,
@@ -218,7 +218,7 @@ export const registerNonComSocialRemixingPIL = async function (
 
 export const registerCommercialRemixPIL = async function (
     wallet: keyof typeof storyClients, 
-    mintingFee: string, 
+    mintingFee: string | number | bigint, 
     commercialRevShare: number, 
     currency: Hex, 
     waitForTransaction: boolean
@@ -283,8 +283,16 @@ export const getLicenseTerms = async function (
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.getLicenseTerms(selectedLicenseTermsId);
 
-    const responseJson = processResponse(response);
+    const responseJson: { [key: string]: string | bigint } = {};
+    Object.entries(response["terms"]).forEach(([key, value]) => {
+      if (typeof value === "bigint") {
+        responseJson[key] = value.toString() + 'n';
+      } else {
+        responseJson[key] = value as string;
+      }
+    });
     console.log(JSON.stringify(responseJson));
+    
     return response;
 };
 
@@ -357,7 +365,7 @@ export const payRoyaltyOnBehalf = async function (
     receiverIpId: Hex, 
     payerIpId: Hex, 
     token: Address, 
-    amount: string, 
+    amount: string | number | bigint, 
     waitForTransaction: boolean
 ) {
     const storyClient = getStoryClient(wallet);
@@ -417,10 +425,10 @@ export const royaltyClaimableRevenue = async function (
 export const royaltyClaimRevenue = async function (
     wallet: keyof typeof storyClients, 
     snapshotIds:string[] | bigint[] | number[], 
-    royaltyVaultIpId: Hex, 
-    account: Hex, 
-    token: Hex, 
-    waitForTransaction: boolean
+    royaltyVaultIpId: Address,
+    token: Address,
+    account?: Address | undefined, 
+    waitForTransaction?: boolean
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.royalty.claimRevenue({
@@ -435,6 +443,17 @@ export const royaltyClaimRevenue = async function (
 
     const responseJson = processResponse(response);
     console.log(JSON.stringify(responseJson));
+    return response;
+};
+
+export const getRoyaltyVaultAddress = async function (
+    wallet: keyof typeof storyClients, 
+    royaltyVaultIpId: Hex
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.royalty.getRoyaltyVaultAddress(royaltyVaultIpId);
+
+    console.log(response);    
     return response;
 };
 
@@ -512,6 +531,57 @@ export const createNFTCollection = async function (
             waitForTransaction: waitForTransaction
         },
         ...options
+    });
+    console.log(JSON.stringify(response));
+    return response;
+};
+
+
+export const ipAccountExecute = async function (
+    wallet: keyof typeof storyClients, 
+    toAddress: Address, 
+    value: number, 
+    ipId: Address,
+    data: Address,
+    waitForTransaction?: boolean
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAccount.execute({
+        to: toAddress,
+        value: value,
+        ipId: ipId,
+        data: data,
+        txOptions: {
+            waitForTransaction: waitForTransaction
+        },
+    });
+    console.log(JSON.stringify(response));
+    return response;
+};
+
+export const ipAccountExecuteWithSig = async function (
+    wallet: keyof typeof storyClients, 
+    ipId: Address,
+    to: Address,
+    value: number,
+    data: Address,
+    signer: Address,
+    deadline: number | bigint | string,
+    signature: Address,
+    waitForTransaction?: boolean | undefined
+) {
+    const storyClient = getStoryClient(wallet);
+    const response = await storyClient.ipAccount.executeWithSig({
+        ipId: ipId,
+        to: to,
+        value: value,
+        data: data,
+        deadline: deadline,
+        signer: signer,
+        signature: signature,
+        txOptions: {
+          waitForTransaction: waitForTransaction,
+        },
     });
     console.log(JSON.stringify(response));
     return response;

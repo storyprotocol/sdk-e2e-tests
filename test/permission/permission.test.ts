@@ -30,27 +30,27 @@ describe('SDK Test', function () {
         it("Non-owner set permission", async function () {            
             const response = await expect(
                 setPermission("B", ipIdA, accountB.address, licensingModuleAddress, 1, true)
-            ).to.be.rejectedWith("Failed to set permissions: The contract function \"execute\" reverted with the following signature:", 
-                                 "0xb3e96921");
+            ).to.be.rejectedWith(`Failed to set permissions: The contract function "setPermission" reverted.`, 
+                                 `Error: AccessController__CallerIsNotIPAccountOrOwner()`);
         });
 
         it("Set permission with an empty IP id", async function () {
             let testIpId:any;            
             const response = await expect(
                 setPermission("A", testIpId, accountB.address, licensingModuleAddress, 1, true)
-            ).to.be.rejectedWith("Failed to set permissions: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to set permissions: ipId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Set permission with a non-existent IP id", async function () {            
             const response = await expect(
                 setPermission("B", "0x1954631f55AC9a79CC4ec57103D23A9b2e8aDBfa", accountB.address, licensingModuleAddress, 1, true)
-            ).to.be.rejectedWith("Failed to set permissions: The contract function \"execute\" returned no data (\"0x\").");
+            ).to.be.rejectedWith(`Failed to set permissions: IP id with 0x1954631f55AC9a79CC4ec57103D23A9b2e8aDBfa is not registered.`);
         });
 
         it("Set permission with an invalid IP id", async function () {            
             const response = await expect(
                 setPermission("A", "0x00000", accountB.address, licensingModuleAddress, 1, true)
-            ).to.be.rejectedWith("Failed to set permissions: Address \"0x00000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to set permissions: ipId address is invalid: 0x00000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Set permission with an empty signer address", async function () {
@@ -88,8 +88,8 @@ describe('SDK Test', function () {
         it("Set permission with an invalid permission id (4)", async function () {            
             const response = await expect(
                 setPermission("A", ipIdA, accountB.address, licensingModuleAddress, 4, true)
-            ).to.be.rejectedWith("Failed to set permissions: The contract function \"execute\" reverted with the following signature:", 
-                                 "0x07e5a971");
+            ).to.be.rejectedWith(`Failed to set permissions: The contract function "setPermission" reverted.`, 
+                                 `Error: AccessController__PermissionIsNotValid()`);
         });
 
         it("Set permission (permission id: 1) to wallet B", async function () {            

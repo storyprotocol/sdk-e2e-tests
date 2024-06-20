@@ -71,19 +71,19 @@ describe("SDK Test", function () {
         it("Claim revenue fail as undefined snapshotId", async function () {
             let snapshotId: any;
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId], ipIdA, mintingFeeTokenAddress, ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Cannot convert undefined to a BigInt");
         });
 
         it("Claim revenue fail as invalid snapshotId", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", ["test"], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", ["test"], ipIdA, mintingFeeTokenAddress, ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Cannot convert test to a BigInt");
         });
 
         it("Claim revenue fail as non-existent snapshotId", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", ["999"], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", ["999"], ipIdA, mintingFeeTokenAddress, ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Failed to execute the IP Account transaction: The contract function \"execute\" reverted with the following reason:", 
                                  "ERC20Snapshot: nonexistent id");
         });
@@ -91,26 +91,26 @@ describe("SDK Test", function () {
         it("Claim revenue fail as undefined royaltyVaultIpId", async function () {
             let royaltyVaultIpId: any;
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], royaltyVaultIpId, ipIdA, mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Address \"undefined\" is invalid.");
+                royaltyClaimRevenue("A", [snapshotId1], royaltyVaultIpId, mintingFeeTokenAddress, ipIdA, waitForTransaction)
+            ).to.be.rejectedWith(`Failed to claim revenue: request.royaltyVaultIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Claim revenue fail as invalid royaltyVaultIpId", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], "0x0000", ipIdA, mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Address \"0x0000\" is invalid.");
+                royaltyClaimRevenue("A", [snapshotId1], "0x0000", mintingFeeTokenAddress, ipIdA, waitForTransaction)
+            ).to.be.rejectedWith(`Failed to claim revenue: request.royaltyVaultIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Claim revenue fail as non-existent royaltyVaultIpId", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], "0xe967f54D03acc01CF624b54e0F24794a2f8f229b", ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId1], "0xe967f54D03acc01CF624b54e0F24794a2f8f229b", mintingFeeTokenAddress, ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: The royalty vault IP with id 0xE967F54d03aCC01Cf624b54E0f24794A2F8F229b is not registered.");
         });
 
         it("Claim revenue with undefined account address", async function () {
             let accountAddress: any;
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, accountAddress, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, accountAddress, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -119,39 +119,38 @@ describe("SDK Test", function () {
 
         it("Claim revenue fail as invalid account address", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, "0x00000", mintingFeeTokenAddress, waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Address \"0x00000\" is invalid.");
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, "0x00000", waitForTransaction)
+            ).to.be.rejectedWith(`ailed to claim revenue: request.account address is invalid: 0x00000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Claim revenue fail as non-existent account address", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229c", mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, "0xe967f54D03acc01CF624b54e0F24794a2f8f229c", waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Failed to execute the IP Account transaction: The contract function \"execute\" returned no data (\"0x\").");
         });
 
         it("Claim revenue fail as undefined token address", async function () {
             let tokenAddress: any;
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, tokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, tokenAddress, ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Address \"undefined\" is invalid.");
         });
 
         it("Claim revenue fail as invalid token address", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, "0x0000", waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, "0x0000", ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Address \"0x0000\" is invalid.");
         });
 
         it("Claim revenue fail as non-existent token address", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229c", waitForTransaction)
-            ).to.be.rejectedWith("Failed to claim revenue: Failed to execute the IP Account transaction: The contract function \"execute\" reverted with the following reason:", 
-                                 "Address: call to non-contract");
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, "0xe967f54D03acc01CF624b54e0F24794a2f8f229c", ipIdA, waitForTransaction)
+            ).to.be.rejectedWith(`Failed to claim revenue: Address "0xe967f54D03acc01CF624b54e0F24794a2f8f229c" is invalid.`);
         });
 
         it("Claim revenue with waitForTransaction: true", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, mintingFeeTokenAddress, true)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, ipIdA, true)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -160,7 +159,7 @@ describe("SDK Test", function () {
 
         it("Claim revenue with waitForTransaction: false", async function () {
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, mintingFeeTokenAddress, false)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, ipIdA, false)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -170,7 +169,7 @@ describe("SDK Test", function () {
         it("Claim revenue with waitForTransaction: undefined", async function () {
             let waitForTransaction: any;
             const response = await expect(
-                royaltyClaimRevenue("A", [snapshotId1], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("A", [snapshotId1], ipIdA, mintingFeeTokenAddress, ipIdA, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -179,7 +178,7 @@ describe("SDK Test", function () {
 
         it("Claim revenue fail by non-owner", async function () {
             const response = await expect(
-                royaltyClaimRevenue("B", [snapshotId1], ipIdA, ipIdA, mintingFeeTokenAddress, waitForTransaction)
+                royaltyClaimRevenue("B", [snapshotId1], ipIdA, mintingFeeTokenAddress, ipIdA, waitForTransaction)
             ).to.be.rejectedWith("Failed to claim revenue: Failed to execute the IP Account transaction: The contract function \"execute\" reverted with the following signature:", "0x8ea0b111");
         });
     });

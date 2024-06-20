@@ -43,13 +43,13 @@ describe('SDK Test', function () {
             let nftContractAddress: any;
             await expect(
                 registerIpAndAttachPilTerms("A", nftContractAddress, tokenIdA, PIL_TYPE.NON_COMMERCIAL_REMIX, true)
-            ).to.be.rejectedWith(`Failed to register IP and attach PIL terms: Address "undefined" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register IP and attach PIL terms: nftContract address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register IP and attach PilTerms fail as invalid NFT contract address", async function () {
             await expect(
                 registerIpAndAttachPilTerms("A", "0x0000", tokenIdA, PIL_TYPE.NON_COMMERCIAL_REMIX, true)
-            ).to.be.rejectedWith(`Failed to register IP and attach PIL terms: Address "0x0000" is invalid.`);
+            ).to.be.rejectedWith(`Failed to register IP and attach PIL terms: nftContract address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         // 0x1033cd88: IPAssetRegistry__UnsupportedIERC721(address)

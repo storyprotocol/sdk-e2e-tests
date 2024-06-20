@@ -30,13 +30,13 @@ describe('SDK Test', function () {
             let nftContractAddress: any;
             await expect(
                 mintAndRegisterIpAssetWithPilTerms("A", nftContractAddress, PIL_TYPE.NON_COMMERCIAL_REMIX)
-            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: Address "undefined" is invalid.`);
+            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: request.nftContract address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register an IP asset fail as invalid NFT contract address", async function () {
             await expect(
                 mintAndRegisterIpAssetWithPilTerms("A", "0x0000", PIL_TYPE.NON_COMMERCIAL_REMIX)
-            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: Address "0x0000" is invalid.`);
+            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: request.nftContract address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register an IP asset fail as non-existent NFT contract address", async function () {
@@ -67,7 +67,7 @@ describe('SDK Test', function () {
         it("Register an IP asset fail as invalid recipient", async function () {
             await expect(
                 mintAndRegisterIpAssetWithPilTerms("A", nftCollectionAddress, PIL_TYPE.NON_COMMERCIAL_REMIX, true, metadataURI, undefined, undefined, "0x000")
-            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: Address "0x000" is invalid.`);
+            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: request.recipient address is invalid: 0x000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register an IP asset fail as missing required parameters for commercial use PIL", async function () {

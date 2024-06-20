@@ -36,7 +36,7 @@ describe('SDK Test', function () {
         it("Register an IP asset fail as invalid NFT contract address", async function () {
             await expect(
                 registerIpAsset("A", "0x000000", tokenIdA, true)
-            ).to.be.rejectedWith("Failed to register IP: Address \"0x000000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to register IP: nftContract address is invalid: 0x000000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Register an IP asset fail as invalid tokenId", async function () {

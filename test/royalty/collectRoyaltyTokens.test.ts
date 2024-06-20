@@ -83,13 +83,13 @@ describe("SDK Test", function () {
             let parentIpId: any;
             const response = await expect(
                 collectRoyaltyTokens("B", parentIpId, ipIdB, waitForTransaction)
-            ).to.be.rejectedWith("Failed to collect royalty tokens: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to collect royalty tokens: request.parentIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Collect royalty tokens fail as invalid parentIpId", async function () {
             const response = await expect(
                 collectRoyaltyTokens("B", "0x0000", ipIdB, waitForTransaction)
-            ).to.be.rejectedWith("Failed to collect royalty tokens: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to collect royalty tokens: request.parentIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Collect royalty tokens fail as non-existent parentIpId", async function () {
@@ -102,13 +102,13 @@ describe("SDK Test", function () {
             let royaltyVaultIpId: any;
             const response = await expect(
                 collectRoyaltyTokens("B", ipIdA, royaltyVaultIpId, waitForTransaction)
-            ).to.be.rejectedWith("Failed to collect royalty tokens: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to collect royalty tokens: request.royaltyVaultIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Collect royalty tokens fail as invalid royaltyVaultIpId", async function () {
             const response = await expect(
                 collectRoyaltyTokens("B", ipIdA, "0x0000", waitForTransaction)
-            ).to.be.rejectedWith("Failed to collect royalty tokens: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to collect royalty tokens: request.royaltyVaultIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Collect royalty tokens fail as non-existent royaltyVaultIpId", async function () {
@@ -123,7 +123,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1 * 1000000));
         });
 
         it("Collect royalty tokens fail as already claimed", async function () {
@@ -154,7 +154,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare2));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare2 * 1000000));
         });
 
         it("Collect royalty tokens for derivative IP attached multiple license terms", async function () {
@@ -178,7 +178,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt(commercialRevShare1 + commercialRevShare2));
+            expect(response.royaltyTokensCollected).to.be.a("bigint").and.equal(BigInt((commercialRevShare1 + commercialRevShare2) * 1000000));
         });
 
         it("Collect royalty tokens fail as royaltyVaultIpId is not derivative IP", async function () {

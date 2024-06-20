@@ -24,8 +24,9 @@ afterEach(function () {
   if (consoleLogs.length > 0) {
     addContext(this, {
       title: 'Test Result',
-      value: consoleLogs[0],
+      value: consoleLogs.join('\n'),
     });
+    consoleLogs = []; 
   };
 });
 
