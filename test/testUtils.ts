@@ -1,7 +1,7 @@
-import { nftContractAddress, mintingFeeTokenAddress} from '../config/config'
-import { checkMintResult, mintNFTWithRetry } from '../utils/utils'
-import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltySnapshot, collectRoyaltyTokens, royaltyClaimableRevenue, royaltyClaimRevenue, getRoyaltyVaultAddress, ipAccountExecute, storyClients, ipAccountExecuteWithSig } from '../utils/sdkUtils'
-import { expect } from 'chai'
+import { nftContractAddress, mintingFeeTokenAddress} from '../config/config';
+import { checkMintResult, mintNFTWithRetry } from '../utils/utils';
+import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltySnapshot, collectRoyaltyTokens, royaltyClaimableRevenue, royaltyClaimRevenue, getRoyaltyVaultAddress, ipAccountExecute, storyClients, ipAccountExecuteWithSig } from '../utils/sdkUtils';
+import { expect } from 'chai';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
