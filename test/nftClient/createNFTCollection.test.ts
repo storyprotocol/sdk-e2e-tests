@@ -59,21 +59,7 @@ describe("SDK Test", function () {
 
             expect(response.txHash).to.be.a("string").and.not.empty;
             expect(response.nftContract).to.be.a("string").and.not.empty;
-        });          
-
-        it.skip("Create NFT collection with mintCost and invalid mintToken", async function () {
-            let mintToken: any;
-            const options = {
-                maxSupply: 10n,
-                mintCost: 1,
-                mintToken: mintToken,
-                owner: accountA.address
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Invalid mint token address, mint cost is greater than 0.");
-        });          
+        });         
 
         it("Create NFT collection with multi undefined parameters", async function () {
             let maxSupply: any;
@@ -104,37 +90,7 @@ describe("SDK Test", function () {
             const response = await expect(
                 createNFTCollection("A", "sdk-e2e-test", "test", true, options)
             ).to.be.rejectedWith("Failed to create a SPG NFT collection: Cannot convert test to a BigInt");
-        });          
-
-        it.skip("Create NFT collection with invalid type for mintCost", async function () {
-            const options = {
-                mintCost: "test"
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Cannot convert test to a BigInt");
-        });                  
-
-        it.skip("Create NFT collection with invalid type for mintToken", async function () {
-            const options = {
-                mintToken: "test"
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"test\" is invalid.");
-        });          
-
-        it.skip("Create NFT collection with mintToken: 0x0000", async function () {
-            const options = {
-                mintToken: "0x0000"
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"0x0000\" is invalid.");
-        });          
+        });         
 
         it("Create NFT collection with invalid type for owner", async function () {
             const options = {

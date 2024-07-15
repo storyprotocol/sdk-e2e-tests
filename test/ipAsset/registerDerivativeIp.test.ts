@@ -1,7 +1,7 @@
 import { privateKeyA, nftContractAddress } from '../../config/config';
 import { attachLicenseTerms, registerDerivativeIp, registerIpAsset, createNFTCollection } from '../../utils/sdkUtils';
 import { checkMintResult, getBlockTimestamp, mintNFTWithRetry } from '../../utils/utils';
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
@@ -43,7 +43,7 @@ describe('SDK Test', function () {
             ipIdA = responseRegisterIpA.ipId;
             
             const attachLicenseTermsResponse = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, true)
+                attachLicenseTerms("A", ipIdA, 0n, true)
             ).to.not.be.rejected;
 
             expect(attachLicenseTermsResponse.txHash).to.be.a("string").and.not.empty;

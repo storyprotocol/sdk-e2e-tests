@@ -7,7 +7,7 @@ import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
 import { registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
-import { nonComLicenseTermsId, comUseLicenseTermsId1, comUseLicenseTermsId2, comRemixLicenseTermsId1 } from '../setup';
+import { comUseLicenseTermsId1, comUseLicenseTermsId2, comRemixLicenseTermsId1 } from '../setup';
 
 let tokenIdA: string;
 let tokenIdB: string;
@@ -19,7 +19,7 @@ let ipIdC: Address;
 const waitForTransaction: boolean = true;
 
 describe("SDK Test", function () {
-    describe("Register PIL", async function () {
+    describe("Attach license terms - license.attachLicenseTerms", async function () {
         before("Register license terms and IP assets", async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             checkMintResult(tokenIdA);
@@ -111,7 +111,10 @@ describe("SDK Test", function () {
             it("Attach license terms that is already attached to the IP Asset", async function () {
                 const response = await expect(
                     attachLicenseTerms("A", ipIdA, comUseLicenseTermsId1, true)
-                ).to.be.rejectedWith("Failed to attach license terms: License terms id " + comUseLicenseTermsId1 + " is already attached to the IP with id " + ipIdA);
+                ).to.not.be.rejected;
+
+                expect(response.txHash).to.be.a("string").and.empty;
+                expect(response.success).to.be.equals(false);
             });
     
             it("Attach license terms with waitForTransaction: false", async function () {
@@ -189,7 +192,7 @@ describe("SDK Test", function () {
 
             step("Parent IP asset can attach more license terms（non-commercial PIL）", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, 0n, waitForTransaction)
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;

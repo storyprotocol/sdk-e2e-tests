@@ -1,20 +1,19 @@
-import { privateKeyA, privateKeyB, privateKeyC, mintingFeeTokenAddress, accountB, accountA } from '../../config/config'
-import { getTotalRTSupply} from '../../utils/utils'
-import { payRoyaltyOnBehalf, registerCommercialUsePIL } from '../../utils/sdkUtils'
-import { expect } from 'chai'
-import { mintNFTCreateRootIPandAttachPIL, mintNFTAndRegisterDerivative, checkRoyaltyTokensCollected, getSnapshotId,checkClaimableRevenue, claimRevenueByIPA, claimRevenueByEOA, transferTokenToEOA } from '../testUtils'
+import { privateKeyA, privateKeyB, privateKeyC, mintingFeeTokenAddress, accountB, accountA } from '../../config/config';
+import { getTotalRTSupply} from '../../utils/utils';
+import { payRoyaltyOnBehalf, registerCommercialUsePIL } from '../../utils/sdkUtils';
+import { expect } from 'chai';
+import { mintNFTCreateRootIPandAttachPIL, mintNFTAndRegisterDerivative, checkRoyaltyTokensCollected, getSnapshotId,checkClaimableRevenue, claimRevenueByIPA, claimRevenueByEOA, transferTokenToEOA } from '../testUtils';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 import { Address } from 'viem';
-import { comUseLicenseTermsId1, mintingFee1 } from '../setup'
+import { comUseLicenseTermsId1, mintingFee1 } from '../setup';
 
 let ipIdA: Address;
 let ipIdB: Address;
 let ipIdC: Address;
-let ipIdD: Address;
 let snapshotId1_ipIdA: bigint;
 let snapshotId1_ipIdB: bigint;
 let TOTAL_RT_SUPPLY: number;

@@ -90,7 +90,7 @@ describe('SDK Test', function () {
 
         it("Register an IP asset with waitForTransaction: false", async function () {            
             const response = await expect(
-                mintAndRegisterIpAssetWithPilTerms("A", nftCollectionAddress, PIL_TYPE.NON_COMMERCIAL_REMIX, false)
+                mintAndRegisterIpAssetWithPilTerms("A", nftCollectionAddress, PIL_TYPE.COMMERCIAL_USE, false, undefined, undefined, undefined, undefined, "100", undefined, mintingFeeTokenAddress)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -99,15 +99,10 @@ describe('SDK Test', function () {
             expect(response.licenseTermsId).to.not.be.exist;
         });
 
-        it("Register an IP asset with non-commercial remix license terms", async function () {            
+        it("Register an IP asset with non-commercial remix license terms id 2", async function () {            
             const response = await expect(
                 mintAndRegisterIpAssetWithPilTerms("A", nftCollectionAddress, PIL_TYPE.NON_COMMERCIAL_REMIX, true)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.ipId).to.be.a("string").and.not.empty;
-            expect(response.tokenId).to.be.a("bigint").and.to.be.ok;
-            expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: The contract function "mintAndRegisterIpAndAttachPILTerms" reverted with the following signature:`, `0x55d48f8d`);
         });
 
         it("Register an IP asset with commercial use license terms", async function () {            
@@ -132,15 +127,10 @@ describe('SDK Test', function () {
             expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
         });
 
-        it("Register an IP asset with non-commercial remix license terms and all optional parameters", async function () {
+        it("Register an IP asset with non-commercial remix license terms id 2 and all optional parameters", async function () {
             const response = await expect(
                 mintAndRegisterIpAssetWithPilTerms("A", nftCollectionAddress, PIL_TYPE.NON_COMMERCIAL_REMIX, true, metadataURI, metadataHash, nftMetadataHash, accountA.address)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.ipId).to.be.a("string").and.not.empty;
-            expect(response.tokenId).to.be.a("bigint").and.to.be.ok;
-            expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+            ).to.be.rejectedWith(`Failed to mint and register IP and attach PIL terms: The contract function "mintAndRegisterIpAndAttachPILTerms" reverted with the following signature:`, `0x55d48f8d`);
         });
 
         it("Register an IP asset with commercial use license terms and all optional parameters", async function () {

@@ -1,6 +1,6 @@
 import { privateKeyA, privateKeyB, clientA, accountA, chainId } from '../../config/config';
 import { getDeadline, getWalletClient } from '../../utils/utils';
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
