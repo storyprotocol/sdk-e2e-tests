@@ -1,6 +1,6 @@
 import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config';
 import { attachLicenseTerms, registerDerivative, registerIpAsset } from '../../utils/sdkUtils';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
+import { checkMintResult, mintNFT, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -17,11 +17,11 @@ let ipIdB: Address;
 describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivative Function', async function () {
         before("Register license terms, mint NFTs and register IP assets",async function () {
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            tokenIdA = await mintNFT(privateKeyA);
             checkMintResult(tokenIdA);            
             expect(tokenIdA).not.empty;
             
-            tokenIdB = await mintNFTWithRetry(privateKeyB);
+            tokenIdB = await mintNFT(privateKeyB);
             checkMintResult(tokenIdB);
             expect(tokenIdB).not.empty;
             

@@ -1,4 +1,4 @@
-import { privateKeyA, nftContractAddress } from '../../config/config';
+import { privateKeyA, nftContractAddress, accountA, licenseTemplateAddress } from '../../config/config';
 import { attachLicenseTerms, registerDerivativeIp, registerIpAsset, createNFTCollection } from '../../utils/sdkUtils';
 import { checkMintResult, getBlockTimestamp, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai';
@@ -13,25 +13,31 @@ let tokenIdA: string;
 let tokenIdB: string;
 let ipIdA: Address;
 let nftCollectionAddress: Address;
-const metadataURI = "http://example.com/metadata/12345";
+const metadataURI = "http://example.com/metadata/1";
+const nftMetadataURI = "http://example.com/metadata/2";
 
 describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivativeIp Function', async function () {
         before("Mint NFT, register IP assets and attach license terms",async function () {
+            console.log(accountA.address);
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.be.a("string").and.not.empty;
+            expect(response.spgNftContract).to.be.a("string").and.not.empty;
 
-            nftCollectionAddress = response.nftContract;
+            nftCollectionAddress = response.spgNftContract as Address;
+            console.log(nftCollectionAddress);
 
-            tokenIdA = await mintNFTWithRetry(privateKeyA, nftCollectionAddress);
+            
+            tokenIdA = await mintNFTWithRetry(privateKeyA, nftCollectionAddress, "nft-metadata-test");
             checkMintResult(tokenIdA);
+            console.log(tokenIdA);
                         
-            tokenIdB = await mintNFTWithRetry(privateKeyA, nftCollectionAddress);
+            tokenIdB = await mintNFTWithRetry(privateKeyA, nftCollectionAddress, "nft-metadata-test");
             checkMintResult(tokenIdB);
+            console.log(tokenIdB);
             
             const responseRegisterIpA = await expect(
                 registerIpAsset("A", nftCollectionAddress, tokenIdA, true)
@@ -140,13 +146,13 @@ describe('SDK Test', function () {
 
         it("Register a derivative IP asset fail as invalid nftMetadataHash", async function () {
             await expect(
-                registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipIdA], [nonComLicenseTermsId], true, undefined, metadataURI, undefined, "0x0000")
+                registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipIdA], [nonComLicenseTermsId], true, undefined, metadataURI, undefined, undefined, "0x0000")
             ).to.be.rejectedWith(`Failed to register derivative IP: Size of bytes "0x0000" (bytes2) does not match expected size (bytes32).`);
         });
 
         it("Register a derivative IP asset fail as invalid deadline", async function () {
             await expect(
-                registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipIdA], [nonComLicenseTermsId], true, undefined, metadataURI, undefined, undefined, "test")
+                registerDerivativeIp("A", nftContractAddress, tokenIdB, [ipIdA], [nonComLicenseTermsId], true, undefined, metadataURI, undefined, undefined, undefined, "test")
             ).to.be.rejectedWith(`Failed to register derivative IP: Invalid deadline value.`);
         });
 
@@ -201,7 +207,7 @@ describe('SDK Test', function () {
         });
 
         it("Register a derivative IP asset with all optional parameters", async function () {
-            const licenseTemplate = "0x260B6CB6284c89dbE660c0004233f7bB99B5edE7";
+            const licenseTemplate = licenseTemplateAddress;
             const metadataHash = toHex("test-metadata-hash", { size: 32 });
             const nftMetadataHash = toHex("test-nft-metadata-hash", { size: 32 });
             const deadline = await(getBlockTimestamp()) + 1000n;
@@ -210,7 +216,7 @@ describe('SDK Test', function () {
             expect(tokenIdC).to.be.a("string").and.not.empty;
 
             const response = await expect(
-                registerDerivativeIp("A", nftCollectionAddress, tokenIdC, [ipIdA], [nonComLicenseTermsId], true, licenseTemplate, metadataURI, metadataHash, nftMetadataHash, deadline)
+                registerDerivativeIp("A", nftCollectionAddress, tokenIdC, [ipIdA], [nonComLicenseTermsId], true, licenseTemplate, metadataURI, metadataHash, nftMetadataURI, nftMetadataHash, deadline)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
