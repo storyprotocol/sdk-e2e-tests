@@ -51,41 +51,41 @@ describe("SDK Test", function () {
             let disputeId1: any;
             const response = await expect(                
                 resolveDispute("B", disputeId1, "0x", true)
-            ).to.be.rejectedWith("Failed to cancel dispute: Cannot convert undefined to a BigInt");
+            ).to.be.rejectedWith(`Failed to resolve dispute: Cannot convert undefined to a BigInt`);
         });
 
         it("Resolve dispute fail as invalid disputeId", async function () {
             const response = await expect(                
                 resolveDispute("B", "test", "0x", true)
-            ).to.be.rejectedWith("Failed to cancel dispute: Cannot convert test to a BigInt");
+            ).to.be.rejectedWith(`Failed to resolve dispute: Cannot convert test to a BigInt`);
         });
 
         it("Resolve dispute fail as non-existent disputeId", async function () {
             const response = await expect(                
                 resolveDispute("B", "999999", "0x", true)
-            ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
-                                 "Error: DisputeModule__NotDisputeInitiator()");
+            ).to.be.rejectedWith(`Failed to resolve dispute: The contract function "resolveDispute" reverted.`, 
+                                 `Error: DisputeModule__NotDisputeInitiator()`);
         });
 
         it("Resolve dispute fail as undefined data", async function () {
             let data: any;
             const response = await expect(                
                 resolveDispute("B", disputeId1, data, true)
-            ).to.be.rejectedWith("Failed to cancel dispute: Cannot read properties of undefined (reading 'length')");
+            ).to.be.rejectedWith(`Failed to resolve dispute: Cannot read properties of undefined (reading 'length')`);
         });
 
         it("Resolve dispute fail as not dispute initiator", async function () {
             const response = await expect(                
                 resolveDispute("A", disputeId1, "0x", true)
-            ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
-                                 "Error: DisputeModule__NotDisputeInitiator()");
+            ).to.be.rejectedWith(`Failed to resolve dispute: The contract function "resolveDispute" reverted.`, 
+                                 `Error: DisputeModule__NotDisputeInitiator()`);
         });
 
         it("Resolve dispute fail as not set judgement", async function () {
             const response = await expect(                              
                 resolveDispute("B", disputeId1, "0x0000", true)
-            ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
-                                 "Error: DisputeModule__NotAbleToResolve()");
+            ).to.be.rejectedWith(`Failed to resolve dispute: The contract function "resolveDispute" reverted.`, 
+                                 `Error: DisputeModule__NotAbleToResolve()`);
         });
 
         it("Resolve dispute fail as judgement decision is false", async function () {
@@ -94,15 +94,15 @@ describe("SDK Test", function () {
 
             const response = await expect(                              
                 resolveDispute("B", disputeId1, "0x0000", true)
-            ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
-                                 "Error: DisputeModule__NotAbleToResolve()");
+            ).to.be.rejectedWith(`Failed to resolve dispute: The contract function "resolveDispute" reverted.`, 
+                                 `Error: DisputeModule__NotAbleToResolve()`);
         });
 
         it("Resolve dispute faile as already resolved", async function () {
             const response = await expect(                
                 resolveDispute("B", disputeId1, "0x0000", false)
-            ).to.be.rejectedWith("Failed to cancel dispute: The contract function \"resolveDispute\" reverted.", 
-                                 "Error: DisputeModule__NotDisputeInitiator()");
+            ).to.be.rejectedWith(`Failed to resolve dispute: The contract function "resolveDispute" reverted.`, 
+                                 `Error: DisputeModule__NotAbleToResolve()`);
         });
 
         it("Resolve dispute with waitForTransaction: false", async function () {

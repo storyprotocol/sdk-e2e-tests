@@ -4,12 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:sepolia:smoke": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
-    "test:story:smoke": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
-    "test:sepolia:e2e": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
-    "test:story:e2e": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/e2e/*.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
-    "test:sepolia": "env TEST_ENV='sepolia' mocha -r ts-node/register -r mocha-steps './test/**/**/**.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
-    "test:story": "env TEST_ENV='storyTestnet' mocha -r ts-node/register -r mocha-steps './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
+    "test:smoke": "mocha -r ts-node/register -r mocha-steps --grep '\\[smoke\\]' './test/**/**/*.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
+    "test:ipAsset": "mocha -r ts-node/register -r mocha-steps './test/**/ipAsset/**.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
+    "test:e2e": "mocha -r ts-node/register -r mocha-steps './test/**/e2e/**.test.ts' --timeout 240000 --reporter mochawesome --reporter-options reportDir='test-reports',reportFilename='[status]_[datetime]_sdk-test-report',timestamp='mm-dd-yyyy_HHMMss',reportTitle='SDK Test Report'",
     "open:report": "open test-reports/*.html",
     "test:sepolia:open:report": "rm -rf test-reports && npm run test:sepolia && npm run open:report"
   },
@@ -18,7 +15,7 @@
     "url": "https://github.com/storyprotocol/sdk-e2e-tests.git"
   },
   "dependencies": {
-    "@story-protocol/core-sdk": "1.0.0-rc.14",
+    "@story-protocol/core-sdk": "1.2.0-rc.1",
     "viem": "^2.8.12"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config';
 import { attachLicenseTerms, registerDerivative, registerIpAsset } from '../../utils/sdkUtils';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
-import { expect } from 'chai'
+import { checkMintResult, mintNFT, mintNFTWithRetry } from '../../utils/utils';
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
@@ -17,11 +17,11 @@ let ipIdB: Address;
 describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivative Function', async function () {
         before("Register license terms, mint NFTs and register IP assets",async function () {
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            tokenIdA = await mintNFT(privateKeyA);
             checkMintResult(tokenIdA);            
             expect(tokenIdA).not.empty;
             
-            tokenIdB = await mintNFTWithRetry(privateKeyB);
+            tokenIdB = await mintNFT(privateKeyB);
             checkMintResult(tokenIdB);
             expect(tokenIdB).not.empty;
             
@@ -46,18 +46,18 @@ describe('SDK Test', function () {
 
         it("Register a derivative IP asset fail as no license terms attached", async function () {
             await expect(
-                registerDerivative("C", ipIdB, [ipIdA], [nonComLicenseTermsId], true)
-            ).to.be.rejectedWith("Failed to register derivative: License terms id " + nonComLicenseTermsId + " must be attached to the parent ipId " + ipIdA + " before registering derivative.");
+                registerDerivative("C", ipIdB, [ipIdA], [0n], true)
+            ).to.be.rejectedWith("Failed to register derivative: License terms id 0 must be attached to the parent ipId " + ipIdA + " before registering derivative.");
         });
 
         it("Register a derivative IP asset fail as no license terms attached", async function () {
             const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, true)
+                attachLicenseTerms("A", ipIdA, 0n, true)
             ).to.not.be.rejected;
             expect(response.txHash).to.be.a("string").and.not.empty;
             
             await expect(
-                registerDerivative("C", ipIdB, [ipIdA], [nonComLicenseTermsId], true)
+                registerDerivative("C", ipIdB, [ipIdA], [0n], true)
             ).to.be.rejectedWith("Failed to register derivative: The contract function \"registerDerivative\" reverted with the following signature:", "0xb3e96921");
         });
 
