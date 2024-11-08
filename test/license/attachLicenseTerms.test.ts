@@ -126,7 +126,7 @@ describe("SDK Test", function () {
             });                
         })
 
-        describe.only("Attach license terms to parent/derivative IP assets", async function () {
+        describe("Attach license terms to parent/derivative IP assets", async function () {
             before("Register IP assets", async function () {
                 tokenIdA = await mintNFT(privateKeyA);
                 checkMintResult(tokenIdA);
