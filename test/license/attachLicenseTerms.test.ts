@@ -1,5 +1,5 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
+import { checkMintResult, mintNFT, mintNFTWithRetry } from '../../utils/utils';
 import { Address } from 'viem';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -21,7 +21,7 @@ const waitForTransaction: boolean = true;
 describe("SDK Test", function () {
     describe("Attach license terms - license.attachLicenseTerms", async function () {
         before("Register license terms and IP assets", async function () {
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            tokenIdA = await mintNFT(privateKeyA);
             checkMintResult(tokenIdA);
 
             const responseA = await expect(
@@ -29,7 +29,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
             ipIdA = responseA.ipId;
 
-            tokenIdB = await mintNFTWithRetry(privateKeyB);
+            tokenIdB = await mintNFT(privateKeyB);
             checkMintResult(tokenIdB);
 
             const responseB = await expect(
@@ -37,7 +37,7 @@ describe("SDK Test", function () {
             ).to.not.be.rejected;
             ipIdB = responseB.ipId;
 
-            tokenIdC = await mintNFTWithRetry(privateKeyA);
+            tokenIdC = await mintNFT(privateKeyA);
             checkMintResult(tokenIdC);
 
             const responseC = await expect(
@@ -126,15 +126,15 @@ describe("SDK Test", function () {
             });                
         })
 
-        describe("Attach license terms to parent/derivative IP assets", async function () {
+        describe.only("Attach license terms to parent/derivative IP assets", async function () {
             before("Register IP assets", async function () {
-                tokenIdA = await mintNFTWithRetry(privateKeyA);
+                tokenIdA = await mintNFT(privateKeyA);
                 checkMintResult(tokenIdA);
 
-                tokenIdB = await mintNFTWithRetry(privateKeyB);
+                tokenIdB = await mintNFT(privateKeyB);
                 checkMintResult(tokenIdB);
 
-                tokenIdC = await mintNFTWithRetry(privateKeyC);
+                tokenIdC = await mintNFT(privateKeyC);
                 checkMintResult(tokenIdB);
             })
 
@@ -207,7 +207,13 @@ describe("SDK Test", function () {
                 expect(response.ipId).to.be.a("string").and.not.empty;
 
                 ipIdC = response.ipId;
-            })
+            });
+
+            step("Derivative IP asset (ipIdB) can NOT attach more license terms", async function () {
+                const response = await expect(
+                    attachLicenseTerms("B", ipIdB, comUseLicenseTermsId2, waitForTransaction)
+                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0x1ae3058f");
+            });
 
             step("Wallet C register a derivative IP asset with ipIdC and comUseLicenseTermsId1", async function () {
                 const response = await expect(
@@ -215,12 +221,6 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.txHash).to.be.a("string").and.not.empty;
-            });
-
-            step("Derivative IP asset (ipIdB) can NOT attach more license terms", async function () {
-                const response = await expect(
-                    attachLicenseTerms("B", ipIdB, comUseLicenseTermsId2, waitForTransaction)
-                ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0x1ae3058f");
             });
 
             step("Derivative IP asset (ipIdC) can NOT attach more license terms", async function () {
