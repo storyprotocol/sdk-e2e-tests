@@ -1,6 +1,6 @@
 import { nftContractAddress, privateKeyA, accountB, licensingModuleAddress } from '../../config/config';
 import { registerIpAsset, setPermission } from '../../utils/sdkUtils';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
+import { checkMintResult, mintNFT } from '../../utils/utils';
 import { expect } from 'chai';
 import { Address } from 'viem';
 import chai from 'chai';
@@ -14,7 +14,7 @@ let ipIdA: Address;
 describe('SDK Test', function () {
     describe('Test permission.setPermission Function', async function () {
         before("Mint NFT and Register IP Asset",async function () {
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            tokenIdA = await mintNFT(privateKeyA);
             checkMintResult(tokenIdA);
 
             const response = await expect(
