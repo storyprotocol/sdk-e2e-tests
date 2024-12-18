@@ -16,14 +16,22 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.terms.transferable).to.be.a("boolean").and.to.be.false;
+                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.defaultMintingFee).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.commercialUse).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.commercialAttribution).to.be.a("boolean").and.to.be.false;
+                expect(response.terms.commercializerChecker).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercializerCheckerData).to.be.a("string").and.to.be.equal('0x');
+                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(0);
+                expect(response.terms.commercialRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.derivativesAllowed).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesAttribution).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesApproval).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesReciprocal).to.be.a("boolean").and.to.be.false;
-                expect(response.terms.mintingFee).to.be.a("bigint").and.to.be.equal(0n);
-                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.derivativeRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.currency).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.uri).to.be.a("string").and.to.be.equal('');
             });
 
             it("licenseTermsId: null", async function () {
@@ -32,14 +40,22 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.terms.transferable).to.be.a("boolean").and.to.be.false;
+                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.defaultMintingFee).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.commercialUse).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.commercialAttribution).to.be.a("boolean").and.to.be.false;
+                expect(response.terms.commercializerChecker).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercializerCheckerData).to.be.a("string").and.to.be.equal('0x');
+                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(0);
+                expect(response.terms.commercialRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.derivativesAllowed).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesAttribution).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesApproval).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesReciprocal).to.be.a("boolean").and.to.be.false;
-                expect(response.terms.mintingFee).to.be.a("bigint").and.to.be.equal(0n);
-                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.derivativeRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.currency).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.uri).to.be.a("string").and.to.be.equal('');             
             });
 
             it("Non Commercial License Terms", async function () {
@@ -48,14 +64,22 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.terms.transferable).to.be.a("boolean").and.to.be.true;
+                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.defaultMintingFee).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.commercialUse).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.commercialAttribution).to.be.a("boolean").and.to.be.false;
+                expect(response.terms.commercializerChecker).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercializerCheckerData).to.be.a("string").and.to.be.equal('0x');
+                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(0);
+                expect(response.terms.commercialRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.derivativesAllowed).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.derivativesAttribution).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.derivativesApproval).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesReciprocal).to.be.a("boolean").and.to.be.true;
-                expect(response.terms.mintingFee).to.be.a("bigint").and.to.be.equal(0n);
-                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.derivativeRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.currency).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.uri).to.be.a("string").and.to.be.equal('');  
             });
 
             it("Commercial Use License Terms", async function () {
@@ -64,15 +88,22 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.terms.transferable).to.be.a("boolean").and.to.be.true;
-                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal(royaltyPolicyLAPAddress);
+                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal('0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6');
+                expect(response.terms.defaultMintingFee).to.be.a("bigint").and.to.be.equal(100n);
+                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.commercialUse).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.commercialAttribution).to.be.a("boolean").and.to.be.true;
+                expect(response.terms.commercializerChecker).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercializerCheckerData).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(0);
+                expect(response.terms.commercialRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.derivativesAllowed).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.derivativesAttribution).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.derivativesApproval).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesReciprocal).to.be.a("boolean").and.to.be.false;
-                expect(response.terms.mintingFee).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
-                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.derivativeRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.currency).to.be.a("string").and.to.be.equal('0x12A8b0DcC6e3bB0915638361D9D49942Da07F455');
+                expect(response.terms.uri).to.be.a("string").and.to.be.equal('');  
             });
 
             it("Commercial Remix License Terms", async function () {
@@ -81,16 +112,22 @@ describe("SDK Test", function () {
                 ).to.not.be.rejected;
 
                 expect(response.terms.transferable).to.be.a("boolean").and.to.be.true;
-                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal(royaltyPolicyLAPAddress);
+                expect(response.terms.royaltyPolicy).to.be.a("string").and.to.be.equal('0x28b4F70ffE5ba7A26aEF979226f77Eb57fb9Fdb6');
+                expect(response.terms.defaultMintingFee).to.be.a("bigint").and.to.be.equal(100n);
+                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.commercialUse).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.commercialAttribution).to.be.a("boolean").and.to.be.true;
+                expect(response.terms.commercializerChecker).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercializerCheckerData).to.be.a("string").and.to.be.equal('0x0000000000000000000000000000000000000000');
+                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(10000000);
+                expect(response.terms.commercialRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
                 expect(response.terms.derivativesAllowed).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.derivativesAttribution).to.be.a("boolean").and.to.be.true;
                 expect(response.terms.derivativesApproval).to.be.a("boolean").and.to.be.false;
                 expect(response.terms.derivativesReciprocal).to.be.a("boolean").and.to.be.true;
-                expect(response.terms.mintingFee).to.be.a("bigint").and.to.be.equal(BigInt(mintingFee1));
-                expect(response.terms.commercialRevShare).to.be.a("number").and.to.be.equal(commercialRevShare1 * 1000000);
-                expect(response.terms.expiration).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.derivativeRevCeiling).to.be.a("bigint").and.to.be.equal(0n);
+                expect(response.terms.currency).to.be.a("string").and.to.be.equal('0x12A8b0DcC6e3bB0915638361D9D49942Da07F455');
+                expect(response.terms.uri).to.be.a("string").and.to.be.equal('');  
             });                
         });
 

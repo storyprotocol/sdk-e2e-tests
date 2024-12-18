@@ -4,155 +4,96 @@ import { expect } from 'chai';
 chai.use(chaiAsPromised);
 import '../setup';
 import { createNFTCollection } from '../../utils/sdkUtils';
-import { accountA, mintingFeeTokenAddress } from '../../config/config';
+import { accountA, mockERC20Address } from '../../config/config';
+import { Address } from 'viem';
 
 describe("SDK Test", function () {
     describe("Create NFT Collection - nftClient.createNFTCollection", async function () {
         it("Create NFT collection", async function () {
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.be.a("string").and.not.empty;
+            expect(response.spgNftContract).to.be.a("string").and.not.empty;
         });
 
         it("Create NFT collection with empyt name and symbol", async function () {
             const response = await expect(
-                createNFTCollection("A", "", "", true)
+                createNFTCollection("A", "", "", true, true, accountA.address, "contract-uri", true)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.be.a("string").and.not.empty;
+            expect(response.spgNftContract).to.be.a("string").and.not.empty;
         });
 
         it("Create NFT collection with waitForTransaction: undefined", async function () {
             let waitForTransaction: any;
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", waitForTransaction)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.not.be.exist;
+            expect(response.spgNftContract).to.not.be.exist;
         });
 
         it("Create NFT collection with waitForTransaction: false", async function () {
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", false)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", false)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.not.be.exist;
+            expect(response.spgNftContract).to.not.be.exist;
         });
 
         it("Create NFT collection with optional parameters", async function () {
             const options = {
+                baseURI: "base-uri",
                 maxSupply: 100n,
-                mintCost: 1,
-                mintToken: mintingFeeTokenAddress,
-                owner: accountA.address
+                mintFee: 1,
+                mintToken: mockERC20Address,
+                owner: accountA.address as Address
             };
 
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true, "base-uri", 100, 1n, mockERC20Address, accountA.address)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.be.a("string").and.not.empty;
-        });          
-
-        it.skip("Create NFT collection with mintCost and invalid mintToken", async function () {
-            let mintToken: any;
-            const options = {
-                maxSupply: 10n,
-                mintCost: 1,
-                mintToken: mintToken,
-                owner: accountA.address
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Invalid mint token address, mint cost is greater than 0.");
-        });          
+            expect(response.spgNftContract).to.be.a("string").and.not.empty;
+        });         
 
         it("Create NFT collection with multi undefined parameters", async function () {
             let maxSupply: any;
-            let mintCost: any;
+            let mintFee: any;
             let mintToken: any;
             let owner: any;
 
-            const options = {
-                maxSupply: maxSupply,
-                mintCost: mintCost,
-                mintToken: mintToken,
-                owner: owner
-            };
-
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true, "base-uri", maxSupply, mintFee, mintToken, owner)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.nftContract).to.be.a("string").and.not.empty;
+            expect(response.spgNftContract).to.be.a("string").and.not.empty;
         });          
 
         it("Create NFT collection with invalid type for maxSupply", async function () {
-            const options = {
-                maxSupply: "test"
-            };
-
+            const maxSupply: any = "test";
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true, "base-uri", maxSupply)
             ).to.be.rejectedWith("Failed to create a SPG NFT collection: Cannot convert test to a BigInt");
-        });          
-
-        it.skip("Create NFT collection with invalid type for mintCost", async function () {
-            const options = {
-                mintCost: "test"
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Cannot convert test to a BigInt");
-        });                  
-
-        it.skip("Create NFT collection with invalid type for mintToken", async function () {
-            const options = {
-                mintToken: "test"
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"test\" is invalid.");
-        });          
-
-        it.skip("Create NFT collection with mintToken: 0x0000", async function () {
-            const options = {
-                mintToken: "0x0000"
-            };
-
-            const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith("Failed to create a SPG NFT collection: Address \"0x0000\" is invalid.");
-        });          
+        });         
 
         it("Create NFT collection with invalid type for owner", async function () {
-            const options = {
-                owner: "test"
-            };
-
+            const owner = "0x0000";
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
-            ).to.be.rejectedWith(`Failed to create a SPG NFT collection: request.owner address is invalid: test, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true, "", undefined, undefined, undefined, owner)
+            ).to.be.rejectedWith(`Failed to create a SPG NFT collection: request.owner address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Create NFT collection with owner: 0x0000", async function () {
-            const options = {
-                owner: "0x0000"
-            };
-
             const response = await expect(
-                createNFTCollection("A", "sdk-e2e-test", "test", true, options)
+                createNFTCollection("A", "sdk-e2e-test", "test", true, true, accountA.address, "contract-uri", true, "", undefined, undefined, undefined, "0x0000")
             ).to.be.rejectedWith(`Failed to create a SPG NFT collection: request.owner address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });          
     });

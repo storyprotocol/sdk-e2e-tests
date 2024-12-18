@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, privateKeyC, accountB, accountC, nftContractAddress } from '../../config/config';
 import { attachLicenseTerms, registerDerivativeWithLicenseTokens, registerIpAsset, mintLicenseTokens } from '../../utils/sdkUtils';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
-import { expect } from 'chai'
+import { checkMintResult, mintNFT, mintNFTWithRetry } from '../../utils/utils';
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
@@ -23,13 +23,13 @@ let licenseTokenIdD: bigint;
 describe('SDK Test', function () {
     describe('Test ipAsset.registerDerivativeWithLicenseTokens Function', async function () {
         before("Register license terms, register IP assets and mint license tokens",async function () {
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            tokenIdA = await mintNFT(privateKeyA);
             checkMintResult(tokenIdA);            
             
-            tokenIdB = await mintNFTWithRetry(privateKeyB);
+            tokenIdB = await mintNFT(privateKeyB);
             checkMintResult(tokenIdB);
             
-            tokenIdC = await mintNFTWithRetry(privateKeyC);
+            tokenIdC = await mintNFT(privateKeyC);
             checkMintResult(tokenIdC);
             
             const responseRegisterIpA = await expect(
@@ -58,12 +58,6 @@ describe('SDK Test', function () {
             expect(responseRegisterIpC.ipId).to.be.a("string").and.not.empty;
 
             ipIdC = responseRegisterIpC.ipId;
-
-            const responseAttachLicenseTerms1 = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, true)
-            ).to.not.be.rejected;
-
-            expect(responseAttachLicenseTerms1.txHash).to.be.a("string").and.not.empty;
 
             const responsemintLicenseTokenA = await expect(
                 mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, accountB.address, true)
@@ -156,7 +150,7 @@ describe('SDK Test', function () {
         it("Register a derivative IP asset fail as non-existent licenseTokenId", async function () {
             await expect(
                 registerDerivativeWithLicenseTokens("B", ipIdB, ["999"], true)
-            ).to.be.rejectedWith(`Failed to register derivative with license tokens: The contract function "registerDerivativeWithLicenseTokens" reverted with the following signature:`, `0xd474000f`);
+            ).to.be.rejectedWith(`Failed to register derivative with license tokens: The contract function "ownerOf" reverted.`);
         });
 
         it("Register a derivative IP asset fail as LicenseTokenNotCompatibleForDerivative", async function () {            

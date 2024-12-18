@@ -34,19 +34,19 @@ describe("SDK Test", function () {
             let ipIdA: any;
             const response = await expect(
                 raiseDispute("B", ipIdA, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
-            ).to.be.rejectedWith("Failed to raise dispute: Address \"undefined\" is invalid.");
+            ).to.be.rejectedWith(`Failed to raise dispute: request.targetIpId address is invalid: undefined, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Raise dispute fail as invalid ipId", async function () {
             const response = await expect(
                 raiseDispute("B", "0x0000", arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
-            ).to.be.rejectedWith("Failed to raise dispute: Address \"0x0000\" is invalid.");
+            ).to.be.rejectedWith(`Failed to raise dispute: request.targetIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
         });
 
         it("Raise dispute fail as non-existent ipId", async function () {
             const response = await expect(
                 raiseDispute("B", "0x8Dcd7f0be38Be6adbe2a7d8fb58032b1e20E3681", arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
-            ).to.be.rejectedWith("Failed to raise dispute: Address \"0x8Dcd7f0be38Be6adbe2a7d8fb58032b1e20E3681\" is invalid.");
+            ).to.be.rejectedWith(`Failed to raise dispute: The contract function "raiseDispute" reverted.`, `Error: DisputeModule__NotRegisteredIpId()`);
         });
 
         it("Raise dispute fail as undefined linkToDisputeEvidence", async function () {

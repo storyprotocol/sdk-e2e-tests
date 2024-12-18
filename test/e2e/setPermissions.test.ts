@@ -4,7 +4,7 @@ import { registerIpAsset, setPermission, attachLicenseTerms } from '../../utils/
 import { expect } from 'chai';
 import { Hex } from 'viem';
 import '../setup';
-import { nonComLicenseTermsId, comUseLicenseTermsId1 } from '../setup';
+import { comUseLicenseTermsId1 } from '../setup';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -46,9 +46,9 @@ describe('@smoke SDK E2E Test - Permissions', function () {
     
     describe("Set permission - 1 ALLOW", async function (){
         // error 0xb3e96921: AccessController__PermissionDenied(address,address,address,bytes4)
-        step("Wallet B(non-owner) can NOT attach licenseTermsId1 to ipIdA", async function () {
+        step("Wallet B(non-owner) can NOT attach licenseTermsId 0 to ipIdA", async function () {
             const response = await expect(
-                attachLicenseTerms("B", ipIdA, nonComLicenseTermsId, waitForTransaction)
+                attachLicenseTerms("B", ipIdA, 0n, waitForTransaction)
             ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0xb3e96921");
         });            
 
@@ -62,9 +62,9 @@ describe('@smoke SDK E2E Test - Permissions', function () {
             expect(response.success).to.be.true;
         });
 
-        step("Wallet B can attach licenseTermsId1 to ipIdA", async function () {
+        step("Wallet B can attach licenseTermsId 0 to ipIdA", async function () {
             const response = await expect(
-                attachLicenseTerms("B", ipIdA, nonComLicenseTermsId, waitForTransaction)
+                attachLicenseTerms("B", ipIdA, 0n, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -72,9 +72,9 @@ describe('@smoke SDK E2E Test - Permissions', function () {
 
         // wallet B is not granted any permission for ipIdB
         // error 0xb3e96921: AccessController__PermissionDenied(address,address,address,bytes4)
-        step("Wallet B can NOT attach licenseTermsId1 to ipIdB", async function () {
+        step("Wallet B can NOT attach licenseTermsId 0 to ipIdB", async function () {
             const response = await expect(
-                attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
+                attachLicenseTerms("B", ipIdB, 0n, waitForTransaction)
             ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted with the following signature:", "0xb3e96921");
         });
     });
@@ -109,9 +109,9 @@ describe('@smoke SDK E2E Test - Permissions', function () {
             expect(response.success).to.be.true;
         });
 
-        step("Wallet B can attach licenseTermsId1 to ipIdB", async function () {
+        step("Wallet B can attach licenseTermsId 0 to ipIdB", async function () {
             const response = await expect(
-                attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
+                attachLicenseTerms("B", ipIdB, 0n, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;

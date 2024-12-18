@@ -1,13 +1,12 @@
 import { privateKeyA, nftContractAddress, accountA, accountB, privateKeyB } from '../../config/config';
-import { attachLicenseTerms, mintLicenseTokens, registerDerivativeIp, registerDerivativeWithLicenseTokens, registerIpAndAttachPilTerms, registerIpAsset } from '../../utils/sdkUtils';
+import { attachLicenseTerms, mintLicenseTokens, registerDerivativeIp, registerDerivativeWithLicenseTokens, registerIpAsset } from '../../utils/sdkUtils';
 import { getLicenseTokenOwner, mintNFTWithRetry, transferLicenseToken } from '../../utils/utils';
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 import '../setup';
 import { Address } from 'viem';
-import { PIL_TYPE } from '@story-protocol/core-sdk';
 
 let tokenIdA: string;
 let tokenIdB: string;
@@ -112,17 +111,16 @@ describe('SDK E2E Test', function () {
             expect(tokenIdA).to.be.a("string").and.not.empty;
         });
 
-        step(`Wallet A register an IP Asset and attach the non-commercial remixing PIL(licenseTermsId:2 - "transferable":true"), get an ipId (ipIdA) and a licenseTermsId (licenseTermsId1)`, async function () {
-            const responseRegisterIpAndAttachPilTerms = await expect(
-                registerIpAndAttachPilTerms("A", nftContractAddress, tokenIdA, PIL_TYPE.NON_COMMERCIAL_REMIX, true)
+        step(`Wallet A register an IP Asset and default attach the non-commercial remixing PIL(licenseTermsId:2 - "transferable":true"), get an ipId (ipIdA) and a licenseTermsId (licenseTermsId1)`, async function () {
+            const responseRegisterIpAsset = await expect(
+                registerIpAsset("A", nftContractAddress, tokenIdA, true)
             ).to.not.be.rejected;
 
-            expect(responseRegisterIpAndAttachPilTerms.txHash).to.be.a("string").and.not.empty;
-            expect(responseRegisterIpAndAttachPilTerms.ipId).to.be.a("string").and.not.empty;
-            expect(responseRegisterIpAndAttachPilTerms.licenseTermsId).to.be.a("bigint").and.to.be.ok;
+            expect(responseRegisterIpAsset.txHash).to.be.a("string").and.not.empty;
+            expect(responseRegisterIpAsset.ipId).to.be.a("string").and.not.empty;
 
-            ipIdA = responseRegisterIpAndAttachPilTerms.ipId;
-            licenseTermsId1 = responseRegisterIpAndAttachPilTerms.licenseTermsId;
+            ipIdA = responseRegisterIpAsset.ipId;
+            licenseTermsId1 = 2n;
         });
 
         step("Wallet A attach another non-commercial social remixing PIL(licenseTermsId:0) to ipIdA", async function () {

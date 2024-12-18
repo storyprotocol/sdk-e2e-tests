@@ -1,20 +1,8 @@
-import { Hex, http, Address, createWalletClient, createPublicClient, Chain } from 'viem'
+import { Hex, http, Address, createWalletClient, createPublicClient } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains';
 import fs from 'fs';
-import { chainStringToViemChain, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress, licenseTokenAddress } from "../config/config";
+import { nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress, licenseTokenAddress, chainStringToViemChain } from "../config/config";
 import { getLicenseTokenOwnerAbi, transferLicenseTokenAbi } from '../config/abi';
-
-const TEST_ENV = process.env.TEST_ENV as string | undefined;
-
-let chainId: Chain;
-if (TEST_ENV == "sepolia") {
-  chainId = sepolia;
-// } else if (TEST_ENV == "storyTestnet") {
-//   chainId = chainStringToViemChain("storyTestnet");
-} else {
-  throw new Error(`Unknown TEST_ENV value: ${TEST_ENV}`);
-};
 
 export function sleep(second: number) {
   return new Promise((resolve) => setTimeout(resolve, second * 1000));
@@ -40,7 +28,7 @@ export function captureConsoleLogs(consoleLogs:string[]){
 export function getWalletClient(WALLET_PRIVATE_KEY: Hex){
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const walletClient = createWalletClient({
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl),
     account
   });
@@ -48,10 +36,10 @@ export function getWalletClient(WALLET_PRIVATE_KEY: Hex){
   return walletClient;
 };
 
-export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
+export async function mintSPGNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address, nftMetadata?: string): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
   const walletClient = createWalletClient({
@@ -60,7 +48,57 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: 
   });
   const publicClient = createPublicClient(baseConfig);
   const contractAbi = {
-    inputs: [{ internalType: 'address', name: 'to', type: 'address' }],
+    inputs: [
+      { internalType: 'address', name: 'to', type: 'address' },
+      { internalType: "string", name: "nftMetadata", type: "string"},
+    ],
+    name: 'mint',
+    outputs: [
+      { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  };
+
+  const requestArgs = {
+    address: NFT_COLLECTION_ADDRESS || nftContractAddress,
+    functionName: 'mint',
+    args: [account.address, nftMetadata || 'test'],
+    account: walletClient.account,
+    abi: [contractAbi]    
+  };
+
+  // Mint an NFT to your account
+  await publicClient.simulateContract(requestArgs);
+  const hash = await walletClient.writeContract(requestArgs);
+  const { logs } = await publicClient.waitForTransactionReceipt({
+    hash: hash
+  });
+
+  let tokenId: any;
+  if (logs[0].topics[3]) {
+    tokenId = parseInt(logs[0].topics[3], 16);
+  };
+
+  console.log(`Minted NFT successful with hash: ` + JSON.stringify(hash) + `\nMinted NFT tokenId: ` + JSON.stringify(tokenId));
+  return String(tokenId);
+};
+
+export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
+  const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
+  const baseConfig = {
+    chain: chainStringToViemChain("odyssey"),
+    transport: http(rpcProviderUrl)    
+  };
+  const walletClient = createWalletClient({
+    ...baseConfig,
+    account
+  });
+  const publicClient = createPublicClient(baseConfig);
+  const contractAbi = {
+    inputs: [
+      { internalType: 'address', name: 'to', type: 'address' },
+    ],
     name: 'mint',
     outputs: [
       { internalType: 'uint256', name: 'tokenId', type: 'uint256' },
@@ -95,8 +133,8 @@ export async function mintNFT(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: 
 
 export async function isRegistered(ipId: Address): Promise<boolean> {
   const baseConfig = {
-    chain: chainId,
-    transport: http(rpcProviderUrl)    
+    chain: chainStringToViemChain("odyssey"),
+    transport: http(rpcProviderUrl)
   };
 
   const publicClient = createPublicClient(baseConfig);
@@ -123,10 +161,10 @@ export async function isRegistered(ipId: Address): Promise<boolean> {
   return Boolean(result);
 };
 
-export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
+export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NFT_COLLECTION_ADDRESS?: Address, nftMetadata?: string): Promise<string> {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
   const walletClient = createWalletClient({
@@ -137,7 +175,8 @@ export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NF
   const contractAbi = {
     inputs: [
       { internalType: 'address', name: 'to', type: 'address' },
-      { internalType: "uint256", name: "tokenId",type: "uint256" }
+      { internalType: "uint256", name: "tokenId",type: "uint256" },
+      { internalType: "string", name: "nftMetadata", type: "string"},
     ],
     name: 'mintId',
     outputs: [
@@ -150,7 +189,7 @@ export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NF
   const requestArgs = {
     address: NFT_COLLECTION_ADDRESS || nftContractAddress,
     functionName: 'mintId',
-    args: [account.address, BigInt(id)],
+    args: [account.address, BigInt(id), nftMetadata],
     account: walletClient.account,
     abi: [contractAbi]   
   };
@@ -175,7 +214,7 @@ export async function mintNFTWithTokenID(WALLET_PRIVATE_KEY: Hex, id: number, NF
 export async function approveSpender(WALLET_PRIVATE_KEY: Hex, value: number) {
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
   const walletClient = createWalletClient({
@@ -214,7 +253,7 @@ export async function approveSpender(WALLET_PRIVATE_KEY: Hex, value: number) {
 export async function mintAmount(WALLET_PRIVATE_KEY: Hex, amount: number){
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
   const walletClient = createWalletClient({
@@ -252,7 +291,7 @@ export async function setDisputeJudgement(WALLET_PRIVATE_KEY: Hex, disputeId: bi
   try {
     const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
     const baseConfig = {
-      chain: chainId,
+      chain: chainStringToViemChain("odyssey"),
       transport: http(rpcProviderUrl)    
     };
     const walletClient = createWalletClient({
@@ -308,18 +347,18 @@ export async function getLatestTokenId(): Promise<number> {
   return Number(latestTokenId);
 };
 
-export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address): Promise<string> {
+export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_ADDRESS?: Address, nftMetadata?: string): Promise<string> {
   let tokenId: string = '';
 
   for (let i = 0; i < 3; i++) {
     try {
-      tokenId = await mintNFT(WALLET_PRIVATE_KEY, NFT_COLLECTION_ADDRESS);
+      tokenId = await mintSPGNFT(WALLET_PRIVATE_KEY, NFT_COLLECTION_ADDRESS, nftMetadata);
       break;
     } catch (error) {      
       if (i === 1) {
         try{
           const latestTokenId = await getLatestTokenId();
-          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1, NFT_COLLECTION_ADDRESS);
+          tokenId = await mintNFTWithTokenID(WALLET_PRIVATE_KEY, Number(latestTokenId) + 1, NFT_COLLECTION_ADDRESS, nftMetadata);
           break;
         } catch (error) {
           tokenId = '';
@@ -333,7 +372,7 @@ export async function mintNFTWithRetry(WALLET_PRIVATE_KEY: Hex, NFT_COLLECTION_A
 
 export async function getTotalRTSupply(): Promise<number> {
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
 
@@ -368,7 +407,7 @@ export async function checkMintResult(tokenIdA: string){
 
 export async function getBlockTimestamp(): Promise<bigint> {
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
   const publicClient = createPublicClient(baseConfig);
@@ -407,7 +446,7 @@ export const getDeadline = (deadline?: bigint | number | string): bigint => {
 export async function transferLicenseToken(WALLET_PRIVATE_KEY: Hex, from: Address, to: Address, licenseTokenId: number){
   const account = privateKeyToAccount(WALLET_PRIVATE_KEY as Address);
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
   const walletClient = createWalletClient({
@@ -438,7 +477,7 @@ export async function transferLicenseToken(WALLET_PRIVATE_KEY: Hex, from: Addres
 export async function getLicenseTokenOwner(tokenId: number): Promise<Address | unknown> {
   let result: Address | unknown;
   const baseConfig = {
-    chain: chainId,
+    chain: chainStringToViemChain("odyssey"),
     transport: http(rpcProviderUrl)    
   };
 
@@ -456,6 +495,4 @@ export async function getLicenseTokenOwner(tokenId: number): Promise<Address | u
 
   return result;
 };
-
-
 

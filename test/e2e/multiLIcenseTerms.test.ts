@@ -1,7 +1,7 @@
-import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config'
-import { mintNFTWithRetry } from '../../utils/utils'
-import { registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils'
-import { expect } from 'chai'
+import { privateKeyA, privateKeyB, nftContractAddress } from '../../config/config';
+import { mintNFTWithRetry } from '../../utils/utils';
+import { registerIpAsset, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
+import { expect } from 'chai';
 
 import '../setup';
 import chai from 'chai';
@@ -184,8 +184,8 @@ describe("SDK E2E Test - Register Derivative IP Asset with multiple PILs", funct
 
         step("Wallet B can NOT use nonComLicenseTermsId to register ipIdC as ipIdA's derivative IP asset", async function () {
             const response = await expect(
-                registerDerivative("B", ipIdC, [ipIdA], [nonComLicenseTermsId], waitForTransaction)
-            ).to.be.rejectedWith("Failed to register derivative: License terms id " + nonComLicenseTermsId + " must be attached to the parent ipId " + ipIdA + " before registering derivative.");
+                registerDerivative("B", ipIdC, [ipIdA], [0n], waitForTransaction)
+            ).to.be.rejectedWith("Failed to register derivative: License terms id 0 must be attached to the parent ipId " + ipIdA + " before registering derivative.");
         });
 
         step("Wallet B can use comRemixLicenseTermsId1 and comRemixLicenseTermsId2 to register ipIdC as ipIdA's derivative IP asset", async function () {
@@ -225,14 +225,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with multiple PILs", funct
         step("Wallet A attach comRemixLicenseTermsId1(commercial remix PIL) to ipIdA", async function () {
             const response = await expect(
                 attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId1, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-        });
-
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
