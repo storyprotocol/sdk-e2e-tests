@@ -1,7 +1,7 @@
 import { Hex, http, Address, createWalletClient, createPublicClient } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import fs from 'fs';
-import { chainId, nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress, licenseTokenAddress, chainStringToViemChain } from "../config/config";
+import { nftContractAddress, rpcProviderUrl, royaltyPolicyLAPAddress, royaltyApproveAddress, disputeModuleAddress, ipAssetRegistryAddress, licenseTokenAddress, chainStringToViemChain } from "../config/config";
 import { getLicenseTokenOwnerAbi, transferLicenseTokenAbi } from '../config/abi';
 
 export function sleep(second: number) {
