@@ -70,7 +70,7 @@ describe("SDK Test", function () {
             ipIdC = responseRegisterIpAssetC.ipId;
         });
 
-        it("Captue snapshot fail as undefined ipId", async function () {
+        it("Capture snapshot fail as undefined ipId", async function () {
             let ipIdA: any;
             const response = await expect(
                 royaltySnapshot("A", ipIdA, waitForTransaction)
@@ -78,21 +78,21 @@ describe("SDK Test", function () {
 
         });
 
-        it("Captue snapshot fail as invalid ipId", async function () {
+        it("Capture snapshot fail as invalid ipId", async function () {
             const response = await expect(
                 royaltySnapshot("A", "0x0000", waitForTransaction)
             ).to.be.rejectedWith(`Failed to snapshot: request.royaltyVaultIpId address is invalid: 0x0000, Address must be a hex value of 20 bytes (40 hex characters) and match its checksum counterpart.`);
 
         });
 
-        it("Captue snapshot fail as non-existent ipId", async function () {
+        it("Capture snapshot fail as non-existent ipId", async function () {
             let ipIdA: any;
             const response = await expect(
                 royaltySnapshot("A", "0x7F51F6AC36B5d618545345baDbe22E40ed113e2a", waitForTransaction)
             ).to.be.rejectedWith("Failed to snapshot: The royalty vault IP with id 0x7f51f6AC36B5D618545345badBe22e40eD113e2A is not registered.");
         });
 
-        it("Captue snapshot by non-owner", async function () {
+        it("Capture snapshot by non-owner", async function () {
             const response = await expect(
                 royaltySnapshot("B", ipIdA, true)
             ).to.not.be.rejected;
@@ -101,13 +101,13 @@ describe("SDK Test", function () {
             expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
         });
 
-        it("Captue snapshot for no valut account", async function () {
+        it("Capture snapshot for no valut account", async function () {
             const response = await expect(
                 royaltySnapshot("C", ipIdC, true)
             ).to.be.rejectedWith("Failed to snapshot: The contract function \"snapshot\" returned no data (\"0x\").");
         });
 
-        it("Captue snapshot with waitForTransaction: true", async function () {
+        it("Capture snapshot with waitForTransaction: true", async function () {
             await sleep(20);
             const response = await expect(
                 royaltySnapshot("C", ipIdB, true)
@@ -117,7 +117,7 @@ describe("SDK Test", function () {
             expect(response.snapshotId).to.be.a("bigint").and.to.be.ok;
         });
 
-        it("Captue snapshot with waitForTransaction: false", async function () {
+        it("Capture snapshot with waitForTransaction: false", async function () {
             const response = await expect(
                 royaltySnapshot("A", ipIdA, false)
             ).to.not.be.rejected;
@@ -126,7 +126,7 @@ describe("SDK Test", function () {
             expect(response.snapshotId).to.not.be.exist;
         });
 
-        it("Captue snapshot with waitForTransaction: undefined", async function () {
+        it("Capture snapshot with waitForTransaction: undefined", async function () {
             await sleep(10);
             let waitForTransaction: any;
             const response = await expect(
