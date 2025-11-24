@@ -18,7 +18,7 @@
     "url": "https://github.com/storyprotocol/sdk-e2e-tests.git"
   },
   "dependencies": {
-    "@story-protocol/core-sdk": "1.0.0-rc.14",
+    "@story-protocol/core-sdk": "1.0.0-rc.15",
     "viem": "^2.8.12"
   },
   "devDependencies": {

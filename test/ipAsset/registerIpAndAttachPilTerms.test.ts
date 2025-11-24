@@ -1,7 +1,7 @@
 import { privateKeyA, mintingFeeTokenAddress } from '../../config/config';
 import { createNFTCollection, registerIpAndAttachPilTerms } from '../../utils/sdkUtils';
 import { checkMintResult, getBlockTimestamp, mintNFTWithRetry } from '../../utils/utils';
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
@@ -126,11 +126,7 @@ describe('SDK Test', function () {
         it("Register IP and attach NON_COMMERCIAL_REMIX PilTerms", async function () {          
             const response = await expect(
                 registerIpAndAttachPilTerms("A", nftCollectionAddress, tokenIdA, PIL_TYPE.NON_COMMERCIAL_REMIX, true)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTermsId).to.be.a("bigint").and.to.be.ok;
-            expect(response.ipId).to.be.a("string").and.not.empty;
+            ).to.be.rejectedWith(`Failed to register IP and attach PIL terms: The contract function "registerIpAndAttachPILTerms" reverted with the following signature:`, `0x55d48f8d`);
         });
 
         it("Register IP and attach NON_COMMERCIAL_REMIX PilTerms with all optional parameters", async function () {
@@ -139,11 +135,7 @@ describe('SDK Test', function () {
 
             const response = await expect(
                 registerIpAndAttachPilTerms("A", nftCollectionAddress, tokenId, PIL_TYPE.NON_COMMERCIAL_REMIX, false, metadataURI, metadataHash, nftMetadataHash, 1000n, "100", 20, mintingFeeTokenAddress)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-            expect(response.licenseTermsId).to.not.be.exist;
-            expect(response.ipId).to.not.be.exist;
+            ).to.be.rejectedWith(`Failed to register IP and attach PIL terms: The contract function "registerIpAndAttachPILTerms" reverted with the following signature:`, `0x55d48f8d`);
         });
 
         it("Register IP and attach COMMERCIAL_USE PilTerms", async function () {
@@ -195,4 +187,3 @@ describe('SDK Test', function () {
         });
     });
 });
-

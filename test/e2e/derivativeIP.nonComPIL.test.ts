@@ -1,7 +1,7 @@
-import { privateKeyA, privateKeyB, privateKeyC, accountA, accountB, accountC,nftContractAddress } from '../../config/config'
-import { mintNFTWithRetry } from '../../utils/utils'
-import { registerIpAsset, attachLicenseTerms, mintLicenseTokens, registerDerivative, registerDerivativeWithLicenseTokens } from '../../utils/sdkUtils'
-import { expect } from 'chai'
+import { privateKeyA, privateKeyB, privateKeyC, accountA, accountB, accountC,nftContractAddress } from '../../config/config';
+import { mintNFTWithRetry } from '../../utils/utils';
+import { registerIpAsset, attachLicenseTerms, mintLicenseTokens, registerDerivative, registerDerivativeWithLicenseTokens } from '../../utils/sdkUtils';
+import { expect } from 'chai';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -40,14 +40,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             expect(response.ipId).to.be.a("string").and.not.empty;
 
             ipIdA = response.ipId;
-        });
-
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
         });
 
         step("Wallet A mint a license token with the receiverAddress set as Wallet B, get a licenseTokenId (licenseTokenIdA)", async function () {
@@ -143,14 +135,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             ipIdA = response.ipId;
         });
 
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-        });
-
         step("Mint a NFT to WalletB, get a tokenId (tokenidB)", async function () {
             tokenIdB = await mintNFTWithRetry(privateKeyB);
             if (tokenIdB === '') {
@@ -168,14 +152,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             expect(response.ipId).to.be.a("string").and.not.empty;
 
             ipIdB = response.ipId;
-        });
-
-        step("Wallet B attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
         });
 
         step("Mint a NFT to WalletC, get a tokenId (tokenidC)", async function () {
@@ -226,14 +202,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             ipIdA = response.ipId;
         });
 
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-        });
-
         step("Wallet A mint a license token with the receiverAddress set as Wallet B, get a licenseId (licenseTokenIdA)", async function () {
             const response = await expect(
                 mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, accountC.address, waitForTransaction)
@@ -262,14 +230,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             expect(response.ipId).to.be.a("string").and.not.empty;
 
             ipIdB = response.ipId;
-        });
-
-        step("Wallet B attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdB", async function () {
-            const response = await expect(
-                attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
         });
 
         step("Wallet B mint a license token with the receiverAddress set as Wallet C, get a licenseTokenId (licenseTokenIdB)", async function () {
@@ -331,14 +291,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             ipIdA = response.ipId;
         });
 
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-        });
-
         step("Wallet A mint a license token with the receiverAddress set as Wallet B, get a licenseId (licenseTokenIdA)", async function () {
             const response = await expect(
                 mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 2, accountB.address, waitForTransaction)
@@ -367,14 +319,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             expect(response.ipId).to.be.a("string").and.not.empty;
 
             ipIdB = response.ipId;
-        });
-
-        step("Wallet B attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdB", async function () {
-            const response = await expect(
-                attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
         });
 
         step("Wallet B mint a license token with the receiverAddress set as Wallet C, get a licenseTokenId (licenseTokenIdB)", async function () {
@@ -433,14 +377,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             expect(response.ipId).to.be.a("string").and.not.empty;
 
             ipIdA = response.ipId;
-        });
-
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
         });
 
         step("Wallet A mint a license token with ipIdA and get a licenseTokenId (licenseTokenIdA)", async function () {
@@ -527,14 +463,6 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             ipIdA = response.ipId;
         });
 
-        step("Wallet A attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
-        });
-
         step("Wallet A mint a license token with ipIdA and get a licenseTokenId (licenseTokenIdA)", async function () {
             const response = await expect(
                 mintLicenseTokens("A", ipIdA, nonComLicenseTermsId, 1, accountB.address, waitForTransaction)
@@ -565,9 +493,9 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
             ipIdB = response.ipId;
         });
 
-        step("Wallet B attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdA", async function () {
+        step("Wallet B attach nonComLicenseTermsId(non-commercial social remixing PIL) to ipIdB", async function () {
             const response = await expect(
-                attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
+                attachLicenseTerms("B", ipIdB, 0n, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;
@@ -575,7 +503,7 @@ describe("SDK E2E Test - Register Derivative IP Asset with Non-Commercial Social
 
         step("Wallet B mint a license token with ipIdB and get a licenseTokenId (licenseTokenIdB)", async function () {
             const response = await expect(
-                mintLicenseTokens("B", ipIdB, nonComLicenseTermsId, 1, accountA.address, waitForTransaction)
+                mintLicenseTokens("B", ipIdB, 0n, 1, accountA.address, waitForTransaction)
             ).to.not.be.rejected;
 
             expect(response.txHash).to.be.a("string").and.not.empty;

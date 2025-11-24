@@ -1,7 +1,7 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress } from '../../config/config';
 import { registerIpAsset } from '../../utils/sdkUtils';
 import { checkMintResult, isRegistered, mintNFTWithRetry } from '../../utils/utils';
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
