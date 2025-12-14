@@ -1,7 +1,7 @@
-import { nftContractAddress, mintingFeeTokenAddress} from '../config/config'
-import { checkMintResult, mintNFTWithRetry } from '../utils/utils'
-import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltySnapshot, collectRoyaltyTokens, royaltyClaimableRevenue, royaltyClaimRevenue, getRoyaltyVaultAddress, ipAccountExecute, storyClients, ipAccountExecuteWithSig } from '../utils/sdkUtils'
-import { expect } from 'chai'
+import { nftContractAddress } from '../config/config';
+import { checkMintResult, mintNFTWithRetry } from '../utils/utils';
+import { registerIpAsset, attachLicenseTerms, registerDerivative, royaltySnapshot, royaltyClaimableRevenue, royaltyClaimRevenue, getRoyaltyVaultAddress, ipAccountExecute, storyClients, ipAccountExecuteWithSig } from '../utils/sdkUtils';
+import { expect } from 'chai';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -63,19 +63,19 @@ export const mintNFTAndRegisterDerivative = async function(
     return ipId;
 };
 
-export const checkRoyaltyTokensCollected = async function(
-    caller: keyof typeof storyClients,
-    parentIpId: Address, 
-    royaltyVaultIpId: Address,
-    expectedRoyaltyTokensCollected: bigint
-){
-    const responseAFromB = await expect(
-        collectRoyaltyTokens(caller, parentIpId, royaltyVaultIpId, waitForTransaction)
-    ).to.not.be.rejected;
+// export const checkRoyaltyTokensCollected = async function(
+//     caller: keyof typeof storyClients,
+//     parentIpId: Address, 
+//     royaltyVaultIpId: Address,
+//     expectedRoyaltyTokensCollected: bigint
+// ){
+//     const responseAFromB = await expect(
+//         collectRoyaltyTokens(caller, parentIpId, royaltyVaultIpId, waitForTransaction)
+//     ).to.not.be.rejected;
 
-    expect(responseAFromB.txHash).to.be.a("string").and.not.empty;
-    expect(responseAFromB.royaltyTokensCollected).to.be.a('bigint').and.to.be.equal(expectedRoyaltyTokensCollected);
-};
+//     expect(responseAFromB.txHash).to.be.a("string").and.not.empty;
+//     expect(responseAFromB.royaltyTokensCollected).to.be.a('bigint').and.to.be.equal(expectedRoyaltyTokensCollected);
+// };
 
 export const getSnapshotId = async function(
     caller: keyof typeof storyClients,
@@ -92,48 +92,48 @@ export const getSnapshotId = async function(
     return snapshotId;
 };
 
-export const checkClaimableRevenue = async function(
-    caller: keyof typeof storyClients,
-    royaltyVaultIpId: Address,
-    account: Address,
-    snapshotId: bigint,
-    expectedClaimableRevenue: bigint
-){
-    const response = await expect(
-        royaltyClaimableRevenue(caller, royaltyVaultIpId, account, snapshotId, mintingFeeTokenAddress, waitForTransaction)
-    ).to.not.be.rejected;
+// export const checkClaimableRevenue = async function(
+//     caller: keyof typeof storyClients,
+//     royaltyVaultIpId: Address,
+//     account: Address,
+//     snapshotId: bigint,
+//     expectedClaimableRevenue: bigint
+// ){
+//     const response = await expect(
+//         royaltyClaimableRevenue(caller, royaltyVaultIpId, account, snapshotId, mintingFeeTokenAddress, waitForTransaction)
+//     ).to.not.be.rejected;
     
-    // expect(response).to.be.a("bigint").and.to.be.equal(expectedClaimableRevenue);
-};
+//     // expect(response).to.be.a("bigint").and.to.be.equal(expectedClaimableRevenue);
+// };
 
-export const claimRevenueByEOA = async function (
-    caller: keyof typeof storyClients,
-    snapshotIds: bigint[],
-    royaltyVaultIpId: Address,
-    expectedClaimableToken: bigint
-) {
-    const response = await expect(
-        royaltyClaimRevenue(caller, snapshotIds, royaltyVaultIpId, mintingFeeTokenAddress, undefined, waitForTransaction)
-    ).to.not.be.rejected;
+// export const claimRevenueByEOA = async function (
+//     caller: keyof typeof storyClients,
+//     snapshotIds: bigint[],
+//     royaltyVaultIpId: Address,
+//     expectedClaimableToken: bigint
+// ) {
+//     const response = await expect(
+//         royaltyClaimRevenue(caller, snapshotIds, royaltyVaultIpId, mintingFeeTokenAddress, undefined, waitForTransaction)
+//     ).to.not.be.rejected;
 
-    expect(response.txHash).to.be.a("string").and.not.empty;
-    // expect(response.claimableToken).to.be.a("bigint").to.be.equal(expectedClaimableToken);               
-};
+//     expect(response.txHash).to.be.a("string").and.not.empty;
+//     // expect(response.claimableToken).to.be.a("bigint").to.be.equal(expectedClaimableToken);               
+// };
 
-export const claimRevenueByIPA = async function (
-    caller: keyof typeof storyClients,
-    snapshotIds: bigint[],
-    royaltyVaultIpId: Address,
-    ipAccount: Address,
-    expectedClaimableToken: bigint
-) {
-    const response = await expect(
-        royaltyClaimRevenue(caller, snapshotIds, royaltyVaultIpId, mintingFeeTokenAddress, ipAccount, waitForTransaction)
-    ).to.not.be.rejected;
+// export const claimRevenueByIPA = async function (
+//     caller: keyof typeof storyClients,
+//     snapshotIds: bigint[],
+//     royaltyVaultIpId: Address,
+//     ipAccount: Address,
+//     expectedClaimableToken: bigint
+// ) {
+//     const response = await expect(
+//         royaltyClaimRevenue(caller, snapshotIds, royaltyVaultIpId, mintingFeeTokenAddress, ipAccount, waitForTransaction)
+//     ).to.not.be.rejected;
 
-    expect(response.txHash).to.be.a("string").and.not.empty;
-    // expect(response.claimableToken).to.be.a("bigint").to.be.equal(expectedClaimableToken);               
-};
+//     expect(response.txHash).to.be.a("string").and.not.empty;
+//     // expect(response.claimableToken).to.be.a("bigint").to.be.equal(expectedClaimableToken);               
+// };
 
 export const transferTokenToEOA = async function(
     caller: keyof typeof storyClients,

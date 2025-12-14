@@ -1,6 +1,5 @@
 import { Hex, Address, encodeFunctionData } from "viem";
 import { clientA, clientB, clientC, } from '../config/config';
-import { PIL_TYPE } from "@story-protocol/core-sdk";
 import { processResponse } from "./utils";
 
 export const storyClients = {
@@ -31,6 +30,7 @@ export const registerIpAsset = async function (
     waitForTransaction: boolean | undefined,
     metadataURI?: string | undefined,
     metadataHash?: `0x${string}` | undefined,
+    nftMetadataURI?: string | undefined,
     nftMetadataHash?: `0x${string}` | undefined,
     deadline?: string | number | bigint | undefined
 ) {
@@ -38,9 +38,10 @@ export const registerIpAsset = async function (
     const response = await storyClient.ipAsset.register({
         nftContract: nftContractAddress,
         tokenId: tokenId,
-        metadata: {
-            metadataURI: metadataURI,
-            metadataHash: metadataHash,
+        ipMetadata: {
+            ipMetadataURI: metadataURI,
+            ipMetadataHash: metadataHash,
+            nftMetadataURI: nftMetadataURI,
             nftMetadataHash: nftMetadataHash
         },
         deadline: deadline,
@@ -48,7 +49,8 @@ export const registerIpAsset = async function (
             waitForTransaction: waitForTransaction
         }
     });
-    console.log(JSON.stringify(response));
+    // console.log(JSON.stringify(response));
+    console.log(response);
     return response;
 };
 
@@ -80,8 +82,9 @@ export const registerDerivativeIp = async function (
     licenseTermsIds: string[] | bigint[] | number[],
     waitForTransaction?: boolean,
     licenseTemplate?: `0x${string}` | undefined,
-    metadataURI?: string | undefined,
-    metadataHash?: `0x${string}` | undefined,
+    ipMetadataURI?: string | undefined,
+    ipMetadataHash?: `0x${string}` | undefined,
+    nftMetadataURI?: string | undefined,
     nftMetadataHash?: `0x${string}` | undefined,
     deadline?: string | number | bigint | undefined
 ) {
@@ -94,9 +97,10 @@ export const registerDerivativeIp = async function (
             licenseTermsIds: licenseTermsIds,
             licenseTemplate: licenseTemplate
         },
-        metadata: {
-            metadataURI: metadataURI,
-            metadataHash: metadataHash,
+        ipMetadata: {
+            ipMetadataURI: ipMetadataURI,
+            ipMetadataHash: ipMetadataHash,
+            nftMetadataURI: nftMetadataURI,
             nftMetadataHash: nftMetadataHash,
         },
         deadline: deadline,
@@ -128,30 +132,26 @@ export const registerDerivativeWithLicenseTokens = async function (
 
 export const mintAndRegisterIpAssetWithPilTerms = async function (
     wallet: keyof typeof storyClients, 
-    nftContract: Address, 
-    pilType: PIL_TYPE, 
+    spgNftContract: Address, 
+    terms: any[], 
     waitForTransaction?: boolean, 
-    metadataURI?: string | undefined,
-    metadataHash?: `0x${string}` | undefined,
+    ipMetadataURI?: string | undefined,
+    ipMetadataHash?: `0x${string}` | undefined,
+    nftMetadataURI?: string | undefined,
     nftMetadataHash?: `0x${string}` | undefined,
-    recipient?: `0x${string}` | undefined,
-    mintingFee?: string | undefined,
-    commercialRevShare?: number | undefined,
-    currency?: `0x${string}` | undefined
+    recipient?: `0x${string}` | undefined
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.mintAndRegisterIpAssetWithPilTerms({
-        nftContract: nftContract,
-        pilType: pilType,
-        metadata: {
-            metadataURI: metadataURI,
-            metadataHash: metadataHash,
+        spgNftContract: spgNftContract,
+        terms: terms,
+        ipMetadata: {
+            ipMetadataURI: ipMetadataURI,
+            ipMetadataHash: ipMetadataHash,
+            nftMetadataURI: nftMetadataURI,
             nftMetadataHash: nftMetadataHash,
         },
         recipient: recipient,
-        mintingFee: mintingFee,
-        commercialRevShare: commercialRevShare,
-        currency: currency,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
@@ -166,30 +166,30 @@ export const registerIpAndAttachPilTerms = async function (
     wallet: keyof typeof storyClients, 
     nftContract: Address, 
     tokenId: string | number | bigint,
-    pilType: PIL_TYPE, 
+    terms: any, 
+    mintingFee: string | number | bigint,
+    currency: `0x${string}`,
     waitForTransaction?: boolean, 
-    metadataURI?: string | undefined,
-    metadataHash?: `0x${string}` | undefined,
+    ipMetadataURI?: string | undefined,
+    ipMetadataHash?: `0x${string}` | undefined,
+    nftMetadataURI?: string | undefined,
     nftMetadataHash?: `0x${string}` | undefined,
+    royaltyPolicyAddress?: `0x${string}` | undefined,
     deadline?: string | number | bigint | undefined,
-    mintingFee?: string | undefined,
     commercialRevShare?: number | undefined,
-    currency?: `0x${string}` | undefined
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.ipAsset.registerIpAndAttachPilTerms({
         nftContract: nftContract,
         tokenId: tokenId,
-        pilType: pilType,
-        metadata: {
-            metadataURI: metadataURI,
-            metadataHash: metadataHash,
+        terms: terms,
+        ipMetadata: {
+            ipMetadataURI: ipMetadataURI,
+            ipMetadataHash: ipMetadataHash,
+            nftMetadataURI: nftMetadataURI,
             nftMetadataHash: nftMetadataHash,
         },
         deadline: deadline,
-        mintingFee: mintingFee,
-        commercialRevShare: commercialRevShare,
-        currency: currency,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
@@ -218,14 +218,14 @@ export const registerNonComSocialRemixingPIL = async function (
 
 export const registerCommercialRemixPIL = async function (
     wallet: keyof typeof storyClients, 
-    mintingFee: string | number | bigint, 
+    defaultMintingFee: string | number | bigint, 
     commercialRevShare: number, 
     currency: Hex, 
     waitForTransaction: boolean
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.registerCommercialRemixPIL({
-        mintingFee: mintingFee,
+        defaultMintingFee: defaultMintingFee,
         commercialRevShare: commercialRevShare,
         currency: currency,
         txOptions: {
@@ -240,13 +240,13 @@ export const registerCommercialRemixPIL = async function (
 
 export const registerCommercialUsePIL = async function (
     wallet: keyof typeof storyClients, 
-    mintingFee: string | number | bigint, 
+    defaultMintingFee: string | number | bigint, 
     currency: `0x${string}`, 
     waitForTransaction?: boolean | undefined
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.license.registerCommercialUsePIL({
-        mintingFee: mintingFee,
+        defaultMintingFee: defaultMintingFee,
         currency: currency,
         txOptions: {
             waitForTransaction: waitForTransaction,
@@ -382,26 +382,6 @@ export const payRoyaltyOnBehalf = async function (
     return response;
 };
 
-export const collectRoyaltyTokens = async function (
-    wallet: keyof typeof storyClients, 
-    parentIpId: Hex, 
-    royaltyVaultIpId: Hex, 
-    waitForTransaction: boolean
-) {
-    const storyClient = getStoryClient(wallet);
-    const response = await storyClient.royalty.collectRoyaltyTokens({
-        parentIpId: parentIpId,
-        royaltyVaultIpId: royaltyVaultIpId,
-        txOptions: {
-            waitForTransaction: waitForTransaction
-        }
-    });
-
-    const responseJson = processResponse(response);
-    console.log(JSON.stringify(responseJson));
-    return response;
-};
-
 export const royaltyClaimableRevenue = async function (
     wallet: keyof typeof storyClients, 
     royaltyVaultIpId: Address, 
@@ -459,18 +439,18 @@ export const getRoyaltyVaultAddress = async function (
 
 export const raiseDispute = async function (
     wallet: keyof typeof storyClients, 
-    targetIpId: Hex, 
-    arbitrationPolicy: Hex, 
-    linkToDisputeEvidence: string, 
-    targetTag: string, 
-    waitForTransaction: boolean
+    targetIpId: Address,
+    cid: string,
+    targetTag: string,
+    data?: Hex,
+    waitForTransaction?: boolean
 ) {
     const storyClient = getStoryClient(wallet);
     const response = await storyClient.dispute.raiseDispute({
         targetIpId: targetIpId,
-        arbitrationPolicy: arbitrationPolicy,
-        linkToDisputeEvidence: linkToDisputeEvidence,
         targetTag: targetTag,
+        cid: cid,
+        data: data,
         txOptions: {
             waitForTransaction: waitForTransaction
         }
@@ -517,22 +497,39 @@ export const resolveDispute = async function (
 
 export const createNFTCollection = async function (
     wallet: keyof typeof storyClients, 
-    name: string, 
-    symbol: string, 
-    waitForTransaction: boolean,
-    options?: { [key: string]: any }
+    name: string,
+    symbol: string,
+    isPublicMinting: boolean,
+    mintOpen: boolean,
+    mintFeeRecipient: Address,
+    contractURI: string,
+    waitForTransaction?: boolean,
+    baseURI?: string,
+    maxSupply?: number,
+    mintFee?: bigint,
+    mintFeeToken?: Hex,
+    owner?: Hex
 ) {
     const storyClient = getStoryClient(wallet);
-    storyClient.nftClient.spgClient
     const response = await storyClient.nftClient.createNFTCollection({
         name: name,
         symbol: symbol,
+        isPublicMinting: isPublicMinting,
+        mintOpen: mintOpen,
+        mintFeeRecipient: mintFeeRecipient,
+        contractURI: contractURI,
+        baseURI: baseURI,
+        maxSupply: maxSupply,
+        mintFee: mintFee,
+        mintFeeToken: mintFeeToken,
+        owner: owner,
         txOptions: {
             waitForTransaction: waitForTransaction
-        },
-        ...options
+        }
     });
-    console.log(JSON.stringify(response));
+
+    // console.log(JSON.stringify(response));
+    console.log(response);
     return response;
 };
 

@@ -1,16 +1,14 @@
-import { privateKeyA, privateKeyB, privateKeyC, mintingFeeTokenAddress, accountC, clientC, accountB, chainId, clientA, accountA } from '../../config/config'
-import { getTotalRTSupply} from '../../utils/utils'
-import { getRoyaltyVaultAddress, payRoyaltyOnBehalf, registerCommercialRemixPIL } from '../../utils/sdkUtils'
-import { mintNFTCreateRootIPandAttachPIL, mintNFTAndRegisterDerivative, checkRoyaltyTokensCollected, getSnapshotId,checkClaimableRevenue, claimRevenueByIPA, claimRevenueByEOA, transferTokenToEOA, transferTokenToEOAWithSig } from '../testUtils'
+import { privateKeyA, privateKeyB, privateKeyC, mintingFeeTokenAddress, accountA, accountB, accountC } from '../../config/config';
+import { getTotalRTSupply} from '../../utils/utils';
+import { payRoyaltyOnBehalf, registerCommercialRemixPIL } from '../../utils/sdkUtils';
+import { mintNFTCreateRootIPandAttachPIL, mintNFTAndRegisterDerivative, checkRoyaltyTokensCollected, getSnapshotId,checkClaimableRevenue, claimRevenueByIPA, claimRevenueByEOA, transferTokenToEOA } from '../testUtils';
 
-import { expect } from 'chai'
+import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
-import { Address, Hex } from 'viem';
+import { Address } from 'viem';
 import '../setup';
-import { AccessPermission, getPermissionSignature } from '@story-protocol/core-sdk'
-import { coreMetadataModuleAbi } from '@story-protocol/core-sdk/dist/declarations/src/abi/generated'
 
 let ipIdA: Address;
 let ipIdB: Address;

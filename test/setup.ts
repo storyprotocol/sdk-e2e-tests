@@ -1,6 +1,6 @@
 import addContext = require("mochawesome/addContext");
 import { captureConsoleLogs } from "../utils/utils";
-import { mintingFeeTokenAddress } from '../config/config';
+import { mockERC20Address } from '../config/config';
 import { registerNonComSocialRemixingPIL, registerCommercialUsePIL, registerCommercialRemixPIL } from '../utils/sdkUtils';
 import { expect } from 'chai';
 
@@ -42,14 +42,14 @@ before("Register License Terms", async function () {
 
   it("Register Commercial Use License Terms", async function () {
     const responseComUseLicenseTerms1 = await expect(
-      registerCommercialUsePIL("A", mintingFee1, mintingFeeTokenAddress, true)
+      registerCommercialUsePIL("A", mintingFee1, mockERC20Address, true)
     ).to.not.be.rejected;
 
     expect(responseComUseLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     comUseLicenseTermsId1 = responseComUseLicenseTerms1.licenseTermsId;
 
     const responseComUseLicenseTerms2 = await expect(
-      registerCommercialUsePIL("A", mintingFee2, mintingFeeTokenAddress, true)
+      registerCommercialUsePIL("A", mintingFee2, mockERC20Address, true)
     ).to.not.be.rejected;
 
     expect(responseComUseLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
@@ -58,14 +58,14 @@ before("Register License Terms", async function () {
 
   it("Register Commercial Remix License Terms", async function () {
     const responseComRemixLicenseTerms1 = await expect(
-      registerCommercialRemixPIL("A", mintingFee1, commercialRevShare1, mintingFeeTokenAddress, true)
+      registerCommercialRemixPIL("A", mintingFee1, commercialRevShare1, mockERC20Address, true)
     ).to.not.be.rejected;
 
     expect(responseComRemixLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;
     comRemixLicenseTermsId1 = responseComRemixLicenseTerms1.licenseTermsId;
 
     const responseComRemixLicenseTerms2 = await expect(
-      registerCommercialRemixPIL("A", mintingFee2, commercialRevShare2, mintingFeeTokenAddress, true)
+      registerCommercialRemixPIL("A", mintingFee2, commercialRevShare2, mockERC20Address, true)
     ).to.not.be.rejected;
 
     expect(responseComRemixLicenseTerms1.licenseTermsId).to.be.a("bigint").and.to.be.ok;

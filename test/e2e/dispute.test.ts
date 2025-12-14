@@ -59,7 +59,7 @@ describe("SDK E2E Test - Dispute Module", function () {
         describe("Attach License Terms to IN_DISPUTE IP Asset", async function () {
             it("Attach non-commerical social remixing PIL to IN_DISPUTE IP asset", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, 0n, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(response.txHash).to.be.a("string").and.not.empty;
@@ -287,7 +287,7 @@ describe("SDK E2E Test - Dispute Module", function () {
         describe("Attach License Terms to DISPUTED IP Asset", async function () {
             it("Attach non-commerical social remixing PIL to a DISPUTED IP asset", async function () {
                 const response = await expect(
-                    attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
+                    attachLicenseTerms("A", ipIdA, 0n, waitForTransaction)
                 ).to.be.rejectedWith("Failed to attach license terms: The contract function \"attachLicenseTerms\" reverted.",
                                      "Error: LicensingModule__DisputedIpId()");
             });
@@ -309,23 +309,17 @@ describe("SDK E2E Test - Dispute Module", function () {
 
         describe("Mint License Tokens for DISPUTED IP asset", async function () {
             before("Attach license terms, raise dispute and set judgement", async function () {
-                const response1 = await expect(
-                    attachLicenseTerms("B", ipIdB, nonComLicenseTermsId, waitForTransaction)
-                ).to.not.be.rejected;
-                
-                expect(response1.txHash).to.be.a("string").and.not.empty;
-
-                const response2 = await expect(
+                const responseComUsePIL = await expect(
                     attachLicenseTerms("B", ipIdB, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response2.txHash).to.be.a("string").and.not.empty;
+                expect(responseComUsePIL.txHash).to.be.a("string").and.not.empty;
 
-                const response3 = await expect(
+                const responsecomRemixPIL = await expect(
                     attachLicenseTerms("B", ipIdB, comRemixLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
                 
-                expect(response3.txHash).to.be.a("string").and.not.empty;
+                expect(responsecomRemixPIL.txHash).to.be.a("string").and.not.empty;
 
                 const responseRaiseDispute = await expect(
                     raiseDispute("A", ipIdB, arbitrationPolicyAddress, "test", "PLAGIARISM", waitForTransaction)
@@ -386,7 +380,7 @@ describe("SDK E2E Test - Dispute Module", function () {
     
                 step("Register derivative with non-commercial social remixing PIL, derivative IP is a DISPUTED IP asset", async function () {
                     const responseAttachLicenseTerms = await expect(
-                        attachLicenseTerms("A", ipIdC, nonComLicenseTermsId, waitForTransaction)
+                        attachLicenseTerms("A", ipIdC, 0n, waitForTransaction)
                     ).to.not.be.rejected;
                     
                     expect(responseAttachLicenseTerms.txHash).to.be.a("string").and.not.empty;

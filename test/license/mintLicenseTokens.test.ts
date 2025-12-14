@@ -1,6 +1,6 @@
 import { privateKeyA, accountB, nftContractAddress } from '../../config/config';
 import { attachLicenseTerms, mintLicenseTokens, registerIpAsset } from '../../utils/sdkUtils';
-import { checkMintResult, mintNFTWithRetry } from '../../utils/utils';
+import { checkMintResult, mintNFT, mintNFTWithRetry } from '../../utils/utils';
 import { expect } from 'chai';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -19,10 +19,10 @@ const waitForTransaction: boolean = true;
 describe('SDK Test', function () {
     describe('Test license.mintLicenseTokens Function', async function () {
         before("Register license terms and IP assets",async function () {
-            tokenIdA = await mintNFTWithRetry(privateKeyA);
+            tokenIdA = await mintNFT(privateKeyA);
             checkMintResult(tokenIdA);
 
-            tokenIdB = await mintNFTWithRetry(privateKeyA);
+            tokenIdB = await mintNFT(privateKeyA);
             checkMintResult(tokenIdB);
 
             const responseA = await expect(
@@ -33,12 +33,6 @@ describe('SDK Test', function () {
             expect(responseA.ipId).to.be.a("string").and.not.empty;
 
             ipIdA = responseA.ipId;
-
-            const response = await expect(
-                attachLicenseTerms("A", ipIdA, nonComLicenseTermsId, waitForTransaction)
-            ).to.not.be.rejected;
-
-            expect(response.txHash).to.be.a("string").and.not.empty;
 
             const responseB = await expect(
                 registerIpAsset("A", nftContractAddress, tokenIdB, waitForTransaction)
@@ -104,8 +98,8 @@ describe('SDK Test', function () {
 
             it("Mint a license token fail as not attached licenseTermsId", async function () {
                 const response = await expect(
-                    mintLicenseTokens("A", ipIdB, nonComLicenseTermsId, 2, "0x485FCfC79Ce0A082Ab2a5e729D6e6255A540342a", true)      
-                ).to.be.rejectedWith("Failed to mint license tokens: License terms id " + nonComLicenseTermsId + " is not attached to the IP with id " + ipIdB);
+                    mintLicenseTokens("A", ipIdB, 0n, 2, "0x485FCfC79Ce0A082Ab2a5e729D6e6255A540342a", true)      
+                ).to.be.rejectedWith("Failed to mint license tokens: License terms id 0 is not attached to the IP with id " + ipIdB);
             });
         });
 
@@ -179,23 +173,17 @@ describe('SDK Test', function () {
         describe("Mint License Tokens - IP asset attached multiple license terms", async function () {
             before("Register 2 license terms and 2 IP assets", async function () {
                 const responseAttachLicenseTerms1 = await expect(
-                    attachLicenseTerms("A", ipIdB, nonComLicenseTermsId, waitForTransaction)
+                    attachLicenseTerms("A", ipIdB, comUseLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
     
                 expect(responseAttachLicenseTerms1.txHash).to.be.a("string").and.not.empty;
 
                 const responseAttachLicenseTerms2 = await expect(
-                    attachLicenseTerms("A", ipIdB, comUseLicenseTermsId1, waitForTransaction)
-                ).to.not.be.rejected;
-    
-                expect(responseAttachLicenseTerms2.txHash).to.be.a("string").and.not.empty;
-
-                const responseAttachLicenseTerms3 = await expect(
                     attachLicenseTerms("A", ipIdB, comRemixLicenseTermsId1, waitForTransaction)
                 ).to.not.be.rejected;
     
-                expect(responseAttachLicenseTerms3.txHash).to.be.a("string").and.not.empty;
-            })
+                expect(responseAttachLicenseTerms2.txHash).to.be.a("string").and.not.empty;
+            });
                         
             it("Mint a license token with ipIdB and nonComLicenseTermsId", async function () {
                 const response = await expect(

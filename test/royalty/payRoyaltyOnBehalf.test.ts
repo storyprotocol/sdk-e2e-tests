@@ -1,5 +1,5 @@
 import { privateKeyA, privateKeyB, privateKeyC, nftContractAddress, mintingFeeTokenAddress } from '../../config/config';
-import { mintNFTWithRetry, checkMintResult, sleep } from '../../utils/utils';
+import { mintNFTWithRetry, checkMintResult } from '../../utils/utils';
 import { registerIpAsset, payRoyaltyOnBehalf, attachLicenseTerms, registerDerivative } from '../../utils/sdkUtils';
 import { Address } from 'viem';
 import chai from 'chai';

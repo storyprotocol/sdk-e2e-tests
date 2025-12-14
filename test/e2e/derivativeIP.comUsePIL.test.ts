@@ -1,7 +1,7 @@
-import { privateKeyA, privateKeyB, privateKeyC, accountA, accountB, accountC, nftContractAddress } from '../../config/config'
-import { mintNFTWithRetry } from '../../utils/utils'
-import { registerIpAsset, attachLicenseTerms, mintLicenseTokens, registerDerivative, registerDerivativeWithLicenseTokens } from '../../utils/sdkUtils'
-import { expect } from 'chai'
+import { privateKeyA, privateKeyB, privateKeyC, accountA, accountB, accountC, nftContractAddress } from '../../config/config';
+import { mintNFTWithRetry } from '../../utils/utils';
+import { registerIpAsset, attachLicenseTerms, mintLicenseTokens, registerDerivative, registerDerivativeWithLicenseTokens } from '../../utils/sdkUtils';
+import { expect } from 'chai';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
