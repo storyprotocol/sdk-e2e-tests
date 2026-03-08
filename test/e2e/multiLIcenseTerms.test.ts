@@ -197,7 +197,7 @@ describe("SDK E2E Test - Register Derivative IP Asset with multiple PILs", funct
         });
     });
 
-    describe("Register a derivative IP asset, parent IP asset with multiple non-commericial and commercial PILs", async function () {
+    describe("Register a derivative IP asset, parent IP asset with multiple non-commercial and commercial PILs", async function () {
         step("Mint a NFT to Wallet A and get a tokenId (tokenIdA)", async function () {
             tokenIdA = await mintNFTWithRetry(privateKeyA);
             expect(tokenIdA).not.empty;

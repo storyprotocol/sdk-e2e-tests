@@ -73,7 +73,7 @@ describe("SDK E2E Test - Dispute Module", function () {
                 expect(response.txHash).to.be.a("string").and.not.empty;
             });
     
-            it("Attach commericial remix PIL to IN_DISPUTE IP asset", async function () {
+            it("Attach commercial remix PIL to IN_DISPUTE IP asset", async function () {
                 const response = await expect(
                     attachLicenseTerms("A", ipIdA, comRemixLicenseTermsId2, waitForTransaction)
                 ).to.not.be.rejected;
@@ -101,7 +101,7 @@ describe("SDK E2E Test - Dispute Module", function () {
                 expect(response.licenseTokenIds).to.be.a("array").and.to.have.lengthOf(2);
             });
 
-            it("Mint license tokens with commericial remix PIL for IN_DISPUTE IP asset", async function () {
+            it("Mint license tokens with commercial remix PIL for IN_DISPUTE IP asset", async function () {
                 const response = await expect(
                     mintLicenseTokens("A", ipIdA, comRemixLicenseTermsId2, 2, accountB.address, waitForTransaction)
                 ).to.not.be.rejected;
@@ -143,7 +143,7 @@ describe("SDK E2E Test - Dispute Module", function () {
                 expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2 * 1000000));
             });
 
-            step("Captue snapshot", async function () {
+            step("Capture snapshot", async function () {
                 const response = await expect(
                     royaltySnapshot("A", ipIdA, waitForTransaction)
                 ).to.not.be.rejected;
@@ -664,7 +664,7 @@ describe("SDK E2E Test - Dispute Module", function () {
                 expect(response.royaltyTokensCollected).to.be.a("bigint").and.be.equal(BigInt(commercialRevShare2 * 1000000));
             });
 
-            step("Captue snapshot", async function () {
+            step("Capture snapshot", async function () {
                 const response = await expect(
                     royaltySnapshot("B", ipIdB, waitForTransaction)
                 ).to.not.be.rejected;
